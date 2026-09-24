@@ -102,3 +102,11 @@ test('prefs survive without localStorage', async () => {
   prefs.set('align', { x: 1 });
   assert.deepEqual(prefs.get('align'), { x: 1 });
 });
+
+test('reading labels mention home languages', async () => {
+  const { readingLabel } = await import('../../js/core/storage.js');
+  assert.equal(readingLabel({ readerName: 'Nana' }), 'Read by Nana');
+  assert.equal(readingLabel({ readerName: 'Nana', language: 'Urdu' }), 'Read by Nana in Urdu');
+  assert.equal(readingLabel({ readerName: 'Taid', language: 'English' }), 'Read by Taid');
+  assert.equal(readingLabel(null), '');
+});

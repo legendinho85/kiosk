@@ -16,6 +16,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
   camera: false, // magic-window mode on by default?
   allowOnlineVoices: false, // online voices send the story text (and the name) to Google/Microsoft: opt-in only
   bedtime: false, // audio-first sleepy mode: dim screen, story carries on page by page
+  easyRead: false, // dyslexia-friendly reading text: bigger, more letter/word/line spacing, clearer font
+  highContrast: false, // darker text on plain backgrounds, stronger outlines on controls
+  letterActivity: true, // offer "Find your first letter" after the story
 });
 
 /**
@@ -29,6 +32,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
  * }} Profile
  * @typedef {{
  *   id: string, bookId: string, readerName: string,     // e.g. "Grandma Rose"
+ *   language?: string,                                  // e.g. "Urdu", "Polish", "Cymraeg" (home languages); empty = English
  *   parts: Record<string, {main?: string|null, after?: string|null}>, // page n -> blob ids ("main" = text + prompt, "after" = after lines)
  *   note?: string, createdAt: number, updatedAt: number
  * }} Reading  // a grown-up's recorded reading of a whole book (grandparent mode)
@@ -156,6 +160,14 @@ export function removeReading(state, id) {
   const blobIds = r ? Object.values(r.parts ?? {}).flatMap((p) => [p.main, p.after]).filter(Boolean) : [];
   const activeReading = Object.fromEntries(Object.entries(state.activeReading ?? {}).map(([book, rid]) => [book, rid === id ? null : rid]));
   return { state: { ...state, readings: (state.readings ?? []).filter((x) => x.id !== id), activeReading }, blobIds };
+}
+
+/** "Read by Nana" / "Read by Nana in Urdu". */
+export function readingLabel(reading) {
+  if (!reading) return '';
+  const who = String(reading.readerName ?? '').trim() || 'a grown-up';
+  const lang = String(reading.language ?? '').trim();
+  return lang && !/^english$/i.test(lang) ? `Read by ${who} in ${lang}` : `Read by ${who}`;
 }
 
 /** The reading chosen for a book, if it still exists. */

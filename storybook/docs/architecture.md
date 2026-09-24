@@ -368,3 +368,93 @@ Tokens (in `css/app.css`): `--ink #2B2A33`, `--paper #FFF8EC`, `--card #FFFFFF`,
 `--accent` (book colour), `--sun #FFC83D`, `--sky #7EC8F0`, `--grass #6CC24A`,
 `--berry #E8505B`, focus ring `--focus #1D6FE0`. Parent screens are calm and
 trustworthy; the reader is bright and bold.
+
+## 11. Family features (round 2)
+
+State lives in `js/core/storage.js` (done): `settings.allowOnlineVoices` (default
+false), `settings.bedtime`, `state.together` + `readingChildren(state)` /
+`setTogether(state, ids)` (siblings, up to 3), `state.readings` +
+`upsertReading` / `removeReading` / `readingsFor` / `activeReadingFor`
+(grandparent mode), `profile.fullName` (when `display` is the name used in
+stories, e.g. "Max"), `profile.gift` `{from, text, recordingId, createdAt}`,
+and `prefs.get/set` for small per-device values.
+
+### Who is being read to
+`person = togetherPerson(readingChildren(state).map(p => ({display: p.display, say: p.pronunciation?.say})))`
+(`js/core/personalise.js`). With siblings, `person.count > 1`, text picks the
+plural side of `{one|many}`, pictures use `person.art` ("Amara & Zak"), and
+recorded name clips are not used (the voice says the joined names).
+
+### Online voices are opt-in (privacy)
+Browser "online"/network voices (`localService === false`, e.g. Chrome's Google
+voices, Edge's "Online (Natural)") send the text — including the child's
+name — to the browser maker's servers. The narrator only uses them when
+`settings.allowOnlineVoices` is true. `narrator.voiceStatus()` →
+`{local: number, online: number, usingOnline: boolean, needsConsent: boolean}`;
+`needsConsent` is true when there is no local English voice but online ones
+exist (the app then asks the grown-up; until they agree, narration is silent
+with highlighting). `listVoices()` still lists online voices, flagged
+`online: true`, so settings can show them.
+
+### Environment — `js/core/env.js`
+`detectEnvironment(nav = navigator, win = window) -> { speech: boolean, recognition: boolean, camera: boolean,
+ inAppBrowser: null | 'android-webview' | 'facebook' | 'instagram' | 'tiktok' | 'snapchat' | 'linkedin' | 'other', os: 'ios'|'android'|'other',
+ openInBrowserHint: string | null }` — the hint is parent-friendly text such as
+"This page opened inside Instagram, which can't read aloud. Tap ⋯ and choose
+'Open in browser'." (null when all is well).
+
+### Audio tools — `js/audio/mix.js`
+`concatToWav(parts: Array<Blob | {silenceMs: number} | {chime: true}>, {sampleRate = 22050}) -> Promise<Blob>`
+(decodes each blob, resamples to mono, joins with silences/soft chimes,
+encodes WAV); `downloadBlob(blob, filename)`; `shareOrDownload(blob, filename, {title, text}) -> Promise<'shared'|'downloaded'|'cancelled'>`
+(Web Share API with files when available).
+
+### Reader additions — `js/reader/reader.js`
+`mountReader(root, { ..., reading = null, bedtime = false })`:
+- `reading`: `{ readerName, getPart(n, 'main'|'after') -> Promise<Blob|null> }`.
+  When a part exists it is played instead of the computer voice (main = the
+  page text + prompt, after = the after lines), with highlighting estimated
+  across the clip's duration; missing parts fall back to the voice.
+- `bedtime`: calm night styling (dimmed page, no bright effects, soft sounds),
+  the story carries on by itself: after the prompt the mechanism plays itself
+  ("show me") after a few seconds if nobody touches it, and pages turn
+  automatically after a soft chime.
+- A pause/play button (`data-testid="pause"`) that pauses narration and timers.
+- Name spotting: tapping a name in the picture (`.sb-name`, `.sb-letters`)
+  sparkles it and the voice says "That says {name}!".
+- Name slots use `person.art ?? person.display`.
+
+### Family packs — `js/family/pack.js`
+A single JSON file parents share by WhatsApp/email/AirDrop (no server):
+```jsonc
+{ "format": "starring-pack", "version": 1,
+  "kind": "reading" | "gift",
+  "bookId": "tiffin-football", "createdAt": 1790000000000,
+  "readerName": "Grandma Rose",                        // reading packs
+  "parts": { "1": { "main": {"mime": "audio/mp4", "data": "<base64>"}, "after": null } },
+  "child": { "display": "Ava", "fullName": null, "pronunciation": { "say": "Ava", "ipa": "", "respell": "", "label": "", "source": "gift" } }, // gift packs
+  "message": { "from": "Auntie Jo", "text": "Happy birthday!", "audio": {"mime": "audio/wav", "data": "<base64>"} } } // gift packs (audio optional)
+```
+`buildPack(...) -> Blob`, `readPack(file) -> Promise<ParsedPack>` (untrusted
+input: size caps (30 MB), audio MIME allow-list, text length caps, never
+rendered as HTML), `importPack(state, parsed, blobs) -> Promise<{state, summary}>`.
+Filenames: `<book>-<reader-or-child>.starring.json`.
+
+### App screens — `js/app/screens/*`
+New routes: `#/b/:book/record` (record a reading, page by page, teleprompter
+with the child's name filled in), `#/b/:book/gift` (set up a gift), `#/open`
+(open a family pack). Ready screen: reading-together picker, "Who's reading?"
+(computer voice / recorded readings), bedtime toggle, gift message player,
+"Save as audio for Yoto / Tonie" (recorded readings only — the computer voice
+can't be saved by browsers; explain that the full version will use a cloud
+voice for this). Settings: online-voices consent toggle with a clear
+explanation, readings list (play, choose, send, delete), open a pack.
+
+## 12. Round 3 (founder's extra ideas)
+
+- **Home languages**: `Reading.language` (free text, e.g. "Urdu"); `readingLabel(reading)` → "Read by Nana in Urdu". A reading in another language plays page by page without word-by-word highlighting (the timing can't match English text); the teleprompter lets the reader read the English or tell it in their own words.
+- **Name clash check** — `js/core/clash.js`: `nameClashes(childName, book.characters)` and `clashMessage(...)`; books list their cast in `book.characters` (e.g. `["Tiffin", "Goose", "Frog"]`). The name screen offers a nickname when there is a clash.
+- **Find your first letter** — `js/activities/letter-trace.js`: `mountLetterTrace(root, {person, narrator, sfx, onDone, onSkip, reducedMotion, bedtime})`, offered after the last page when `settings.letterActivity`.
+- **Name stickers** — `js/ar/stickers.js`: `renderStickerSheet(root, {book, bookId, baseUrl, person, trimMm})`, route `#/stickers/:book`: A4 sticker sheets sized to the printed name spots.
+- **Accessibility**: `settings.easyRead` (dyslexia-friendly reading text) and `settings.highContrast`, applied as `data-easy-read` / `data-contrast="high"` on `<html>`.
+- **Nursery/class edition**: parked (privacy), see docs/product-plan.md.
