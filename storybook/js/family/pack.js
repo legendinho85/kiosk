@@ -13,6 +13,7 @@
 // pack is ever put into the page as HTML; the screens use text nodes only.
 
 import { normaliseName, nameKey, NAME_MAX_LENGTH } from '../core/personalise.js';
+import { parseRespelling, respellToIpa, respellToSay } from '../pronounce/respell.js';
 import { newId, upsertProfile, upsertReading } from '../core/storage.js';
 import { asciiSlug, readingChildFields, chooseReading } from './family.js';
 
@@ -338,6 +339,25 @@ async function fileText(file) {
 }
 
 /**
+ * The spoken form of a gifted child's name. A gift file is untrusted: its
+ * `say` text is what the narrator reads wherever the name appears, so a
+ * prank file could otherwise make the story say anything while the screens
+ * show a harmless respelling. So: when there is a respelling, the spoken
+ * text is rebuilt from it (what the parent sees is what is said); otherwise
+ * `say` is only kept if it looks like a name (letters, up to three words),
+ * else the displayed name is used. The screens also show the exact words.
+ */
+export function giftPronunciation(pr, display) {
+  const respell = cleanText(pr?.respell, PACK_LIMITS.respell);
+  if (respell && parseRespelling(respell).errors.length === 0 && /\p{L}/u.test(respell)) {
+    return { say: respellToSay(respell), ipa: respellToIpa(respell), respell };
+  }
+  const say = cleanText(pr?.say, PACK_LIMITS.say);
+  const nameLike = /^\p{L}[\p{L}\p{M}'’-]*(?: [\p{L}\p{M}'’-]+){0,2}$/u.test(say) && [...say].length <= 30;
+  return { say: nameLike ? say : display, ipa: '', respell: '' };
+}
+
+/**
  * Read and check a pack file chosen by the parent.
  * @param {Blob|File} file
  * @param {{books?: Array<string|{id: string, title?: string, subtitle?: string}> | (() => Promise<Array>)}} [opts]
@@ -400,15 +420,13 @@ export async function readPack(file, { books } = {}) {
     if (n.ok) {
       const full = normaliseName(cleanText(raw.child.fullName, NAME_MAX_LENGTH + 8));
       const pr = raw.child.pronunciation && typeof raw.child.pronunciation === 'object' ? raw.child.pronunciation : {};
-      const say = cleanText(pr.say, PACK_LIMITS.say);
+      const spoken = giftPronunciation(pr, n.display);
       child = {
         display: n.display,
         key: n.key,
         fullName: full.ok && full.key !== n.key ? full.display : null,
         pronunciation: {
-          say: /\p{L}/u.test(say) ? say : n.display,
-          ipa: cleanText(pr.ipa, PACK_LIMITS.ipa),
-          respell: cleanText(pr.respell, PACK_LIMITS.respell),
+          ...spoken,
           label: cleanText(pr.label, PACK_LIMITS.label),
           source: 'gift',
           useRecording: false,

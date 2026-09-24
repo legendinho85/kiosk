@@ -400,10 +400,12 @@ export function render(root, ctx) {
         testid: 'confirm-forget',
       });
       if (!ok) return;
-      await forgetEverything();
+      const result = await forgetEverything();
       forgetInMemory();
       ctx.setState({ ...loadState(), lastBook: bookId }, { persist: false });
-      toast('Done — nothing about your family is stored on this device now.', { kind: 'success' });
+      // Only say "nothing is stored" when that's true (storage reports whether the recordings went).
+      if (result?.recordings === 'error') toast('Names and settings are gone, but this browser didn’t let us clear the recordings. Please try again, or clear this site’s data in your browser settings.', { kind: 'error', timeout: 9000 });
+      else toast('Done — nothing about your family is stored on this device now.', { kind: 'success' });
       ctx.navigate(`#/b/${bookId}`);
     },
   });

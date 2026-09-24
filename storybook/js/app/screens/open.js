@@ -126,7 +126,8 @@ export function render(root, ctx) {
       }
       const pr = p.child.pronunciation;
       const sayBtn = button({ text: 'Listen', label: `Listen to how we’ll say ${p.child.display}`, icon: 'speaker', variant: 'soft', size: 'sm', testid: 'pack-say', onClick: () => ctx.narrator?.speakText?.(pr.say)?.catch?.(() => {}) });
-      giftBits.push(h('div', { class: 'said-row' }, h('p', { class: 'said-as' }, `We’ll say ${p.child.display} `, pr.respell ? respellNode(pr.respell) : h('strong', {}, `“${pr.say}”`)), sayBtn));
+      // Show the exact words the voice will use (not only the respelling).
+      giftBits.push(h('div', { class: 'said-row' }, h('p', { class: 'said-as' }, `We’ll say ${p.child.display} `, pr.respell ? respellNode(pr.respell) : null, pr.respell ? ' ' : null, h('strong', { 'data-testid': 'pack-say-text' }, `“${pr.say}”`)), sayBtn));
     }
     const addBtn = button({ text: isGift ? `Add ${p.child.display} to this phone` : 'Add it to this phone', icon: 'check', variant: 'primary', size: 'lg', testid: 'pack-import' });
     addBtn.addEventListener('click', () => doImport(addBtn));

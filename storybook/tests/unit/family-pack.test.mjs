@@ -273,7 +273,7 @@ test('text from a pack is cleaned and capped, and stays plain text', async () =>
   assert.equal(parsed.child.fullName, null, 'same as the display name: not kept');
   assert.equal(parsed.child.pronunciation.say, 'Ava', 'a say with no letters falls back to the name');
   assert.equal(parsed.child.pronunciation.respell, '');
-  assert.equal(parsed.child.pronunciation.ipa.length, PACK_LIMITS.ipa);
+  assert.equal(parsed.child.pronunciation.ipa, '', 'IPA from a file is not trusted: it is only rebuilt from a visible respelling');
   assert.equal(parsed.message.from, 'Jo <b>Smith</b>', 'no control or direction-override characters; markup is just text');
   assert.ok(parsed.message.text.startsWith('<script>alert("hi")</script> long'), 'kept as text, never as HTML');
   assert.ok(Array.from(parsed.message.text).length <= PACK_LIMITS.message);
@@ -322,4 +322,17 @@ test('helpers: text cleaning, MIME types, base64, sniffing, filenames', async ()
   assert.equal(packFilename({ kind: 'reading', bookId: 'tiffin-football', readerName: 'Grandma Rose' }), 'tiffin-football-Grandma-Rose.starring.json');
   assert.equal(packFilename({ kind: 'gift', bookId: 'tiffin-football', child: { display: 'Zoë' } }), 'tiffin-football-Zoe.starring.json');
   assert.equal(packFilename({ kind: 'reading', bookId: 'tiffin-football' }), 'tiffin-football-family.starring.json');
+});
+
+test('gift pronunciations cannot smuggle arbitrary words into the story', async () => {
+  const { giftPronunciation } = await import('../../js/family/pack.js');
+  // A respelling wins: what the parent sees is what is said.
+  assert.deepEqual(giftPronunciation({ say: 'Stinky Pants', respell: 'AY-vuh' }, 'Ava'), { say: 'Ayva', ipa: 'ˈeɪvə', respell: 'AY-vuh' });
+  // A plain sounds-like spelling is kept if it looks like a name.
+  assert.equal(giftPronunciation({ say: 'Neeve' }, 'Niamh').say, 'Neeve');
+  assert.equal(giftPronunciation({ say: 'Shi vawn' }, 'Siobhan').say, 'Shi vawn');
+  // Sentences, punctuation and long text fall back to the displayed name.
+  for (const bad of ['you are a silly billy, ha ha', 'Bad! Word.', 'one two three four', '<b>x</b>', '']) {
+    assert.equal(giftPronunciation({ say: bad }, 'Ava').say, 'Ava', bad);
+  }
 });

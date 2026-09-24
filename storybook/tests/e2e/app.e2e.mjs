@@ -868,8 +868,9 @@ try {
       s.settings.bedtime = true;
       localStorage.setItem('starring.v1', JSON.stringify(s));
     });
+    // A fresh load (not a same-page hash change + reload, which can race the reader still leaving).
+    await p.goto(`${BASE}/package.json`);
     await p.goto(url(`#/b/${BOOK}/letters`));
-    await p.reload();
     await p.waitForFunction(() => document.querySelector('[data-testid=letter-trace]')?.dataset.step === 'find', null, { timeout: 20000 });
     eq(await p.getByTestId('letter-trace').getAttribute('data-bedtime'), '', 'bedtime passed on');
     eq(await p.getByTestId('letter-trace').getAttribute('data-letter'), 'S', 'first child first');
@@ -942,10 +943,23 @@ try {
     await waitHash(p, `#/stickers/${BOOK2}?from=settings`);
     await p.getByTestId('sticker-sheets').waitFor();
     eq(await p.getByTestId('back').getAttribute('href'), '#/settings', 'back to settings');
-    // No child yet: says so and links to the name box.
-    await p.evaluate(() => localStorage.removeItem('starring.v1'));
+    // No child yet: says so and links to the name box. Clear the saved state
+    // at the start of the next page load, before the app boots: clearing it
+    // while the app is running lets the app write its in-memory state back.
+    await c.addInitScript(() => {
+      // Only the app's own top-level page (not about:blank or sandboxed frames).
+      if (window.top !== window || !/^https?:$/.test(location.protocol)) return;
+      try {
+        if (!sessionStorage.getItem('sb-cleared')) {
+          localStorage.removeItem('starring.v1');
+          sessionStorage.setItem('sb-cleared', '1');
+        }
+      } catch {
+        /* storage blocked: nothing to clear */
+      }
+    });
     await p.goto(url(`#/stickers/${BOOK}`));
-    await p.reload();
+    await p.reload(); // the init script clears storage before the app boots
     await p.getByTestId('stickers-no-child').waitFor();
     eq(await p.getByTestId('stickers-add-child').getAttribute('href'), `#/b/${BOOK}/name`, 'add a child');
     assert(!(await p.getByTestId('print-now').isVisible()), 'nothing to print');
