@@ -18,6 +18,13 @@ for (const f of files) {
   const patch = JSON.parse(await readFile(new URL(f, pagesDir), 'utf8'));
   // Story text lives in the draft; fragments may only add presentation details.
   for (const key of ['text', 'prompt', 'after', 'n', 'kind']) delete patch[key];
+  // Print data: the draft owns the printed words and page numbers, the
+  // illustrator's fragment adds where the text sits (textBoxes).
+  if (patch.print) {
+    const { text: _t, pages: _p, ...layout } = patch.print;
+    page.print = { ...(page.print ?? {}), ...layout };
+    delete patch.print;
+  }
   Object.assign(page, patch);
 }
 

@@ -4,7 +4,8 @@
 import { unknownPlaceholders } from './personalise.js';
 
 export const MECHANIC_TYPES = ['none', 'slider', 'pull-tab', 'wheel', 'flap', 'push-button'];
-export const PAGE_KINDS = ['cover', 'spread', 'end'];
+// v1 board-book kinds, then v2 (KDP paperback) spread kinds.
+export const PAGE_KINDS = ['cover', 'spread', 'end', 'title', 'magic', 'story', 'activity', 'back-matter'];
 const DRIVE_KEYS = ['along', 'translate', 'rotate', 'scale', 'opacity', 'visible'];
 
 const booksBase = new URL('../../books/', import.meta.url);
@@ -53,6 +54,15 @@ export function validateBook(book) {
     if (!p.scene || typeof p.scene !== 'string') err(`${at}: scene (path to an SVG) is required`);
     if (!Array.isArray(p.text)) err(`${at}: text must be an array of lines`);
     if (p.after != null && !Array.isArray(p.after)) err(`${at}: after must be an array of lines`);
+    if (p.print != null) {
+      const pr = p.print;
+      if (!Array.isArray(pr.pages) || pr.pages.length !== 2) err(`${at}: print.pages must be [left, right] (null for an unprinted half)`);
+      if (pr.text != null && !Array.isArray(pr.text)) err(`${at}: print.text must be an array of lines`);
+      for (const t of pr.text ?? []) if (/\{(name|NAME|Name|name's)\}/.test(t)) err(`${at}: printed text can't contain the child's name (use "you")`);
+      for (const [j, b] of (pr.textBoxes ?? []).entries()) {
+        if (!['left', 'right'].includes(b?.side) || ![b.x, b.y, b.w, b.h].every(Number.isFinite)) err(`${at}: print.textBoxes[${j}] needs side left|right and x, y, w, h`);
+      }
+    }
     for (const t of texts(p)) for (const bad of unknownPlaceholders(t)) err(`${at}: unknown placeholder ${bad}`);
 
     const m = p.mechanic ?? { type: 'none' };

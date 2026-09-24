@@ -463,3 +463,62 @@ explanation, readings list (play, choose, send, delete), open a pack.
 - **Name stickers** — `js/ar/stickers.js`: `renderStickerSheet(root, {book, bookId, baseUrl, person, trimMm})`, route `#/stickers/:book`: A4 sticker sheets sized to the printed name spots.
 - **Accessibility**: `settings.easyRead` (dyslexia-friendly reading text) and `settings.highContrast`, applied as `data-easy-read` / `data-contrast="high"` on `<html>`.
 - **Nursery/class edition**: parked (privacy), see docs/product-plan.md.
+
+## 13. KDP editions (print-on-demand paperback, format v2)
+
+Decisions (see docs/kdp-plan.md): Amazon KDP premium-colour paperback,
+**8.5 × 8.5 in, 24 pages**, matte cover; art finish **C "Textured flat"** with
+the texture turned up a little; **all lettering stays crisp** (story text,
+titles, names, scoreboards are never textured). The printed book is the same
+for every buyer and must read well with no phone: blank name spots with a faint
+star, and printed text that uses "you"/"your" instead of the name. The app adds
+the name, the voice and the movement.
+
+### Page plan (24 printed pages = 12 spreads; p1 is a right-hand page, p24 left)
+| Spread | Printed pages | Kind | Content |
+|---|---|---|---|
+| 1 | –, 1 | `title` | title page (left half = app-only endpaper, not printed) |
+| 2 | 2, 3 | `magic` | "Make this book magic" (QR + how it works) / "This book belongs to ☆" |
+| 3–10 | 4–19 | `story` | 8 story spreads, each with a name spot and a phone moment |
+| 11 | 20, 21 | `end` | calm bedtime ending + series signature |
+| 12 | 22, 23 | `activity` | find the lucky pebble on every page; letter hunt |
+| — | 24 | `back-matter` | more books in the series, credits, publisher/GPSR details (drawn as the left half of a 13th spread whose right half is app-only) |
+
+### `book.json` (version 2)
+Same shape as version 1 (the reader keeps working: every entry in `pages` is
+one SPREAD) plus print data:
+```jsonc
+{
+  "id": "goal", "version": 2,
+  "title": "Goal!",                         // printed & listed title: never contains the name
+  "appTitle": "Goal, {name}!",               // what the app shows
+  "subtitle": "…", "series": "Tiffin & Me", "seriesNumber": 1,
+  "format": { "trimIn": [8.5, 8.5], "pages": 24, "bleedIn": 0.125, "spread": [2000, 1000], "bleedUnits": 30,
+              "gutterSafeUnits": 120, "outerSafeUnits": 90 },
+  "cover": { "front": "cover/front.svg", "back": "cover/back.svg", "blurb": ["…"], "barcodeBox": true },
+  "pages": [ {
+    "n": 3, "kind": "story", "scene": "scenes/s3.svg",
+    "text": ["Tiffin passes to {name}!"],      // app (spoken, highlighted)
+    "prompt": "Can you tap the ball?", "after": ["…"], "mechanic": { … }, "sfx": { … },
+    "print": {
+      "pages": [4, 5],                          // printed page numbers of the left/right half (null = not printed)
+      "text": ["Tiffin passes to you!"],        // printed words (no name)
+      "textBoxes": [ { "side": "left", "x": 120, "y": 90, "w": 700, "h": 220, "align": "left", "size": 54 } ]
+    }
+  } ]
+}
+```
+Scene SVGs use `viewBox="0 0 2000 1000"` (one spread; x 0–1000 = left page,
+1000–2000 = right page; 1 unit = 0.00425 in). Backgrounds extend 30 units past
+every trim edge for bleed (the print renderer widens the viewBox to
+`-30 -30 2060 1060`; the app clips to the trim). Keep name spots, text boxes and
+faces ≥ 120 units from the gutter (x = 1000) and ≥ 90 units from the trim edges.
+Text boxes sit on calm areas of the art; the print renderer sets the printed
+text there as live vector text (Andika), the app keeps its own read-along band.
+
+### Print pipeline — `tools/kdp/`
+`node tools/kdp/build.mjs <bookId>` → `print/<bookId>/interior.pdf` (24 single
+pages, 8.625 × 8.75 in with bleed on the outside edge, art at 300 DPI + vector
+text), `print/<bookId>/cover.pdf` (full wrap: back + spine + front, sized by page
+count; QR code as vector, clear of the 2 × 1.2 in barcode box), page previews,
+and a preflight report (safe zones, text size, dark-ink areas, image DPI).

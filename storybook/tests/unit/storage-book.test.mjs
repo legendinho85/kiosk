@@ -115,3 +115,17 @@ test('reading labels mention home languages', async () => {
   assert.equal(readingLabel({ readerName: 'Taid', language: 'English' }), 'Read by Taid');
   assert.equal(readingLabel(null), '');
 });
+
+test('validateBook checks v2 print data', () => {
+  const b = good();
+  b.pages[1].kind = 'story';
+  b.pages[1].print = { pages: [4, 5], text: ['Tiffin passes to you!'], textBoxes: [{ side: 'left', x: 100, y: 80, w: 600, h: 200 }] };
+  assert.deepEqual(validateBook(b), []);
+  b.pages[1].print.text = ['Tiffin passes to {name}!'];
+  b.pages[1].print.textBoxes = [{ side: 'middle', x: 1 }];
+  b.pages[1].print.pages = [4];
+  const errors = validateBook(b).join('\n');
+  assert.match(errors, /can't contain the child's name/);
+  assert.match(errors, /textBoxes\[0\]/);
+  assert.match(errors, /print.pages must be/);
+});
