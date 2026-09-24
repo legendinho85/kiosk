@@ -190,6 +190,18 @@ const state = (page) => page.getByTestId('magic-window').getAttribute('data-stat
 const waitState = (page, s, timeout = 10000) => page.waitForFunction((s) => document.querySelector('[data-testid=magic-window]')?.dataset.state === s, s, { timeout });
 const alignOf = (page) => page.getByTestId('magic-window').evaluate((el) => (el.dataset.align ?? '').split(',').map(Number));
 const liveTracks = (page) => page.evaluate(() => window.__streams.flatMap((s) => s.getTracks()).filter((t) => t.readyState === 'live').length);
+// The app's magic-window route asks a grown-up to press and hold first (js/app/screens/magic.js);
+// tests shorten the hold with SB_TEST.gateMs.
+const GATE_HOOK = `globalThis.SB_TEST = { ...(globalThis.SB_TEST ?? {}), gateMs: 150 };`;
+async function passCameraGate(page) {
+  const gate = page.getByTestId('parent-gate');
+  await gate.waitFor({ timeout: 15000 });
+  const box = await gate.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(400);
+  await page.mouse.up();
+}
 async function drag(page, from, to, steps = 12) {
   await page.mouse.move(from[0], from[1]);
   await page.mouse.down();
@@ -535,10 +547,16 @@ try {
       });
     const before = await styles(plain.page);
     await plain.context.close();
-    const hc = await newPage(browser, { init: `document.documentElement.dataset.contrast = 'high'; document.documentElement.dataset.easyRead = 'true';` });
+    const hc = await newPage(browser);
     await hc.page.goto(`${HARNESS}?page=2&explain=always`);
     await hc.page.waitForFunction(() => window.__ready === true);
     await waitState(hc.page, 'explain');
+    // As js/main.js applies settings.highContrast / settings.easyRead.
+    await hc.page.evaluate(() => {
+      document.documentElement.dataset.contrast = 'high';
+      document.documentElement.dataset.easyRead = 'true';
+    });
+    await hc.page.waitForTimeout(100);
     const after = await styles(hc.page);
     eq([after.note, after.steps, after.card], ['rgb(46, 46, 46)', 'rgb(20, 20, 20)', 'rgb(255, 255, 255)'], 'darker words on a plain white card');
     assert(after.cardBorder >= 3, `a solid edge round the card (${after.cardBorder})`);
@@ -831,8 +849,9 @@ try {
   });
 
   await step('magic window via the app route (#/b/…/magic/3), reduced motion, tablet', async () => {
-    const { page, context, errors } = await newPage(browser, { viewport: { width: 1024, height: 768 }, seed: true, reducedMotion: 'reduce' });
+    const { page, context, errors } = await newPage(browser, { viewport: { width: 1024, height: 768 }, seed: true, reducedMotion: 'reduce', init: GATE_HOOK });
     await page.goto(`${BASE}/?test=1#/b/${BOOK}/magic/3`);
+    await passCameraGate(page);
     await page.getByTestId('magic-window').waitFor({ timeout: 15000 });
     await waitState(page, 'explain');
     await page.waitForTimeout(450);
@@ -870,8 +889,9 @@ try {
     await step(`filmed paper (${name} ${feed.vp.width}x${feed.vp.height}): line up by hand; the name lands on the printed name spot`, async () => {
       const b = await chromium.launch({ args: [...FAKE_CAMERA, `--use-file-for-fake-video-capture=${feed.file}`] });
       try {
-        const { page, errors } = await newPage(b, { viewport: feed.vp, seed: true, init: `globalThis.SB_TEST = { camera: { audio: false, video: { width: { ideal: ${feed.frame.width} }, height: { ideal: ${feed.frame.height} } } } };` });
+        const { page, errors } = await newPage(b, { viewport: feed.vp, seed: true, init: `globalThis.SB_TEST = { gateMs: 150, camera: { audio: false, video: { width: { ideal: ${feed.frame.width} }, height: { ideal: ${feed.frame.height} } } } };` });
         await page.goto(`${BASE}/?test=1#/b/${BOOK}/magic/4`);
+        await passCameraGate(page);
         await page.getByTestId('mw-allow').click({ timeout: 15000 });
         await waitState(page, 'live');
         const vw = await page.getByTestId('mw-video').evaluate((v) => [v.videoWidth, v.videoHeight]);
@@ -973,7 +993,7 @@ try {
         const { page, errors } = await newPage(b, {
           viewport: vp,
           seed: true,
-          init: `globalThis.SB_TEST = { camera: { audio: false, video: { width: { ideal: ${frame.width} }, height: { ideal: ${frame.height} } } } };`,
+          init: `globalThis.SB_TEST = { gateMs: 150, camera: { audio: false, video: { width: { ideal: ${frame.width} }, height: { ideal: ${frame.height} } } } };`,
           routes: async (p) => {
             await routeMindar(p);
             await p.route(/\/books\/tiffin-football\/targets\.mind$/, (r) => r.fulfill({ status: 200, contentType: 'application/octet-stream', body: readFileSync(targetFile) }));
@@ -986,6 +1006,7 @@ try {
           },
         });
         await page.goto(`${BASE}/?test=1#/b/${BOOK}/magic/1`);
+        await passCameraGate(page);
         await page.getByTestId('mw-allow').click({ timeout: 15000 });
         await waitState(page, 'live');
         await page.getByTestId('mw-align-done').click();
