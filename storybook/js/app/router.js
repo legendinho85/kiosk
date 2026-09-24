@@ -120,13 +120,14 @@ export function buildHash(pattern, params = {}, query = {}) {
  *   notFound: {render: Function},
  *   makeContext: (match: object, extras: {signal: AbortSignal}) => object,
  *   onError?: (err: Error, match: object) => void,
+ *   onRender?: (match: object) => void,
  * }} opts
  *   `prepare(match)` may load data before rendering (a book, the lexicon); what
  *   it resolves to is merged into the context. If it throws, `onError` decides
  *   what to show (it is called with the root already cleared).
  * @returns {{navigate(hash: string, opts?: {replace?: boolean}): void, refresh(): void, destroy(): void, readonly current: object|null}}
  */
-export function startRouter({ root, routes, notFound, makeContext, onError }) {
+export function startRouter({ root, routes, notFound, makeContext, onError, onRender }) {
   let current = null; // { match, cleanup, ctl }
   let seq = 0;
   let first = true;
@@ -231,11 +232,16 @@ export function startRouter({ root, routes, notFound, makeContext, onError }) {
     afterRender(match);
   }
 
-  function afterRender() {
+  function afterRender(match) {
     try {
       window.scrollTo(0, 0);
     } catch {
       /* ignore */
+    }
+    try {
+      onRender?.(match);
+    } catch (err) {
+      console.warn('[router] onRender failed', err);
     }
     // Move focus to the new screen's heading so screen readers announce it.
     // Not on the very first load: the page is announced anyway, and pulling

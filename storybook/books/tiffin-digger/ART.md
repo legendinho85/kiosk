@@ -102,6 +102,22 @@ gives a suggested `sb-name` text: `x`, baseline `y`, `font-size`, `data-max-widt
 | wet concrete (p5, drawn by the scene) | – | groove style: `fill=#8C939C stroke=#D7DCE2 stroke-width=4 paint-order=stroke` |
 | cover ribbon tail (p1, drawn by the scene) | – | copy Book 1's p1: the title on a `textPath`, and the name in red `#E4483A` with a white stroke |
 
+**Brothers and sisters reading together.** A spot too small for every name
+("Amara & Zak & Oluwaseun") shows them stacked (`data-wrap` spots) or as first
+letters ("A & Z & O"), never squashed. Where the story gives each child their
+own thing (p2's hard hat), mark the group that holds it and its name slot with
+`data-siblings="copies"`: the reader draws one copy per child, fanned out round
+the artist's placement, each with one child's name. Tune the fan with
+`data-sibling-step` (gap between copies, in the parent's units),
+`data-sibling-scale`, `data-sibling-turn` (degrees) and `data-sibling-shift`;
+each takes one value, or two (for two children, then for three). p2 uses
+`data-sibling-step="196 168" data-sibling-scale="0.7 0.56" data-sibling-turn="6 6" data-sibling-shift="0 -10"`.
+
+**Describe every page** for screen readers in `book.draft.json`: `alt` (what the
+picture shows when the page opens) and, when the moving part changes it,
+`altAfter`. Both are templates (`{name}`, `{one|many}`); use `{name}`, not
+`{NAME}`, since screen readers may spell out capitals.
+
 ## 4. Paint servers
 
 | id | What |
@@ -367,6 +383,10 @@ All arm drives rotate about `origin: [0,0]`, because each group's origin is its 
   - At p=1 the wrist is about `(560,−60)` from the boom pivot. Put the dumper's skip
     mouth about 250 below and slightly left of that: with the digger at
     `translate(330 860) scale(.75)`, that is the dumper at `translate(1170 880) scale(.72)`.
+  - The tab itself sits at `translate(250 860)` (control `from [250,860]`, `to [60,860]`),
+    with its slot at `x=326, y 816…904`: at least 70 units clear of the bottom edge,
+    so on a portrait phone the whole tab and its pointing-hand hint stay inside the
+    picture and the touch area is a full 56 px (it was at y 930, half off the edge).
   - Show `d2-mud-heap-big` and swap Goose for `d2-goose-drive-honk` on completion.
     `d2-mud-clods` can drop during `[.3,.7]`.
 - **p1 cover, raised arm**: boom −34, stick −62, bucket −38 (or use `d2-digger-raised`).

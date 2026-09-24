@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   isCameraSupported, cameraErrorKind, orientationOf, fitSize, normaliseAlign, alignTransform, dragAlign, pinchAlign, nudgeAlign,
   readAlignStore, writeAlignStore, coverFit, projectMarkerPoint, trackedQuad, rectToQuadMatrix, applyMatrix3d, matrix3dCss,
-  DEFAULT_ALIGN, ALIGN_LIMITS, CAMERA_CONSTRAINTS, MINDAR_URL,
+  DEFAULT_ALIGN, ALIGN_LIMITS, CAMERA_CONSTRAINTS, MINDAR_URL, MINDAR_BASE, MINDAR_FILES, rewriteImports, targetsPath, loadMindAr,
 } from '../../js/ar/magic-window.js';
 
 const close = (a, b, eps = 1e-6, msg = '') => assert.ok(Math.abs(a - b) <= eps, `${msg} ${a} ≈ ${b}`);
@@ -222,4 +222,43 @@ test('projectMarkerPoint agrees with a pinhole camera for MindAR matrices', () =
   closePt(quad[2], [pinhole(mw, mh)[0] * cover.scale + cover.dx, pinhole(mw, mh)[1] * cover.scale + cover.dy], 1e-6);
   // Behind the camera -> no projection.
   assert.equal(projectMarkerPoint(new Array(16).fill(0), proj, 0, 0, mh, W, H), null);
+});
+
+test('tracking is only for books that declare their targets (nothing is fetched otherwise)', () => {
+  assert.equal(targetsPath({}), null);
+  assert.equal(targetsPath({ targets: false }), null);
+  assert.equal(targetsPath(null), null);
+  assert.equal(targetsPath({ targets: true }), 'targets.mind');
+  assert.equal(targetsPath({ targets: 'tracking/pages.mind' }), 'tracking/pages.mind');
+  for (const bad of ['https://evil.test/t.mind', '../other/t.mind', '/t.mind', 'targets.js', 'a b.mind']) assert.equal(targetsPath({ targets: bad }), null, bad);
+});
+
+test('MindAR: every file is pinned by hash, and relative imports only reach checked files', () => {
+  assert.ok(MINDAR_URL.startsWith(MINDAR_BASE));
+  assert.equal(MINDAR_FILES.at(-1)[0], 'mindar-image.prod.js', 'the entry comes last, after its dependencies');
+  for (const [name, sri] of MINDAR_FILES) {
+    assert.match(name, /^[\w.-]+\.js$/);
+    assert.match(sri, /^sha384-[A-Za-z0-9+/]{64}$/);
+  }
+  const urls = { 'controller-mGt1s8dJ.js': 'blob:c', 'ui-fBadYuor.js': 'blob:u' };
+  assert.equal(
+    rewriteImports('import { C as o } from "./controller-mGt1s8dJ.js";\nimport{U as i}from"./ui-fBadYuor.js";const m = import(\'./ui-fBadYuor.js\');', urls),
+    'import { C as o } from "blob:c";\nimport{U as i}from"blob:u";const m = import(\'blob:u\');',
+  );
+  assert.equal(rewriteImports('const s = "./not-an-import.js"; import x from "https://cdn/x.js";', urls), 'const s = "./not-an-import.js"; import x from "https://cdn/x.js";');
+  assert.throws(() => rewriteImports('import "./unknown.js";', urls), /unexpected import/);
+  assert.throws(() => rewriteImports('export * from "../up.js";', urls), /unexpected import/);
+});
+
+test('loadMindAr asks for every file with its integrity hash and fails soft', async () => {
+  const asked = [];
+  const fetchImpl = async (url, opts) => {
+    asked.push({ url, integrity: opts?.integrity, credentials: opts?.credentials });
+    return { ok: false, status: 404, text: async () => '' };
+  };
+  await assert.rejects(loadMindAr({ fetchImpl }), /MindAR: ui-fBadYuor\.js \(404\)/);
+  assert.deepEqual(asked, [{ url: `${MINDAR_BASE}ui-fBadYuor.js`, integrity: MINDAR_FILES[0][1], credentials: 'omit' }]);
+  // A failure isn't cached: the next open tries again.
+  await assert.rejects(loadMindAr({ fetchImpl }));
+  assert.equal(asked.length, 2);
 });

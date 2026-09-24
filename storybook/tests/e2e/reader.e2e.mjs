@@ -397,6 +397,19 @@ try {
     await page.keyboard.press('ArrowLeft');
     await page.waitForTimeout(300);
     eq(await at(), '2', 'a double arrow press turns one page');
+    // Holding the key down (auto-repeat, well past the guard) still turns just one page.
+    await page.waitForTimeout(TURN_SETTLE);
+    await page.keyboard.down('ArrowRight');
+    for (let i = 0; i < 12; i++) {
+      await page.waitForTimeout(80);
+      await page.evaluate(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', repeat: true, bubbles: true })));
+    }
+    await page.keyboard.up('ArrowRight');
+    await page.waitForTimeout(200);
+    eq(await at(), '3', 'a key held down turns one page');
+    await page.waitForTimeout(TURN_SETTLE);
+    await page.keyboard.press('ArrowLeft');
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '2');
     await page.waitForTimeout(TURN_SETTLE);
     await page.getByTestId('prev-page').dblclick();
     await page.waitForTimeout(300);
@@ -471,6 +484,70 @@ try {
     await page.mouse.click(300, 200);
     eq(await page.evaluate(() => window.__pwned ?? null), null, 'no handler ran on click');
     noErrors(errors, 'sanitise');
+    await context.close();
+  });
+
+  await step('scenes are sanitised: other namespaces, loading attributes and disguised CSS urls never reach the network', async () => {
+    const hostile = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:html="http://www.w3.org/1999/xhtml" viewBox="0 0 1600 1000">
+      <rect id="p8-bg" width="1600" height="1000" fill="#2F3A66"/>
+      <html:img src="http://evil.test/1-html-img.png"/>
+      <html:img srcset="http://evil.test/2-html-img-srcset.png 1x"/>
+      <html:input type="image" src="http://evil.test/3-html-input-image.png"/>
+      <html:picture><html:source srcset="http://evil.test/4-picture-source.png"/><html:img src="data:,x"/></html:picture>
+      <html:base href="http://evil.test/5-base/"/>
+      <image href="http://evil.test/6-svg-image.png" width="10" height="10"/>
+      <image xlink:href="http://evil.test/7-svg-image-xlink.png" width="10" height="10"/>
+      <filter id="p8-f"><feImage href="http://evil.test/8-feimage.png"/></filter>
+      <use href="http://evil.test/9-use.svg#x"/>
+      <rect width="10" height="10" style="fill:url(http://evil.test/10-style-url.svg#g)"/>
+      <rect width="10" height="10" fill="url(http://evil.test/11-fill-url.svg#g)"/>
+      <rect width="10" height="10" style="background-image:image-set('http://evil.test/12-image-set.png' 1x)"/>
+      <rect width="10" height="10" style="fill: u\\72 l(http://evil.test/13-escaped-url.svg#g)"/>
+      <rect width="10" height="10" fill="u\\72 l(http://evil.test/14-escaped-fill.svg#g)"/>
+      <rect width="10" height="10"><animate attributeName="fill" to="url(http://evil.test/15-animate.svg#g)" dur="1s"/></rect>
+      <html:iframe src="http://evil.test/16-iframe"/>
+      <html:video poster="http://evil.test/17-poster.png"/>
+      <html:object data="http://evil.test/18-object"/>
+      <html:link rel="stylesheet" href="http://evil.test/19-link.css"/>
+      <html:form action="http://evil.test/20-form"><html:button>go</html:button></html:form>
+      <html:audio src="http://evil.test/21-audio.mp3" autoplay="autoplay"/>
+      <html:track src="http://evil.test/22-track.vtt"/>
+      <html:img src="x" onerror="window.__pwned = 'onerror'"/>
+      <text class="sb-name" data-form="plain" x="800" y="500" text-anchor="middle" font-size="60" fill="#fff" style="fill: red">NAME</text>
+    </svg>`;
+    const evil = [];
+    const setup = async (page) => {
+      await page.route('**/*', (r) => {
+        const u = r.request().url();
+        if (/evil\.test/.test(u)) {
+          evil.push(new URL(u).pathname);
+          return r.fulfill({ status: 200, body: '' });
+        }
+        return r.fallback();
+      });
+      await page.route('**/scenes/p8.svg', (r) => r.fulfill({ status: 200, contentType: 'image/svg+xml', body: hostile }));
+    };
+    const { page, context, errors } = await openHarness(browser, 'test=1&page=7', { setup });
+    await waitState(page, 7, 'waiting');
+    await page.evaluate(() => window.__reader.goTo(8));
+    await waitState(page, 8, 'done');
+    await page.waitForTimeout(1200);
+    const report = await page.evaluate(() => {
+      const svg = document.querySelector('[data-testid=scene] svg');
+      const all = [svg, ...svg.querySelectorAll('*')];
+      return {
+        pwned: window.__pwned ?? null,
+        foreign: all.filter((e) => e.namespaceURI !== 'http://www.w3.org/2000/svg').map((e) => e.localName),
+        styles: all.filter((e) => e.hasAttribute('style')).length,
+        loading: all.filter((e) => ['src', 'srcset', 'poster', 'data', 'action'].some((a) => e.hasAttribute(a))).length,
+        external: all.flatMap((e) => [...e.attributes]).filter((a) => /evil\.test|\\/.test(a.value)).map((a) => `${a.name}=${a.value}`),
+        base: document.baseURI.includes('evil'),
+        name: svg.querySelector('.sb-name')?.textContent,
+      };
+    });
+    eq(report, { pwned: null, foreign: [], styles: 0, loading: 0, external: [], base: false, name: 'Ava' }, 'hostile scene cleaned');
+    eq(evil, [], 'no request left for another site');
+    noErrors(errors, 'hostile namespaces');
     await context.close();
   });
 
@@ -1174,6 +1251,167 @@ try {
     }
   });
 
+  await step('"Tap to hear the story" sits with the words, centred, never over the page-turn buttons', async () => {
+    for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 640 }, { width: 844, height: 390 }, { width: 1024, height: 768 }]) {
+      const label = `${viewport.width}x${viewport.height}`;
+      const { page, context, errors } = await openHarness(browser, 'test=1&name=Ava&gesture=1&page=2', { viewport });
+      await page.getByTestId('tap-to-hear').waitFor({ state: 'visible', timeout: 8000 });
+      await page.waitForTimeout(700); // the pop-in animation has finished
+      const r = await page.evaluate(() => {
+        const box = (id) => document.querySelector(`[data-testid=${id}]`).getBoundingClientRect();
+        const hear = box('tap-to-hear');
+        const band = document.querySelector('.sb-r-band').getBoundingClientRect();
+        const overlaps = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+        const hit = (id) => {
+          const b = box(id);
+          return document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2)?.closest('[data-testid]')?.dataset.testid;
+        };
+        return {
+          centred: Math.abs(hear.x + hear.width / 2 - (band.x + band.width / 2)),
+          onScreen: hear.left >= 0 && hear.right <= innerWidth && hear.bottom <= innerHeight,
+          overNext: overlaps(hear, box('next-page')) || overlaps(hear, document.querySelector('.sb-r-bubble').getBoundingClientRect()),
+          overPrev: overlaps(hear, box('prev-page')),
+          nextHit: hit('next-page'),
+          hearHit: hit('tap-to-hear'),
+          h: hear.height,
+        };
+      });
+      assert(r.centred < 3, `${label}: centred (${r.centred}px off)`);
+      assert(r.onScreen && !r.overNext && !r.overPrev, `${label}: clear of the page-turn buttons ${JSON.stringify(r)}`);
+      eq([r.nextHit, r.hearHit], ['next-page', 'tap-to-hear'], `${label}: both can be tapped`);
+      assert(r.h >= 56, `${label}: big enough (${r.h})`);
+      await shot(page, `tap-to-hear-${label}`);
+      await page.getByTestId('tap-to-hear').click();
+      await page.getByTestId('tap-to-hear').waitFor({ state: 'hidden' });
+      noErrors(errors, `tap to hear ${label}`);
+      await context.close();
+    }
+  });
+
+  await step('end of the story: Read again, Goodnight and the letter game always in view, never under 56 px', async () => {
+    for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 640 }, { width: 844, height: 390 }, { width: 640, height: 360 }, { width: 1024, height: 768 }]) {
+      const label = `${viewport.width}x${viewport.height}`;
+      for (const q of ['book=tiffin-football&merge=1&name=Maximilian', 'book=tiffin-digger&merge=1&sibs=Amara,Zak', 'book=tiffin-football&merge=1&name=Ava&easy=1']) {
+        const { page, context, errors } = await openHarness(browser, `test=1&${q}&page=8&letters=1`, { viewport });
+        await waitState(page, 8, 'done');
+        await page.getByTestId('letter-game').waitFor({ state: 'visible', timeout: 5000 });
+        await page.waitForTimeout(800);
+        const pills = await page.evaluate(() =>
+          ['read-again', 'goodnight', 'letter-game'].map((id) => {
+            const r = document.querySelector(`[data-testid=${id}]`).getBoundingClientRect();
+            const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.closest('[data-testid]')?.dataset.testid;
+            return { id, h: Math.round(r.height), inView: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth, top };
+          }),
+        );
+        for (const p of pills) {
+          assert(p.inView && p.top === p.id, `${label} ${q}: ${p.id} can be seen and tapped (${JSON.stringify(p)})`);
+          assert(p.h >= 56, `${label} ${q}: ${p.id} is ${p.h} px tall`);
+        }
+        const scroll = await page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth);
+        assert(scroll, `${label}: no sideways scroll`);
+        if (q.includes('Maximilian')) await shot(page, `end-bar-${label}`);
+        noErrors(errors, `end bar ${label}`);
+        await context.close();
+      }
+    }
+  });
+
+  await step('phone held sideways: the prompt moves to the top when the part to grab is at the bottom', async () => {
+    const viewport = { width: 844, height: 390 };
+    const cases = [
+      { q: 'book=tiffin-football&merge=1&name=Siobh%C3%A1n&page=6', side: 'top', knob: '#p6-ball' },
+      { q: 'book=tiffin-football&merge=1&name=Siobh%C3%A1n&page=3', side: 'top', knob: null },
+      { q: 'book=tiffin-digger&merge=1&name=Siobh%C3%A1n&page=4', side: 'top', knob: '#dg-p4-tab' },
+      { q: 'book=tiffin-football&merge=1&name=Siobh%C3%A1n&page=5', side: 'bottom', knob: '#p5-tab' },
+      { q: 'book=tiffin-digger&merge=1&name=Siobh%C3%A1n&page=6', side: 'bottom', knob: null },
+    ];
+    for (const c of cases) {
+      const { page, context, errors } = await openHarness(browser, `test=1&${c.q}`, { viewport });
+      const n = Number(new URLSearchParams(c.q).get('page'));
+      await waitState(page, n, 'waiting');
+      await page.waitForTimeout(500);
+      const r = await page.evaluate((knobSel) => {
+        const reader = document.querySelector('[data-testid=reader]');
+        const prompt = document.querySelector('.sb-r-prompt').getBoundingClientRect();
+        const frame = document.querySelector('.sb-r-frame').getBoundingClientRect();
+        const knob = knobSel ? document.querySelector(`[data-testid=scene] ${knobSel}`)?.getBoundingClientRect() : null;
+        const covered = knob ? !(prompt.right <= knob.left || prompt.left >= knob.right || prompt.bottom <= knob.top || prompt.top >= knob.bottom) : null;
+        return { side: reader.dataset.promptAt, promptMid: (prompt.top + prompt.bottom) / 2 - frame.top, frameH: frame.height, covered, inFrame: prompt.top >= frame.top - 1 && prompt.bottom <= frame.bottom + 1 };
+      }, c.knob);
+      eq(r.side, c.side, `${c.q}: prompt side`);
+      assert(c.side === 'top' ? r.promptMid < r.frameH * 0.3 : r.promptMid > r.frameH * 0.7, `${c.q}: the prompt is at the ${c.side} (${JSON.stringify(r)})`);
+      assert(r.inFrame, `${c.q}: the prompt stays over the picture`);
+      if (c.knob) assert(r.covered === false, `${c.q}: the prompt doesn't cover ${c.knob}`);
+      if (c.side === 'top') await shot(page, `landscape-prompt-top-${n}-${c.knob ?? 'wheel'}`);
+      noErrors(errors.filter((e) => !/status of 404/.test(e)), `prompt side ${c.q}`);
+      await context.close();
+    }
+  });
+
+  await step('pictures are described for screen readers; the words drawn in the art are not read out in pieces', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&book=tiffin-football&merge=1&name=Amara&page=2');
+    await waitState(page, 2, 'waiting');
+    const svg = page.locator('[data-testid=scene] > svg');
+    eq(await svg.getAttribute('aria-roledescription'), 'picture', 'announced as a picture');
+    eq(await svg.getAttribute('aria-label'), 'Tiffin, in her red kit, hugs a football and waves a boot. A red kit bag with a flap sits on a bench.', 'before the flap');
+    await control(page).focus();
+    await page.keyboard.press('Enter');
+    await waitState(page, 2, 'done');
+    eq(await svg.getAttribute('aria-label'), 'Tiffin hugs a football and waves a boot. Out of the red kit bag pops a red number 1 shirt with Amara on the back.', 'after the flap');
+    const hiddenText = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] svg text')].every((t) => t.getAttribute('aria-hidden') === 'true'));
+    assert(hiddenText, 'every drawn word is hidden from screen readers');
+    for (const n of [1, 3, 5, 7]) {
+      await page.evaluate((n) => window.__reader.goTo(n), n);
+      await page.waitForFunction((n) => document.querySelector('[data-testid=scene] svg')?.dataset.page === String(n), n);
+      await page.waitForTimeout(300);
+      const snap = await page.locator('[data-testid=scene]').ariaSnapshot();
+      assert(/Amara/.test(snap), `page ${n}: the description has the name (${snap})`);
+      assert(!/A M A R A|AMARA 0|Goal, Goal|GO! Amara Amara/.test(snap), `page ${n}: no scraps of drawn text (${snap})`);
+      if (n !== 1) assert(/slider|button/.test(snap), `page ${n}: the moving part is still there to use (${snap})`);
+    }
+    noErrors(errors.filter((e) => !/status of 404/.test(e)), 'descriptions');
+    await context.close();
+  });
+
+  await step('siblings: a shirt (or hard hat) for each child, and "Here they are!"', async () => {
+    for (const [bookId, part] of [['tiffin-football', 'shirt'], ['tiffin-digger', 'hat']]) {
+      for (const sibs of ['Amara,Zak', 'Amara,Zak,Oluwaseun']) {
+        const kids = sibs.split(',');
+        const { page, context, errors } = await openHarness(browser, `test=1&book=${bookId}&merge=1&sibs=${sibs}&page=2`);
+        await waitState(page, 2, 'waiting');
+        await control(page).focus();
+        await page.keyboard.press('Enter');
+        await waitState(page, 2, 'done');
+        await page.waitForTimeout(300);
+        const copies = await page.evaluate(() =>
+          [...document.querySelectorAll('[data-testid=scene] [data-sibling-fan] text.sb-name')].map((t) => {
+            const r = t.getBoundingClientRect();
+            return { text: t.textContent, own: t.dataset.sibling, x: Math.round(r.x + r.width / 2), w: r.width, visible: r.width > 0 };
+          }),
+        );
+        eq(copies.map((c) => c.text), kids, `${bookId} ${sibs}: one ${part} per child, each with a name`);
+        assert(copies.every((c) => c.visible), `${bookId} ${sibs}: every ${part} shows`);
+        assert(copies.every((c, i) => i === 0 || c.x > copies[i - 1].x + 30), `${bookId} ${sibs}: fanned out left to right ${JSON.stringify(copies)}`);
+        const frame = await page.locator('.sb-r-frame').boundingBox();
+        assert(copies.every((c) => c.x - c.w / 2 >= frame.x && c.x + c.w / 2 <= frame.x + frame.width), `${bookId} ${sibs}: all inside the picture`);
+        const ids = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] [id]')].map((e) => e.id));
+        eq(ids.length, new Set(ids).size, `${bookId} ${sibs}: ids stay unique`);
+        if (bookId === 'tiffin-football') eq((await page.getByTestId('page-text').innerText()).split(/\n+/), ['Here they are!', 'Tip-tap, tip-tap, on we go!'], 'plural answer');
+        // Tap Zak's own shirt: "That says Zak!", and the big word shows just his name.
+        const said = await page.evaluate(() => window.__log.speakText.length);
+        const zak = page.locator('[data-testid=scene] text.sb-name[data-sibling="1"]');
+        const zb = await zak.boundingBox();
+        await page.mouse.click(zb.x + zb.width / 2, zb.y + zb.height / 2);
+        await page.waitForFunction((n) => window.__log.speakText.length > n, said, { timeout: 4000 });
+        eq(await page.evaluate(() => window.__log.speakText.at(-1)), 'That says Zak!', `${bookId} ${sibs}: spotting one child's ${part}`);
+        eq(await page.locator('.sb-spot-word').textContent(), 'Zak', 'the big word is that child\'s name');
+        await shot(page, `siblings-${bookId}-${kids.length}-p2`);
+        noErrors(errors.filter((e) => !/status of 404/.test(e)), `sibling copies ${bookId} ${sibs}`);
+        await context.close();
+      }
+    }
+  });
+
   // Smoke test of the real books: every page whose scene the illustrators have
   // delivered opens, its mechanism completes, and the name appears in the art.
   const REAL_BOOKS = (process.env.REAL_BOOKS ?? 'tiffin-football,tiffin-digger').split(',').filter(Boolean);
@@ -1223,7 +1461,7 @@ try {
             await page.keyboard.press('Enter');
           }
           await waitState(page, p.n, 'done', 15000);
-          await page.waitForTimeout(700);
+          await page.waitForTimeout(SHOTS ? 700 : 300);
           await shot(page, `real-${bookId}-${viewport.width}-p${p.n}-after`);
           const names = await page.evaluate(() =>
             [...document.querySelectorAll('[data-testid=scene] text.sb-name')]
@@ -1246,11 +1484,14 @@ try {
         await context.close();
       }
     });
-    await step(`real book ${bookId}: tricky names fit every name spot (shrink, wrap, overflow banner)`, async () => {
-      // The last "name" is three children reading together ("AMARA & ZAK & LI" in the art).
-      for (const name of ['Maximilian', 'Anna-Sophia', 'Xiao Ming', '小明', 'Bo', 'sibs:Amara,Zak,Li']) {
-        const who = name.startsWith('sibs:') ? `sibs=${encodeURIComponent(name.slice(5))}` : `name=${encodeURIComponent(name)}`;
-        const { page, context, errors } = await openHarness(browser, `test=1&book=${bookId}&merge=1&${who}&page=${ready[0].n}`, { viewport: { width: 1024, height: 768 } });
+    await step(`real book ${bookId}: tricky names fit every name spot (shrink, wrap, overflow banner; siblings stay readable)`, async () => {
+      // The last "names" are children reading together: never squashed, and a
+      // spot too small for every name shows them stacked or as first letters.
+      // Reduced motion: names appear at once, so the sweep stays quick.
+      for (const name of ['Maximilian', 'Anna-Sophia', 'Xiao Ming', '小明', 'Bo', 'sibs:Amara,Zak', 'sibs:Amara,Zak,Oluwaseun']) {
+        const sibs = name.startsWith('sibs:') ? name.slice(5).split(',') : null;
+        const who = sibs ? `sibs=${encodeURIComponent(sibs.join(','))}` : `name=${encodeURIComponent(name)}`;
+        const { page, context, errors } = await openHarness(browser, `test=1&book=${bookId}&merge=1&${who}&page=${ready[0].n}`, { viewport: { width: 1024, height: 768 }, reducedMotion: 'reduce' });
         for (const p of ready) {
           if (p.n !== ready[0].n) await page.evaluate((n) => window.__reader.goTo(n), p.n);
           const st = await page.waitForFunction(
@@ -1266,7 +1507,7 @@ try {
             await page.keyboard.press('Enter');
           }
           await waitState(page, p.n, 'done', 15000);
-          await page.waitForTimeout(400);
+          await page.waitForTimeout(150);
           const over = await page.evaluate(() =>
             [...document.querySelectorAll('[data-testid=scene] text.sb-name')]
               .filter((t) => !t.closest('[display=none]') && t.textContent)
@@ -1274,9 +1515,22 @@ try {
               .filter((x) => x.max && x.w > x.max * 1.04),
           );
           eq(over, [], `${name}: name spots on page ${p.n} fit`);
-          if (name.startsWith('sibs:')) {
-            const art = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] text.sb-name')].filter((t) => !t.closest('[display=none]') && t.textContent).map((t) => t.textContent.replace(/\s+/g, ' ')));
-            for (const t of art) assert(/AMARA ?& ?ZAK ?& ?LI|Amara ?& ?Zak ?& ?Li/.test(t), `siblings: page ${p.n} art shows "${t}"`);
+          if (sibs) {
+            const art = await page.evaluate(() =>
+              [...document.querySelectorAll('[data-testid=scene] text.sb-name')]
+                .filter((t) => !t.closest('[display=none]') && t.textContent)
+                .map((t) => ({ text: t.textContent.replace(/\s+/g, ''), as: t.dataset.siblingsAs ?? null, own: t.dataset.sibling ?? null, squashed: t.hasAttribute('textLength'), scale: Number(t.dataset.fitScale), label: t.getAttribute('aria-label') })),
+            );
+            const all = sibs.join('&').toLowerCase();
+            const initials = sibs.map((n) => n[0]).join('&').toLowerCase();
+            for (const a of art) {
+              const t = a.text.toLowerCase().replace(/['’]s$/, '');
+              if (a.own != null) eq(t, sibs[Number(a.own)].toLowerCase(), `siblings: page ${p.n}, a copy of the picture for one child`);
+              else if (a.as === 'initials') eq(t, initials, `siblings: page ${p.n} first letters`);
+              else eq(t, all, `siblings: page ${p.n} art shows every name (${a.as})`);
+              assert(!a.squashed, `siblings: page ${p.n} "${a.text}" is never squashed`);
+              assert(a.as !== 'full' && a.as !== 'stacked' || a.scale >= 0.54, `siblings: page ${p.n} "${a.text}" stays readable (scale ${a.scale})`);
+            }
             eq(await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] .sb-letter')].map((t) => t.textContent).join('')), '', `siblings: page ${p.n} bunting uses the banner`);
           }
           if (name !== 'Bo') await shot(page, `real-${bookId}-names-${encodeURIComponent(name)}-p${p.n}`);

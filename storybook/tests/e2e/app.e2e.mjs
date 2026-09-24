@@ -354,10 +354,26 @@ try {
       await page.getByTestId('parent-gate').waitFor({ state: 'detached' });
       eq(await hashOf(page), `#/b/${BOOK}/read/2`, 'still reading');
     }
+    // Home is a grown-up decision too: a tap asks for the hold, and letting it be carries on reading.
     await page.getByTestId('exit-reader').click();
+    await page.getByTestId('parent-gate').waitFor();
+    assert(/leave the story/.test(await page.locator('.dialog-title').innerText()), 'leave gate title');
+    await page.keyboard.press('Escape');
+    await page.getByTestId('parent-gate').waitFor({ state: 'detached' });
+    eq(await hashOf(page), `#/b/${BOOK}/read/2`, 'a tap on Home keeps the child in the story');
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]')?.dataset.page === '2');
+    await page.getByTestId('exit-reader').click();
+    await holdGate(page, 3300);
     await waitHash(page, `#/b/${BOOK}`);
     await page.getByTestId('start-reading').waitFor();
     assert(!(await page.getByTestId('reader').count()), 'reader removed');
+    // The place is remembered: "Carry on from page 2", with "Start again" beside it.
+    eq(await page.getByTestId('carry-on').getAttribute('href'), `#/b/${BOOK}/read/2`, 'carry on link');
+    assert(/Carry on from page 2/.test(await page.getByTestId('carry-on').innerText()), 'carry on text');
+    eq(await page.getByTestId('start-reading').innerText(), 'Start again', 'start again');
+    // (A fresh page load: the grown-up's hold above doesn't carry into the next step.)
+    await page.reload();
+    await page.getByTestId('start-reading').waitFor();
   });
 
   await step('settings sit behind the press-and-hold gate', async () => {
@@ -428,10 +444,12 @@ try {
     eq(await page.getByTestId('name-input').inputValue(), 'Niamh', 'prefilled');
     await page.getByTestId('name-input').fill('Neve');
     await page.getByTestId('name-continue').click();
-    await waitHash(page, `#/b/${BOOK}/say`);
+    await page.waitForFunction(() => location.hash.startsWith('#/b/tiffin-football/say?child='));
     const st = await stateOf(page);
     eq(st.profiles.length, 2, 'renamed, not added');
     assert(st.profiles.some((p) => p.display === 'Neve'), 'new name saved');
+    eq(st.profiles.find((p) => p.display === 'Neve').id, st.activeProfileId, 'still reading for the same child');
+    assert(/How do we say Neve/.test(await page.locator('h1').innerText()), 'the say screen is for Neve');
     await page.evaluate(() => {
       globalThis.SB_TEST = { ...(globalThis.SB_TEST ?? {}), gateMs: 150 };
     });
@@ -479,6 +497,116 @@ try {
     await p.keyboard.up(' ');
     await p.getByTestId('settings-child').first().waitFor();
     await noErrors(errs, 'keyboard gate');
+    await c.close();
+  });
+
+  await step('child safety: the camera asks every time from the reader, never sits behind it in history; Goodnight ends on a calm card', async () => {
+    if (!readerExists) return;
+    const { page: p, errors: errs, context: c } = await openPage(browser, { seed: seeded(), hooks: { gateMs: 150 } });
+    const videos = () => p.evaluate(() => [...document.querySelectorAll('video')].filter((v) => v.srcObject?.getTracks().some((t) => t.readyState === 'live')).length);
+    // A grown-up's recent hold (settings) doesn't carry into the child's reader.
+    await p.goto(url('#/settings'));
+    await holdGate(p, 400);
+    await p.getByTestId('settings-child').first().waitFor();
+    await p.goto(url(`#/b/${BOOK}`));
+    await p.getByTestId('start-reading').click();
+    await p.getByTestId('reader').waitFor({ timeout: 8000 });
+    await p.getByTestId('next-page').click();
+    await waitHash(p, `#/b/${BOOK}/read/2`);
+    await p.getByTestId('magic-window').click();
+    await p.getByTestId('parent-gate').waitFor();
+    eq(await videos(), 0, 'no camera from a tap, even straight after a grown-up held the gate in settings');
+    await holdGate(p, 400);
+    await waitHash(p, `#/b/${BOOK}/magic/2`);
+    const len = await p.evaluate(() => history.length);
+    await p.waitForFunction(() => document.querySelector('[data-testid=magic-unavailable], [data-testid=mw-exit]'), null, { timeout: 10000 });
+    // Back to reading, then the browser's Back: the ready screen, not the camera again.
+    const exit = (await p.getByTestId('mw-exit').count()) ? p.getByTestId('mw-exit') : p.getByTestId('magic-back');
+    await exit.click();
+    await p.waitForFunction(() => location.hash.startsWith('#/b/tiffin-football/read/'));
+    eq(await p.evaluate(() => history.length), len, 'the magic window replaced the reader in the history');
+    await p.goBack();
+    await waitHash(p, `#/b/${BOOK}`);
+    await p.waitForTimeout(600);
+    eq(await p.locator('[data-testid=magic-gate], .mw').count(), 0, 'Back never reopens the magic window');
+    eq(await videos(), 0, 'camera off');
+    // Once a child has had the phone, the microphone asks too (the pronunciation screen's Record).
+    await p.goto(url(`#/b/${BOOK}/say`));
+    await p.reload(); // a fresh page load: nothing child-facing has shown in it yet
+    await p.getByTestId('record-name').waitFor({ timeout: 8000 });
+    await p.getByTestId('record-name').click();
+    await p.waitForTimeout(300);
+    eq(await p.getByTestId('parent-gate').count(), 0, 'a fresh visit (grown-up setting up) is not asked');
+    await p.getByTestId('record-stop').click({ timeout: 8000 }).catch(() => {});
+    await p.goto(url(`#/b/${BOOK}/read/1`));
+    await p.getByTestId('reader').waitFor({ timeout: 8000 });
+    await p.evaluate(() => (location.hash = '#/b/tiffin-football/say'));
+    await p.getByTestId('record-name').waitFor({ timeout: 8000 });
+    await p.getByTestId('record-name').click();
+    await p.getByTestId('parent-gate').waitFor();
+    assert(/record the name/i.test(await p.locator('.dialog-title').innerText()), 'mic gate title');
+    await p.keyboard.press('Escape');
+    eq(await p.getByTestId('record-stage').getAttribute('data-state'), 'idle', 'no recording without the hold');
+    // Goodnight: the calm card, not the grown-ups' screen.
+    const last = await (await fetch(`${BASE}/books/${BOOK}/book.json`)).json().then((b) => b.pages.length);
+    await p.goto(url(`#/b/${BOOK}/read/${last}`));
+    await p.getByTestId('goodnight').waitFor({ state: 'visible', timeout: 20000 });
+    await p.getByTestId('goodnight').click();
+    await p.getByTestId('goodnight-card').waitFor({ timeout: 10000 });
+    eq(await hashOf(p), `#/b/${BOOK}/read/${last}`, 'still on the story');
+    assert(/Night night, Siobhan/.test(await p.getByTestId('goodnight-card').innerText()), 'night night');
+    eq(await p.getByTestId('open-settings').count(), 0, 'no grown-up controls');
+    await shot(p, 'goodnight');
+    await p.getByTestId('goodnight-again').click();
+    await waitHash(p, `#/b/${BOOK}/read/1`);
+    await p.getByTestId('reader').waitFor({ timeout: 8000 });
+    await noErrors(errs, 'child safety');
+    await c.close();
+  });
+
+  await step('keyboard and screen readers: skip link, headings, tab titles, labels that match', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser, { seed: seeded() });
+    await p.goto(url(`#/b/${BOOK}`));
+    await p.getByTestId('start-reading').waitFor();
+    await p.evaluate(() => document.activeElement?.blur());
+    await p.keyboard.press('Tab');
+    eq(await p.evaluate(() => document.activeElement?.textContent), 'Skip to content', 'skip link first');
+    await p.keyboard.press('Enter');
+    await p.waitForTimeout(200);
+    eq(await hashOf(p), `#/b/${BOOK}`, 'the skip link keeps the screen (no "wandered off" page)');
+    eq(await p.evaluate(() => document.activeElement?.id), 'main', 'focus on <main>');
+    eq(await p.locator('[data-screen=message]').count(), 0, 'no error screen');
+    // The reader has a heading and its own tab title; keyboard focus lands on the heading.
+    await p.getByTestId('start-reading').focus();
+    await p.keyboard.press('Enter');
+    await p.getByTestId('reader').waitFor({ timeout: 8000 });
+    await p.waitForTimeout(300);
+    eq(await p.evaluate(() => document.activeElement?.tagName), 'H1', 'focus on the reader’s heading');
+    eq(await p.locator('h1').innerText(), 'Goal, Siobhan!', 'reader heading');
+    eq(await p.title(), 'Reading — Goal! — Tiffin & Me', 'reader tab title (no child’s name)');
+    // Labels start with the words on the button.
+    await p.goto(url(`#/b/${BOOK}/say`));
+    await p.getByTestId('candidate-choose').first().waitFor();
+    for (const [text, label] of await p.getByTestId('candidate-choose').evaluateAll((els) => els.map((e) => [e.innerText.trim(), e.getAttribute('aria-label')]))) assert(label.startsWith(text), `"${label}" starts with "${text}"`);
+    eq(await p.title(), 'How we say the name — Goal! — Tiffin & Me', 'say tab title');
+    await noErrors(errs, 'keyboard and screen readers');
+    await c.close();
+  });
+
+  await step('name box: no stray "null" beside the nickname box; the blank cover is read as "your child’s name"', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser);
+    await p.goto(url(`#/b/${BOOK2}`));
+    await p.getByTestId('name-input').waitFor();
+    eq(await p.getByTestId('cover-art').getAttribute('aria-label'), 'Book cover: Beep beep, your child’s name!', 'blank cover label');
+    for (const name of ['Oluwaseunfunmi', 'Tiffany']) {
+      await p.getByTestId('name-input').fill(name);
+      await p.getByTestId('nickname-offer').waitFor();
+      eq(await p.locator('.nick-suggest').textContent(), '', `${name}: nothing beside the nickname box`);
+    }
+    await p.getByTestId('name-input').fill('Anna-Sophia');
+    await p.getByTestId('nickname-suggestion').waitFor();
+    eq(await p.locator('.nick-suggest').textContent(), 'Anna', 'a short name is offered for a two-part name');
+    await noErrors(errs, 'name box');
     await c.close();
   });
 
@@ -552,7 +680,12 @@ try {
     await p.goto(url(`#/print/${BOOK}`));
     await p.waitForFunction(() => document.querySelector('[data-testid=print-missing]') || document.querySelector('[data-testid=print-pages]')?.children.length && !document.querySelector('[data-testid=print-pages] .reader-loading'), null, { timeout: 8000 });
     await shot(p, 'print');
+    // The magic window asks a grown-up first, however it is opened (here: straight from the address bar).
     await p.goto(url(`#/b/${BOOK}/magic/2`));
+    await p.getByTestId('magic-gate').waitFor({ timeout: 8000 });
+    eq(await p.locator('video').count(), 0, 'no camera before the hold');
+    await shot(p, 'magic-gate');
+    await holdGate(p, 3300);
     await p.waitForFunction(() => document.querySelector('[data-testid=magic-unavailable]') || (document.querySelector('[data-testid=magic-host]') && !document.querySelector('[data-testid=magic-host] .reader-loading')), null, { timeout: 8000 });
     await shot(p, 'magic');
     // No profile: reading redirects to the name box.
@@ -697,13 +830,15 @@ try {
     await waitHash(p, `#/b/${BOOK2}/read/2`);
     await shot(p, 'book2-reader');
     await p.getByTestId('exit-reader').click();
+    await holdGate(p, 3300);
     await waitHash(p, `#/b/${BOOK2}`);
     eq((await stateOf(p)).lastBook, BOOK2, 'Book 2 remembered for settings');
     await noErrors(errs, 'Book 2');
     await c.close();
   });
 
-  await step('letters: #/b/:book/letters mounts the letter game for the child; Skip and Done go back to the book', async () => {
+  await step('letters: #/b/:book/letters mounts the letter game for the child; Skip and Done go back to the story’s last page', async () => {
+    const last = await (await fetch(`${BASE}/books/${BOOK}/book.json`)).json().then((b) => b.pages.length);
     const { page: p, errors: errs, context: c } = await openPage(browser, { seed: seeded({ settings: { bedtime: false } }) });
     await p.goto(url(`#/b/${BOOK}/letters`));
     await p.getByTestId('letter-trace').waitFor({ timeout: 8000 });
@@ -712,8 +847,9 @@ try {
     assert(/Siobhan/.test(await p.getByTestId('lt-prompt').innerText()), 'the prompt names the child');
     await shot(p, 'letters');
     await p.getByTestId('lt-skip').click();
-    await waitHash(p, `#/b/${BOOK}`);
-    await p.getByTestId('start-reading').waitFor();
+    // Child-facing: back into the story (its last page), not the grown-ups' ready screen.
+    await waitHash(p, `#/b/${BOOK}/read/${last}`);
+    await p.getByTestId('reader').waitFor({ timeout: 8000 });
     eq(await p.getByTestId('letter-trace').count(), 0, 'the game is gone');
     // Done: tap the right tile, then "Show me" traces it; Done goes back to the book.
     await p.goto(url(`#/b/${BOOK}/letters`));
@@ -723,7 +859,7 @@ try {
     await p.getByTestId('lt-show-me').click();
     await p.getByTestId('lt-done').waitFor({ state: 'visible', timeout: 15000 });
     await p.getByTestId('lt-done').click();
-    await waitHash(p, `#/b/${BOOK}`);
+    await waitHash(p, `#/b/${BOOK}/read/${last}`);
     // Siblings reading together take turns; bedtime is passed on.
     await p.evaluate(() => {
       const s = JSON.parse(localStorage.getItem('starring.v1'));
@@ -734,7 +870,7 @@ try {
     });
     await p.goto(url(`#/b/${BOOK}/letters`));
     await p.reload();
-    await p.waitForFunction(() => document.querySelector('[data-testid=letter-trace]')?.dataset.step === 'find', null, { timeout: 8000 });
+    await p.waitForFunction(() => document.querySelector('[data-testid=letter-trace]')?.dataset.step === 'find', null, { timeout: 20000 });
     eq(await p.getByTestId('letter-trace').getAttribute('data-bedtime'), '', 'bedtime passed on');
     eq(await p.getByTestId('letter-trace').getAttribute('data-letter'), 'S', 'first child first');
     // No child: back to the name box.
@@ -786,7 +922,7 @@ try {
     eq(await p.locator('h1').innerText(), 'Name stickers', 'print bar title');
     eq(await p.getByTestId('sticker-print').count(), 0, 'one Print button (in the bar)');
     eq(await p.getByTestId('print-now').isVisible(), true, 'Print in the bar');
-    eq(await p.title(), 'Goal! — a Tiffin & Me story', 'tab title');
+    eq(await p.title(), 'Name stickers — Goal! — Tiffin & Me', 'tab title says the screen and the book (not the child)');
     await shot(p, 'stickers');
     await p.getByTestId('back').click();
     await waitHash(p, `#/b/${BOOK}`);

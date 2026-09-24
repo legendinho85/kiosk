@@ -136,8 +136,9 @@ const narrator = {
   get speaking() {
     return realNarrator.speaking;
   },
+  // gesture=1: an engine that won't talk until someone taps (shows "Tap to hear the story").
   get needsGesture() {
-    return realNarrator.needsGesture ?? false;
+    return params.get('gesture') === '1' || (realNarrator.needsGesture ?? false);
   },
 };
 const realSfx = await makeSfx();

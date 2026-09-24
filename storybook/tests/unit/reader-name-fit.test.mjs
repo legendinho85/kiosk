@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   graphemes, nameForForm, slotLetters, distributeLetters, splitForWrap, estimateTextWidth, fitText, layoutName, twoLineBaselines, MIN_SCALE, artName,
+  siblingNames, layoutSiblings, SIBLING_MIN_SCALE,
 } from '../../js/reader/name-fit.js';
 import { person, togetherPerson } from '../../js/core/personalise.js';
 
@@ -167,4 +168,47 @@ test('siblings: several names never spell out on bunting (the overflow banner sh
   assert.deepEqual(slotLetters('Xiao Ming').join(''), 'XIAOMING');
   // A two-line name slot breaks between the names.
   assert.deepEqual(splitForWrap('AMARA & ZAK'), ['AMARA', '& ZAK']);
+});
+
+test('siblingNames reads the children back from the art form', () => {
+  assert.deepEqual(siblingNames(togetherPerson([{ display: 'Amara' }, { display: 'Zak' }, { display: 'Oluwaseun' }])), ['Amara', 'Zak', 'Oluwaseun']);
+  assert.deepEqual(siblingNames({ display: 'Amara and Zak', art: 'Amara & Zak' }), ['Amara', 'Zak'], 'count is optional');
+  assert.equal(siblingNames(person('Ava')), null);
+  assert.equal(siblingNames(person('Anna-Sophia Rose')), null);
+  assert.equal(siblingNames(null), null);
+});
+
+test('siblings in one name spot: one line while readable, never squashed', () => {
+  // Two short names fit a shirt at a readable size: one line, as before.
+  const two = layoutSiblings({ names: ['Amara', 'Zak'], form: 'upper', fontSize: 42, maxWidth: 176 });
+  assert.equal(two.style, 'full');
+  assert.deepEqual(two.lines, ['AMARA & ZAK']);
+  assert.ok(two.fontSize >= 42 * SIBLING_MIN_SCALE && !two.squeeze && !two.letterSpacing);
+  // Three names on the same shirt would be squashed to a smear: first letters instead.
+  const three = layoutSiblings({ names: ['Amara', 'Zak', 'Oluwaseun'], form: 'upper', fontSize: 42, maxWidth: 176 });
+  assert.equal(three.style, 'initials');
+  assert.deepEqual(three.lines, ['A & Z & O']);
+  assert.ok(three.fontSize >= 42 * SIBLING_MIN_SCALE && !three.squeeze && !three.letterSpacing, JSON.stringify(three));
+  // The old way (one squashed line) would have been far smaller.
+  const old = layoutName({ text: 'AMARA & ZAK & OLUWASEUN', fontSize: 42, maxWidth: 176 });
+  assert.ok(old.squeeze || old.letterSpacing || old.fontSize < 42 * SIBLING_MIN_SCALE);
+});
+
+test('siblings in a spot that may wrap: stacked at an "&" before falling back to first letters', () => {
+  const crane = layoutSiblings({ names: ['Amara', 'Zak'], form: 'upper', fontSize: 52, maxWidth: 160, wrap: true });
+  assert.equal(crane.style, 'stacked');
+  assert.deepEqual(crane.lines, ['AMARA', '& ZAK']);
+  // "{name's} Park": the possessive goes on the last line only.
+  const sign = layoutSiblings({ names: ['Amara', 'Zak', 'Oluwaseun'], form: 'poss', fontSize: 40, maxWidth: 230, wrap: true });
+  assert.equal(sign.style, 'stacked');
+  assert.equal(sign.lines.length, 2);
+  assert.match(sign.lines[1], /^& .*Oluwaseun's$/);
+  assert.ok(!sign.lines[0].endsWith("'s"));
+  // Too narrow even stacked: first letters.
+  const tiny = layoutSiblings({ names: ['Amara', 'Zak', 'Oluwaseun'], form: 'upper', fontSize: 52, maxWidth: 160, wrap: true });
+  assert.equal(tiny.style, 'initials');
+  // Accented and lower-case first letters come out as capitals.
+  assert.deepEqual(layoutSiblings({ names: ['élodie', 'Zoë', 'Ñico'], fontSize: 40, maxWidth: 60 }).lines, ['É & Z & Ñ']);
+  // A slot with no width limit keeps every name.
+  assert.equal(layoutSiblings({ names: ['Amara', 'Zak', 'Oluwaseun'], fontSize: 40, maxWidth: NaN }).style, 'full');
 });

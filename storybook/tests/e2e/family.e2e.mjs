@@ -373,6 +373,9 @@ try {
       const st = await stateOf(page);
       eq(st.readings.length, 1, 'one reading');
       eq(st.activeReading[BOOK], st.readings[0].id, 'active for the book');
+      // A reading says one child's name: it belongs to Ava (who the pack says it was recorded for).
+      const ava = st.profiles.find((p) => p.display === 'Ava');
+      eq([st.readings[0].childId, st.readings[0].childKey], [ava.id, 'ava'], 'the reading is Ava’s');
       assert(await page.locator('[data-testid=reader-choice][data-reader=voice]').count(), 'computer voice still offered');
       assert(await page.locator(`[data-testid=reader-choice][data-reader="${st.readings[0].id}"]`).isChecked(), 'Grandma chosen');
       await shot(page, 'family-ready-reading', { full: true });
@@ -387,7 +390,10 @@ try {
       const lit = await page.evaluate(() => [document.querySelectorAll('[data-testid=page-text] .sb-word.is-read').length, document.querySelectorAll('[data-testid=page-text] .sb-word').length]);
       assert(lit[0] > 0, `words lit: ${lit}`);
       await shot(page, 'family-reader-reading');
+      // Leaving the story is a grown-up's hold.
+      await page.evaluate(() => (globalThis.SB_TEST = { ...(globalThis.SB_TEST ?? {}), gateMs: 150 }));
       await page.getByTestId('exit-reader').click();
+      await holdGate(page, 400);
       await page.getByTestId('save-audio').waitFor();
     });
 
@@ -421,7 +427,9 @@ try {
     await step('settings: family recordings list plays, sends and deletes (with the audio)', async () => {
       await page.evaluate(() => (globalThis.SB_TEST = { ...(globalThis.SB_TEST ?? {}), gateMs: 150 }));
       await page.getByTestId('open-settings').click();
-      await holdGate(page, 400);
+      // (A grown-up held the gate a moment ago to leave the story: no second hold within the minute.)
+      await page.waitForTimeout(300);
+      if (await page.getByTestId('parent-gate').count()) await holdGate(page, 400);
       await waitHash(page, '#/settings');
       const row = page.getByTestId('settings-reading').first();
       await row.waitFor();
@@ -494,8 +502,10 @@ try {
       assert(pack.message.audio?.mime === 'audio/wav', 'spoken message');
       eq(Object.keys(pack.parts), ['1'], 'one page read');
       eq((await stateOf(page))?.profiles?.length ?? 0, 0, 'the giver’s phone keeps no child');
-      await page.getByTestId('gift-tidy').click();
-      eq((await stateOf(page)).readings.length, 0, 'giver tidied the recording away');
+      // The giver's reading and messages stay in the gift (memory only): nothing saved on this phone.
+      eq((await stateOf(page))?.readings?.length ?? 0, 0, 'no reading saved on the giver’s phone');
+      eq(await blobKeys(page), [], 'no recordings saved on the giver’s phone');
+      eq(await page.getByTestId('gift-tidy').count(), 0, 'nothing to tidy away');
       noErrors(errors, 'gift');
     });
     await context.close();
@@ -524,6 +534,13 @@ try {
       eq(siobhan.pronunciation.say, 'Shi vawn', 'said the giver’s way');
       assert(siobhan.gift.recordingId && (await blobKeys(page)).includes(siobhan.gift.recordingId), 'the spoken message is stored');
       eq(st.readings[0].readerName, 'Auntie Jo', 'Auntie Jo’s reading came too');
+      eq(st.readings[0].childId, siobhan.id, 'the reading is Siobhan’s');
+      eq(await page.getByTestId('reading-pill').innerText(), 'Read by Auntie Jo', 'Auntie Jo reads for Siobhan');
+      // ...and not for Zak.
+      await page.locator('[data-testid=switch-child][data-child=child_z]').click();
+      await page.waitForFunction(() => document.querySelector('[data-testid=active-child]')?.textContent === 'Zak');
+      eq(await page.getByTestId('reading-pill').count(), 0, 'Zak hears the computer voice');
+      eq(await page.getByTestId('reader-choice').count(), 1, 'only the computer voice is offered for Zak');
       await shot(page, 'family-ready-gift');
       noErrors(errors, 'opening a gift');
     });
@@ -553,7 +570,9 @@ try {
       await page.getByTestId('reader').waitFor({ timeout: 8000 });
       await page.getByTestId('next-page').click();
       await page.waitForFunction(() => /Where are Amara and Zak's shirts\?/.test(document.querySelector('[data-testid=page-text]')?.textContent ?? ''), null, { timeout: 8000 });
+      await page.evaluate(() => (globalThis.SB_TEST = { ...(globalThis.SB_TEST ?? {}), gateMs: 150 }));
       await page.getByTestId('exit-reader').click();
+      await holdGate(page, 400);
       await page.getByTestId('together-names').waitFor();
       // Back to one child: untick Zak.
       await page.locator('label[for=together-c_zak]').click();
@@ -657,7 +676,7 @@ try {
       eq([await page.getByTestId('name-input').inputValue(), await page.getByTestId('nickname-input').inputValue()], ['Maximilian-James', 'Max'], 'edit form');
       await page.getByTestId('nickname-input').fill('');
       await page.getByTestId('name-continue').click();
-      await waitHash(page, `#/b/${BOOK}/say`);
+      await page.waitForFunction(() => location.hash.startsWith('#/b/tiffin-football/say?child='));
       const q = (await stateOf(page)).profiles[0];
       eq([q.display, 'fullName' in q], ['Maximilian-James', false], 'nickname removed');
       noErrors(errors, 'nickname');
@@ -690,7 +709,15 @@ try {
       await page.getByTestId('voice-consent').waitFor({ state: 'visible', timeout: 8000 });
       assert(!(await page.getByTestId('no-voice').isVisible()), 'asks rather than saying there is no voice');
       await page.getByTestId('consent-allow').click();
+      await page.waitForFunction(() => JSON.parse(localStorage.getItem('starring.v1'))?.settings?.allowOnlineVoices === true);
       eq((await stateOf(page)).settings.allowOnlineVoices, true, 'agreed');
+      // The reassurance under the story preview tells the truth about where the words go
+      // (in ?test=1 the narrator stays silent, so nothing is sent and it says so).
+      await page.waitForFunction(() => {
+        const online = globalThis.__tiffin.services.narrator.voiceStatus?.().usingOnline;
+        const text = document.querySelector('[data-testid=story-voice-note]')?.textContent ?? '';
+        return online ? /Google or Microsoft/.test(text) : /on this device/.test(text);
+      });
       eq(await page.evaluate(() => globalThis.__tiffin.services.narrator.voiceStatus?.().needsConsent), false, 'narrator no longer needs consent');
       noErrors(errors, 'consent');
     });

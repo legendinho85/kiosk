@@ -29,7 +29,7 @@ import { planLines, estimateTimeline, estimateUnitMs } from '../narrator/plan.js
 import { loadScene, prefetchScene, parseSvg, animationWrapper, needsAnimationWrapper, hoistAnimations, ANIMATION_CLASSES } from './scene.js';
 import { createDriver, pick, applyMatrix } from './drive.js';
 import { createControl } from './controls.js';
-import { fillNameSlots, isShown, nameForForm } from './name-fit.js';
+import { fillNameSlots, isShown, nameForForm, siblingNames } from './name-fit.js';
 import { clipTimeline, stretchTimeline, stepAt, clipResumeAt, resumePlan, testScale } from './timeline.js';
 import { clipDurationMs } from './clip.js';
 
@@ -173,7 +173,7 @@ function sceneBox(svgRoot, el) {
  * @param {[number, number]|null} extent top and bottom (scene y, 0-1000) of where the child works the mechanism
  * @returns {'top'|'bottom'}
  */
-export function promptSide(extent, { sceneHeight = 1000, band = 0.25 } = {}) {
+export function promptSide(extent, { sceneHeight = 1000, band = 0.2 } = {}) {
   if (!Array.isArray(extent) || !extent.every(Number.isFinite)) return 'bottom';
   const [y0, y1] = extent[0] <= extent[1] ? extent : [extent[1], extent[0]];
   const underBottom = Math.max(0, y1 - sceneHeight * (1 - band));
@@ -407,7 +407,8 @@ export async function mountReader(root, opts) {
   const hearBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-hear', 'data-testid': 'tap-to-hear', hidden: true }, h('span', { class: 'sb-r-pill-icon', html: ICONS.play }), 'Tap to hear the story');
   // The words scroll on their own if they must; the end-of-story buttons stay
   // pinned below them, always in view (small phones included).
-  const band = h('div', { class: 'sb-r-band' }, h('div', { class: 'sb-r-band-inner' }, h('div', { class: 'sb-r-words' }, hearBtn, badgeBand, textEl)), endBar);
+  const bandInner = h('div', { class: 'sb-r-band-inner' }, h('div', { class: 'sb-r-words' }, hearBtn, badgeBand, textEl));
+  const band = h('div', { class: 'sb-r-band' }, bandInner, endBar);
   const night = h('div', { class: 'sb-r-night', hidden: true, 'aria-live': 'polite' });
   const startLayer = h('div', { class: 'sb-r-start', hidden: true },
     h('button', { type: 'button', class: 'sb-r-startbtn', 'data-testid': 'start-story' }, h('span', { class: 'sb-r-start-icon', html: ICONS.play }), h('span', {}, 'Tap to start the story')));
@@ -507,6 +508,8 @@ export async function mountReader(root, opts) {
     textEl.classList.remove('is-entering');
     void textEl.offsetWidth;
     textEl.classList.add('is-entering');
+    bandInner.scrollTop = 0;
+    markOverflow();
   }
 
   /** The line being read (phone landscape shows only this one). */
@@ -517,11 +520,37 @@ export async function mountReader(root, opts) {
     p.classList.add('is-active-line');
   }
 
+  /**
+   * When the words don't all fit (a small phone, the end-of-story buttons
+   * showing), fade the edge where there is more to scroll to.
+   */
+  function markOverflow() {
+    const more = bandInner.scrollHeight - bandInner.clientHeight - bandInner.scrollTop > 4;
+    const less = bandInner.scrollTop > 4;
+    bandInner.toggleAttribute('data-more', more);
+    bandInner.toggleAttribute('data-less', less);
+  }
+  /** Keep the word being read in view when the words scroll. */
+  function keepInView(word) {
+    if (!word || bandInner.scrollHeight <= bandInner.clientHeight + 1) return;
+    const box = bandInner.getBoundingClientRect();
+    const r = word.getBoundingClientRect();
+    if (r.top >= box.top + 4 && r.bottom <= box.bottom - 4) return;
+    // Scroll only the words (scrollIntoView could shift the whole reader).
+    const top = r.top < box.top ? r.top - box.top - 12 : r.bottom - box.bottom + 12;
+    try {
+      bandInner.scrollBy({ top, behavior: reduced() ? 'auto' : 'smooth' });
+    } catch {
+      bandInner.scrollTop += top;
+    }
+  }
+
   function highlight(line, u) {
     const unit = typeof u === 'object' && u ? u.u : u;
     const next = textEl.querySelector(`[data-unit="${line}:${unit}"]`);
     if (next === currentWord) return;
     activateLine(next);
+    keepInView(next);
     currentWord?.classList.remove('is-current');
     currentWord = next;
     if (next && setting('highlight', true) !== false) {
@@ -1280,6 +1309,10 @@ export async function mountReader(root, opts) {
     if (last || state.page.kind === 'end') {
       state.isEnd = true;
       endBar.hidden = false;
+      // The buttons take room from the words: keep the last line (just read,
+      // with the name in it) in view, and fade the edge that has more.
+      bandInner.scrollTop = bandInner.scrollHeight;
+      markOverflow();
     } else {
       nextWrap.classList.add('is-ready');
     }
@@ -1442,6 +1475,19 @@ export async function mountReader(root, opts) {
 
   const SPOT_COLOURS = isBedtime ? ['#FFE7A3', '#FFD27A', '#FFF4D6', '#E9C46A'] : ['#FFC83D', '#E8505B', '#7EC8F0', '#6CC24A', '#F59A2B', '#3E7BDB'];
   const STAR_SVG = `<svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0-11 2.8-2.8 11 0 2.8 2.8 0 11-2.8 2.8-11 0-2.8-2.8Z" fill="currentColor" stroke="${isBedtime ? '#0B0F26' : '#2B2A33'}" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+  /**
+   * Who a name spot in the picture is for: everyone reading, or (siblings) the
+   * one child whose shirt or hat it is. Their spoken names come from the
+   * joined `say` ("Amara, Zak and Neeve"), split back into its parts.
+   */
+  function slotPerson(slot) {
+    const i = Number(slot?.dataset?.sibling);
+    const names = siblingNames(person);
+    if (!names || !Number.isInteger(i) || !names[i]) return person;
+    const says = String(person.say ?? '').split(/, | and (?=[^,]*$)/);
+    return makePerson(names[i], says.length === names.length ? says[i] : names[i]);
+  }
+
   /** Stars burst out of the name (drawn in the HTML layer over the picture, sized in screen pixels). */
   function sparkleAround(slot) {
     const frame = confettiLayer.getBoundingClientRect();
@@ -1469,7 +1515,7 @@ export async function mountReader(root, opts) {
     // The name itself, big and clear, just above the one in the picture:
     // this is how it's written (capitals where the picture has capitals), and the voice says it.
     const caps = slot.matches('.sb-letters') || slot.dataset.form === 'upper';
-    const word = h('span', { class: 'sb-spot-word' }, nameForForm(person, caps ? 'upper' : 'plain'));
+    const word = h('span', { class: 'sb-spot-word' }, nameForForm(slotPerson(slot), caps ? 'upper' : 'plain'));
     const below = r.top - frame.top < 64;
     const half = Math.min(frame.width / 2 - 8, 170);
     const shift = Math.max(half - cx, Math.min(frame.width - half - cx, 0));
@@ -1496,10 +1542,10 @@ export async function mountReader(root, opts) {
     el.dataset.spotted = String((Number(el.dataset.spotted) || 0) + 1);
     if (state.waiting) rearmIdle(); // they're busy with the picture: no re-prompt just yet
     if (narrating || narrator.speaking) return; // don't talk over the story; the sparkle says it
-    sayName();
+    sayName(slotPerson(slot));
   }
 
-  async function sayName() {
+  async function sayName(who = person) {
     spotCtl?.abort();
     const ctl = childSignal(life.signal);
     spotCtl = ctl;
@@ -1508,7 +1554,7 @@ export async function mountReader(root, opts) {
         // The grown-up's own recording of the name, inside the line.
         await narrator.play(planLines([SPOT_LINE], person, recording), { signal: ctl.signal, rateScale: voiceRate() });
       } else {
-        await narrator.speakText(fillSpoken(SPOT_LINE, person), { signal: ctl.signal, rateScale: voiceRate() });
+        await narrator.speakText(fillSpoken(SPOT_LINE, who), { signal: ctl.signal, rateScale: voiceRate() });
       }
     } catch {
       /* a name that can't be said still sparkled */
@@ -1632,6 +1678,12 @@ export async function mountReader(root, opts) {
     if (span) tapWord(span);
   });
   on(pauseBtn, 'click', togglePause);
+  on(bandInner, 'scroll', markOverflow, { passive: true });
+  if (typeof ResizeObserver === 'function') {
+    const ro = new ResizeObserver(() => markOverflow());
+    ro.observe(bandInner);
+    life.signal.addEventListener('abort', () => ro.disconnect(), { once: true });
+  }
   on(pausedChip, 'click', () => setPaused(false));
   on(night, 'click', lightsOn);
   on(night, 'keydown', (ev) => {
@@ -1727,12 +1779,13 @@ export async function mountReader(root, opts) {
     if (t?.closest?.('[data-testid="control"], input, textarea, select, [contenteditable="true"]')) return;
     // A grown-up dialog on top (e.g. the parent gate, held with Space) keeps its keys.
     if (document.querySelector('dialog[open], [aria-modal="true"]:not([hidden])') && !el.contains(t)) return;
+    // A key held down turns one page (like the real book), not one per auto-repeat.
     if (ev.key === 'ArrowRight' || ev.key === 'PageDown') {
       ev.preventDefault();
-      turnBy(1);
+      if (!ev.repeat) turnBy(1);
     } else if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') {
       ev.preventDefault();
-      turnBy(-1);
+      if (!ev.repeat) turnBy(-1);
     } else if (ev.key === 'k' || ev.key === 'K' || ev.key === ' ' || ev.key === 'Spacebar') {
       // Space on a focused button presses that button instead.
       if (ev.key !== 'k' && ev.key !== 'K' && t?.closest?.('button, [role="button"], a[href]')) return;

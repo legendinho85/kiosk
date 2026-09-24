@@ -37,10 +37,32 @@
   <link rel="preload" href="fonts/fredoka-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/app.css">
-  <!-- Only the reader and the magic window use these: they load without holding up the first paint (js/main.js switches them on). -->
-  <link rel="stylesheet" href="css/reader.css" media="print" data-deferred-style>
-  <link rel="stylesheet" href="css/ar.css" media="print" data-deferred-style>
+  <!-- css/reader.css and css/ar.css load after the first screen (js/main.js, loadStyle) so they don't hold up the first paint. -->
   <link rel="modulepreload" href="js/main.js">
+  <!-- Everything the first screen imports, fetched at once rather than one import level at a time
+       (on a slow phone each level costs a round trip). tests/unit/app-preload.test.mjs keeps this list in step with js/main.js. -->
+  <link rel="modulepreload" href="js/app/boot.js">
+  <link rel="modulepreload" href="js/app/router.js">
+  <link rel="modulepreload" href="js/app/ui.js">
+  <link rel="modulepreload" href="js/app/chrome.js">
+  <link rel="modulepreload" href="js/app/services.js">
+  <link rel="modulepreload" href="js/app/scratch.js">
+  <link rel="modulepreload" href="js/app/parent-gate.js">
+  <link rel="modulepreload" href="js/app/place.js">
+  <link rel="modulepreload" href="js/app/cover.js">
+  <link rel="modulepreload" href="js/app/screens/home.js">
+  <link rel="modulepreload" href="js/app/screens/landing.js">
+  <link rel="modulepreload" href="js/app/screens/name.js">
+  <link rel="modulepreload" href="js/app/screens/ready.js">
+  <link rel="modulepreload" href="js/core/storage.js">
+  <link rel="modulepreload" href="js/core/book.js">
+  <link rel="modulepreload" href="js/core/personalise.js">
+  <link rel="modulepreload" href="js/family/family.js">
+  <link rel="modulepreload" href="js/narrator/plan.js">
+  <link rel="modulepreload" href="js/pronounce/index.js">
+  <link rel="modulepreload" href="js/pronounce/lexicon.js">
+  <link rel="modulepreload" href="js/pronounce/respell.js">
+  <link rel="modulepreload" href="js/pronounce/rules.js">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>

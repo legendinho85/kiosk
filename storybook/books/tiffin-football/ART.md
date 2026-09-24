@@ -88,6 +88,22 @@ All coordinates are in the item's own units. Multiply them by the scale you use.
 | `d-scoreboard` | name row `x −150…80`, centred on `y=−40`; score windows `x 92…150` at `y=−40` and `y=+40` | name `x=−35 y=−25 font-size=44 data-max-width=220 fill=#FFCB3D`; digits at `x=121` |
 | banner (drawn by the scene) | – | hold it with `d-fan-rabbit-arm-up` and `d-fan-rabbit-paw` (see §5, p4) |
 
+**Brothers and sisters reading together.** A spot too small for every name
+("Amara & Zak & Oluwaseun") shows them stacked (`data-wrap` spots) or as first
+letters ("A & Z & O"), never squashed. Where the story gives each child their
+own thing (p2's shirt), mark the group that holds it and its name slot with
+`data-siblings="copies"`: the reader draws one copy per child, fanned out round
+the artist's placement, each with one child's name. Tune the fan with
+`data-sibling-step` (gap between copies, in the parent's units),
+`data-sibling-scale`, `data-sibling-turn` (degrees) and `data-sibling-shift`;
+each takes one value, or two (for two children, then for three). p2 uses
+`data-sibling-step="170 140" data-sibling-scale="0.74 0.62" data-sibling-turn="8 7" data-sibling-shift="-6 -44"`.
+
+**Describe every page** for screen readers in `book.draft.json`: `alt` (what the
+picture shows when the page opens) and, when the moving part changes it,
+`altAfter`. Both are templates (`{name}`, `{one|many}`); use `{name}`, not
+`{NAME}`, since screen readers may spell out capitals.
+
 ## 4. Paint servers
 
 | id | What |

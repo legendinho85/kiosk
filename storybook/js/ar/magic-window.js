@@ -1277,7 +1277,8 @@ export async function mountMagicWindow(root, opts = {}) {
       console.warn('[magic] moving parts unavailable', err);
       driver = null;
     }
-    const names = m.nameFit.fillNameSlots(svg, artWho, { animate: !instantNames && !reduced() });
+    // One name spot per spot, as printed (siblings: all their names in it, not a shirt each).
+    const names = m.nameFit.fillNameSlots(svg, artWho, { animate: !instantNames && !reduced(), siblingCopies: false });
     // Names under a flap stay hidden until the flap "opens" (Magic!), like in the reader.
     const underFlap = new Set();
     if (mechanic.type === 'flap') {

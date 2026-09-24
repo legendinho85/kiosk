@@ -542,7 +542,15 @@ export function render(root, ctx) {
   // ---- Layout --------------------------------------------------------------------------------
   const voiceNote = h('p', { class: 'voice-note', hidden: true, 'data-testid': 'no-voice' }, icon('info', { size: 18 }), h('span', {}, 'This browser has no reading voice at the moment, so you won’t hear anything yet. The story still works — or try recording your own voice below.'));
   // Only online voices here? Ask the grown-up (privacy) rather than saying there's no voice.
-  const consent = voiceConsentCard(ctx, { signal: life.signal, name: display, onChange: () => (voiceNote.hidden = true) });
+  const voiceLine = voicePrivacyLine(ctx, PRIVACY_WORDS.voice, { signal: life.signal, line: h('p', { class: 'field-hint story-voice-note', 'data-testid': 'story-voice-note' }) });
+  const consent = voiceConsentCard(ctx, {
+    signal: life.signal,
+    name: display,
+    onChange: () => {
+      voiceNote.hidden = true;
+      voiceLine.refresh?.();
+    },
+  });
   Promise.resolve(narrator.ready)
     .catch(() => null)
     .then(() => {
@@ -567,7 +575,7 @@ export function render(root, ctx) {
   const storyCard = h('section', { class: 'card story-check', 'aria-labelledby': 'story-check-title' },
     h('div', { class: 'story-check-head' }, h('h2', { id: 'story-check-title' }, 'Try it in the story'), hearBtn),
     preview,
-    voicePrivacyLine(ctx, PRIVACY_WORDS.voice, { signal: life.signal, line: h('p', { class: 'field-hint story-voice-note', 'data-testid': 'story-voice-note' }) }));
+    voiceLine);
   const alts = h('section', { class: 'alts', 'aria-labelledby': 'alts-title' },
     h('h2', { id: 'alts-title', class: 'alts-title' }, 'None of these?'),
     h('div', { class: 'alt-grid' }, typeBlock, sayBlockHost, recordBlockHost));

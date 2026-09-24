@@ -80,8 +80,9 @@ function formLines(lines, form) {
 /**
  * Lay out several children's names in one spot, always readable and never
  * squashed: one line ("Amara & Zak") while it stays at least `minScale` of the
- * drawn size; otherwise, where the slot may wrap, two lines split at an "&"
- * ("Amara & Zak" / "& Oluwaseun"); otherwise first letters ("A & Z & O").
+ * drawn size; where the slot may wrap, two lines split at an "&" ("Amara & Zak"
+ * / "& Oluwaseun") when that is bigger or the one line isn't readable;
+ * otherwise first letters ("A & Z & O").
  * @param {{names: string[], form?: string, fontSize: number, maxWidth: number, wrap?: boolean,
  *   measure?: (text: string, fontSize: number) => number, minScale?: number}} spec
  * @returns {{lines: string[], fontSize: number, letterSpacing: number, squeeze: boolean, style: 'full'|'stacked'|'initials'}}
@@ -90,9 +91,10 @@ export function layoutSiblings({ names, form = 'plain', fontSize, maxWidth, wrap
   const readable = (l) => !l.letterSpacing && !l.squeeze && l.fontSize >= fontSize * minScale - 1e-6;
   const [full] = formLines([names.join(' & ')], form);
   const one = layoutName({ text: full, fontSize, maxWidth, wrap: false, measure });
-  if (readable(one) || !(maxWidth > 0)) return { ...one, style: 'full' };
-  if (wrap) {
-    let best = null;
+  if (!(maxWidth > 0)) return { ...one, style: 'full' };
+  let best = readable(one) ? { ...one, style: 'full' } : null;
+  // Two lines when the one line would be small and the pair comes out bigger (as for one name).
+  if (wrap && (!best || one.fontSize < fontSize * WRAP_BELOW)) {
     for (let i = 1; i < names.length; i++) {
       const lines = formLines([names.slice(0, i).join(' & '), `& ${names.slice(i).join(' & ')}`], form);
       const fits = lines.map((t) => fitText(measure(t, fontSize), fontSize, maxWidth, { chars: graphemes(t).length }));
@@ -100,8 +102,8 @@ export function layoutSiblings({ names, form = 'plain', fontSize, maxWidth, wrap
       const size = settleSize(lines, Math.min(...fits.map((f) => f.fontSize), fontSize * TWO_LINE_MAX), maxWidth, measure, fontSize * MIN_SCALE);
       if (size >= fontSize * minScale - 1e-6 && (!best || size > best.fontSize)) best = { lines, fontSize: size, letterSpacing: 0, squeeze: false, style: 'stacked' };
     }
-    if (best) return best;
   }
+  if (best) return best;
   const [initials] = formLines([names.map((n) => upper(graphemes(n)[0] ?? '')).join(' & ')], form);
   return { ...layoutName({ text: initials, fontSize, maxWidth, wrap: false, measure }), style: 'initials' };
 }
@@ -398,6 +400,7 @@ function renderSlot(item, measure) {
   el.setAttribute('aria-label', item.text);
   if (layout.style) el.dataset.siblingsAs = layout.style;
   else delete el.dataset.siblingsAs;
+  el.dataset.fitScale = round(layout.fontSize / orig.fontSize); // how far it shrank (tests, stickers)
 }
 
 function renderLetters(group, svgRoot, display, animate, several = false) {
@@ -513,18 +516,20 @@ export function expandSiblingCopies(svgRoot, names) {
  * @param {SVGSVGElement} svgRoot
  * @param {{display: string, say?: string, art?: string, count?: number}} person  pictures show `art ?? display`;
  *   with several children (`count > 1`) bunting always uses the overflow banner
- * @param {{animate?: boolean}} [opts]
+ * @param {{animate?: boolean, siblingCopies?: boolean}} [opts]  siblingCopies: false keeps one of
+ *   everything (the magic window, over the printed page), with all the names in each spot
  * @returns {{
  *   writeIn(opts?: {within?: Element, filter?: (el: Element) => boolean, signal?: AbortSignal,
  *     letterMs?: number, instant?: boolean, onLetter?: (el: Element, i: number) => void,
  *     onWritten?: (el: Element) => void}): Promise<number>,
  *   refit(): void, pending(): Element[], revealAll(): void }}
  */
-export function fillNameSlots(svgRoot, person, { animate = false } = {}) {
+export function fillNameSlots(svgRoot, person, { animate = false, siblingCopies = true } = {}) {
   const display = artName(person);
   const sibs = siblingNames(person);
   const several = Boolean(sibs) || (typeof person === 'object' && (person?.count ?? 1) > 1);
-  expandSiblingCopies(svgRoot, sibs);
+  // The magic window writes onto the printed book, which has one shirt: no copies there.
+  expandSiblingCopies(svgRoot, siblingCopies ? sibs : null);
   // Letter-by-letter write-in suits alphabetic scripts ("Amara & Zak" too).
   const letterwise = slotLetters(display.replace(/[&+,]/g, ' ')) !== null;
   const items = [];

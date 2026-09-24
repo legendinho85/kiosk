@@ -104,6 +104,8 @@ export function voicePrivacyLine(ctx, words, { signal, line = null } = {}) {
     el.dataset.voice = online ? 'online' : 'local';
   };
   update();
+  /** Check again (e.g. straight after the grown-up agrees to online voices). */
+  el.refresh = update;
   Promise.resolve(ctx?.servicesReady)
     .catch(() => null)
     .then(() => Promise.resolve(ctx?.narrator?.ready).catch(() => null))

@@ -215,10 +215,12 @@ export const prefs = {
 const DB = 'starring';
 const STORE = 'recordings';
 const memBlobs = new Map();
-// Opening (or a transaction) that takes longer than this is given up on: the
-// blob stays in memory for this visit. It never hangs a caller, e.g. behind a
-// database delete that another old tab is still blocking.
+// Opening the database takes longer than this only when it is stuck (e.g.
+// queued behind a delete that another, old tab is still blocking): give up,
+// and the blob stays in memory for this visit. Never hang a caller.
 const IDB_TIMEOUT_MS = 3000;
+// A transaction is only a safety net: big recordings on a slow phone can take a while.
+const TX_TIMEOUT_MS = 15000;
 
 // One shared connection, reopened when needed. It closes itself when anyone
 // (forgetEverything, or this app in another tab) wants to delete or upgrade
@@ -235,6 +237,17 @@ function dropConn(db) {
 
 function openDb() {
   if (dbPromise) return dbPromise;
+  const p = openDbAt(undefined);
+  dbPromise = p;
+  // A failed open isn't kept: the next call tries again.
+  p.then((db) => {
+    if (!db && dbPromise === p) dbPromise = null;
+  });
+  return p;
+}
+
+/** Open (or create) the database; `version` is only given to add a missing store. */
+function openDbAt(version, repaired = false) {
   const p = new Promise((resolve) => {
     let settled = false;
     const done = (db) => {
@@ -246,10 +259,22 @@ function openDb() {
     const timer = setTimeout(() => done(null), IDB_TIMEOUT_MS);
     try {
       if (!globalThis.indexedDB) return done(null);
-      const req = indexedDB.open(DB, 1);
-      req.onupgradeneeded = () => req.result.createObjectStore(STORE);
+      const req = version ? indexedDB.open(DB, version) : indexedDB.open(DB);
+      req.onupgradeneeded = () => {
+        if (!req.result.objectStoreNames.contains(STORE)) req.result.createObjectStore(STORE);
+      };
       req.onsuccess = () => {
         const db = req.result;
+        if (!db.objectStoreNames.contains(STORE)) {
+          // A database without our store (left by something else): add it once.
+          const next = db.version + 1;
+          db.close();
+          if (repaired || settled) return done(null);
+          settled = true;
+          clearTimeout(timer);
+          openDbAt(next, true).then(resolve);
+          return;
+        }
         db.onversionchange = () => {
           db.close();
           dropConn(db);
@@ -260,7 +285,7 @@ function openDb() {
           db.close();
           return;
         }
-        if (dbPromise === p) dbConn = db;
+        dbConn = db;
         done(db);
       };
       req.onerror = () => done(null);
@@ -268,11 +293,6 @@ function openDb() {
     } catch {
       done(null);
     }
-  });
-  dbPromise = p;
-  // A failed open isn't kept: the next call tries again.
-  p.then((db) => {
-    if (!db && dbPromise === p) dbPromise = null;
   });
   return p;
 }
@@ -303,7 +323,7 @@ async function tx(mode, fn, retried = false) {
       resolve(retried ? undefined : tx(mode, fn, true));
       return;
     }
-    const timer = setTimeout(() => resolve(undefined), IDB_TIMEOUT_MS);
+    const timer = setTimeout(() => resolve(undefined), TX_TIMEOUT_MS);
     try {
       const req = fn(t.objectStore(STORE));
       t.oncomplete = () => {

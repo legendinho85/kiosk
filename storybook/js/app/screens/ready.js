@@ -16,7 +16,8 @@ import { person as makePerson } from '../../core/personalise.js';
 import { readingChildren, setTogether, readingLabel, prefs } from '../../core/storage.js';
 import { planLines } from '../../narrator/plan.js';
 import { readingPerson, recordingSteps, readingCoverage, MAX_TOGETHER, artNames, selectChild, childReadings, childReading, chooseReading } from '../../family/family.js';
-import { saveReadingAudio, yotoTip } from '../family-ui.js';
+// Saving audio and sending files (family packs) load only when a family reading is shown.
+const familyUi = () => import('../family-ui.js');
 import { placeFor } from '../place.js';
 
 /** Can this device open the camera here? (The same check as js/ar/magic-window.js, without loading it.) */
@@ -362,13 +363,20 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
   let audioCard;
   if (reading) {
     const linkHost = h('div', { class: 'download-host', hidden: true });
+    const tipHost = h('div', { class: 'yoto-tip-host' });
     const progress = h('p', { class: 'field-hint', 'aria-live': 'polite', 'data-testid': 'save-audio-status' });
     const save = button({ text: 'Save as audio for Yoto / Tonie', icon: 'note', variant: 'secondary', size: 'md', testid: 'save-audio' });
     save.addEventListener('click', async () => {
       stopPlaying();
       setBusy(save, true);
       progress.textContent = 'Putting the pages together…';
-      const out = await saveReadingAudio(ctx, book, reading, readingChildren(ctx.state)[0] ?? profile, { host: linkHost, onProgress: (f) => (progress.textContent = `Putting the pages together… ${Math.round(f * 100)}%`) });
+      let out;
+      try {
+        out = await (await familyUi()).saveReadingAudio(ctx, book, reading, readingChildren(ctx.state)[0] ?? profile, { host: linkHost, onProgress: (f) => (progress.textContent = `Putting the pages together… ${Math.round(f * 100)}%`) });
+      } catch {
+        out = { how: 'failed' };
+        toast('Sorry — that didn’t work. Please check your connection and try again.', { kind: 'error' });
+      }
       setBusy(save, false);
       progress.textContent = out.how === 'failed' ? '' : out.missing ? `Done. ${out.missing} part${out.missing === 1 ? ' was' : 's were'} missing, so ${out.missing === 1 ? 'it’s' : 'they’re'} not in the audio.` : 'Done — one file, with a soft chime at each page turn.';
     });
@@ -378,7 +386,8 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
       save,
       progress,
       linkHost,
-      yotoTip());
+      tipHost);
+    familyUi().then((m) => !signal.aborted && tipHost.replaceWith(m.yotoTip())).catch(() => {});
   } else {
     audioCard = h('section', { class: 'card audio-card is-muted', 'aria-labelledby': 'audio-title' },
       h('h2', { id: 'audio-title' }, icon('note', { size: 22 }), h('span', {}, 'Take it screen-free')),
@@ -421,13 +430,14 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
     h('div', { class: 'ready-actions' }, pills, carryOn, start, magicWrap),
   );
 
-  const consent = voiceConsentCard(ctx, { signal, name: who.display });
+  const privacy = voicePrivacyLine(ctx, PRIVACY_WORDS.ready, { signal });
+  const consent = voiceConsentCard(ctx, { signal, name: who.display, onChange: () => privacy.refresh?.() });
   const { el } = screen(ctx, {
     name: 'ready',
     body: [
       envBanner({ signal }),
       hero,
-      h('div', { class: 'ready-side' }, giftCard, consent, childCard, storyCard, audioCard, stickersCard, giveCard, tips, voicePrivacyLine(ctx, PRIVACY_WORDS.ready, { signal })),
+      h('div', { class: 'ready-side' }, giftCard, consent, childCard, storyCard, audioCard, stickersCard, giveCard, tips, privacy),
     ],
   });
   el.classList.toggle('is-bedtime', bedtime);
