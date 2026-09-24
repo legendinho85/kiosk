@@ -5,6 +5,10 @@ const params = new URLSearchParams(location.search);
 if (params.get("test") === "1") globalThis.SB_TEST = { forceSilent: true, timeScale: Number(params.get("scale") ?? 0.05), ...(params.has("idle") ? { idleMs: Number(params.get("idle")) } : {}) };
 
 const log = (window.__log = { speak: [], sfx: [], done: [], skip: [], stops: 0 });
+
+// Accessibility settings as the app applies them (docs/architecture.md section 12).
+if (params.get('easy') === '1') document.documentElement.dataset.easyRead = 'true';
+if (params.get('contrast') === 'high') document.documentElement.dataset.contrast = 'high';
 const lt = await import('../../../js/activities/letter-trace.js');
 const { person, togetherPerson } = await import('../../../js/core/personalise.js');
 window.__lt = lt;

@@ -1824,3 +1824,135 @@ button.ready-pill { border: 0; cursor: pointer; min-height: 36px; }
   .open-drop-hint { grid-column: 2; }
 }
 .screen.no-enter { animation: none; }
+
+/* ---- Round 3: letters, stickers, home languages ------------------------------------------- */
+
+/* #/b/:book/letters: the game is a full-screen overlay (css/activities.css);
+   this is only what shows for a moment while it loads. */
+.letters-host { min-height: 100vh; min-height: 100dvh; background: var(--paper); }
+
+/* #/stickers/:book: the print bar, then the sheets (css/stickers.css). */
+.stickers-body {
+  width: 100%;
+  max-width: calc(var(--maxw) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 12px max(var(--gutter), env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(var(--gutter), env(safe-area-inset-left));
+}
+.stickers-body > .reader-loading { min-height: 40vh; }
+.stickers-empty { max-width: 560px; margin: 24px auto; display: grid; gap: 12px; justify-items: start; }
+.stickers-empty .lead { margin-top: 0; }
+.qr-actions .btn { flex: 0 1 auto; }
+.give-art.is-stickers { background: var(--sky-soft); color: #1F5F86; }
+
+/* Record a reading: grandparents are welcome to read in their own language. */
+.record-lang-invite {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--sun-soft);
+  color: var(--ink-2);
+  font-size: 15.5px;
+  max-width: 38em;
+}
+.record-lang-invite > svg { flex: none; margin-top: 4px; color: var(--berry); }
+.inline-link {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.inline-link:hover { text-decoration-thickness: 2px; }
+.tp-lang {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.tp-lang > svg { flex: none; margin-top: 3px; color: var(--berry); }
+.record-done-label { margin: 6px auto 0; }
+@media (max-height: 520px) and (orientation: landscape) {
+  .record-lang-invite { margin-top: 8px; padding: 8px 12px; font-size: 14.5px; line-height: 1.4; }
+}
+
+/* ---- Round 3: easier reading (settings.easyRead, settings.highContrast) ------------------------
+   js/main.js puts data-easy-read="true" / data-contrast="high" on <html>.
+   Here: the grown-up screens. The reader and the activities style their own
+   text (css/reader.css, css/activities.css). */
+
+/* Easy-read: the British Dyslexia Association style guide in CSS — a clear
+   sans-serif (Andika) a size up, extra letter, word and line spacing, left
+   aligned, and no capitals or italics for emphasis. */
+html[data-easy-read="true"] body {
+  font-size: 19px;
+  line-height: 1.7;
+  letter-spacing: .05em;
+  word-spacing: .16em;
+}
+html[data-easy-read="true"] :is(h1, h2, h3) { letter-spacing: .02em; word-spacing: .1em; line-height: 1.3; }
+html[data-easy-read="true"] .lead { font-size: 20px; line-height: 1.6; }
+html[data-easy-read="true"] :is(
+  .field-hint, .name-form .field-hint, .reassure, .cover-sub, .cover-note, .chips-or, .voice-note, .cand-label,
+  .alt-hint, .alt-status, .custom-preview, .privacy-note, .magic-note, .said-as, .switch-label, .tip p,
+  .settings-child-say, .toggle-text span, .version, .toast, .how-step p, .qr-missing, .qr-url, .gate-lead,
+  .env-hint, .consent-card p, .child-fullname, .together-names, .reader-text span, .audio-card p, .yoto-tip,
+  .give-card p, .home-family p, .rec-progress-text, .tp-cue, .rec-status, .open-drop-hint, .open-drop-text,
+  .gift-count, .gift-file, .pp-title, .pp-custom summary, .settings-reading-meta, .tp-next, .shelf-sub,
+  .record-lang-invite, .tp-lang, .boot-slow
+) { font-size: 17.5px; line-height: 1.6; }
+html[data-easy-read="true"] :is(.field-label, .ready-pill, .btn-sm, .badge, .cand-best, .tp-turn) { font-size: 16.5px; }
+html[data-easy-read="true"] :is(.eyebrow, .family-extras-title, .tp-title) { font-size: 16px; text-transform: none; letter-spacing: .04em; }
+html[data-easy-read="true"] :is(em, i, .tp-next span) { font-style: normal; }
+html[data-easy-read="true"] :is(p, li, h1, h2, h3, blockquote) { hyphens: none; }
+html[data-easy-read="true"] .btn { line-height: 1.25; letter-spacing: .03em; }
+
+/* Higher contrast: near-black text on plain white, strong outlines, no soft
+   shadows standing in for edges. */
+html[data-contrast="high"] {
+  --ink: #000000;
+  --ink-2: #141414;
+  --muted: #2E2E2E;
+  --paper: #FFFFFF;
+  --paper-2: #F2F2F2;
+  --line: #5C5C5C;
+  --line-strong: #1A1A1A;
+  --field-border: #1A1A1A;
+  --link: #0842A0;
+  --accent-deep: #8C1D17;
+  --accent-strong: #B3261E;
+  --accent-soft: #FFFFFF;
+  --grass-deep: #1B5E20;
+  --sky-soft: #FFFFFF;
+  --sun-soft: #FFFFFF;
+  --grass-soft: #FFFFFF;
+  --focus: #0B3FB8;
+}
+html[data-contrast="high"] body { background: #FFFFFF; }
+html[data-contrast="high"] :is(.card, .ready-pill, .record-lang-invite, .yoto-tip, .qr-url, .badge, .env-hint, .btn-soft) {
+  border: 2px solid #000;
+  box-shadow: none;
+}
+html[data-contrast="high"] .ready-pill.is-night { border-color: #000; }
+html[data-contrast="high"] .btn-primary { box-shadow: 0 4px 0 #000; }
+html[data-contrast="high"] .btn-secondary { border-color: #000; box-shadow: 0 3px 0 #000; }
+html[data-contrast="high"] .btn-quiet { text-decoration: underline; text-underline-offset: 4px; }
+html[data-contrast="high"] :is(.btn-link, .btn-link-danger) { text-decoration-color: currentColor; text-decoration-thickness: 2px; }
+html[data-contrast="high"] .switch { background: #3D3D3D; box-shadow: inset 0 0 0 2px #000; }
+html[data-contrast="high"] .switch::after { box-shadow: 0 0 0 2px #000; }
+html[data-contrast="high"] .toggle { border-bottom: 2px solid #000; }
+html[data-contrast="high"] :focus-visible { outline-width: 4px; outline-color: var(--focus); }
+html[data-contrast="high"] .print-bar { background: #FFFFFF; border-bottom: 2px solid #000; backdrop-filter: none; }
+html[data-contrast="high"] .brand .tiffin-mark { filter: none; }
+@media print {
+  html[data-contrast="high"] .card { border-width: 1px; }
+}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { testHookFromSearch, entryRedirect, appBaseForPath, shouldRegisterSw, isInIframe } from '../../js/app/boot.js';
+import { testHookFromSearch, entryRedirect, appBaseForPath, shouldRegisterSw, isInIframe, docSettingAttrs, applyDocSettings, pageTitle } from '../../js/app/boot.js';
 
 const loc = (href) => {
   const u = new URL(href);
@@ -61,4 +61,29 @@ test('isInIframe treats an unreadable parent as a frame', () => {
   assert.equal(isInIframe({ self, top: self }), false);
   assert.equal(isInIframe({ self, top: {} }), true);
   assert.equal(isInIframe({ self, get top() { throw new Error('cross-origin'); } }), true);
+});
+
+test('reading comfort settings become attributes on <html>', () => {
+  assert.deepEqual(docSettingAttrs({ easyRead: true, highContrast: true }), { 'data-easy-read': 'true', 'data-contrast': 'high' });
+  assert.deepEqual(docSettingAttrs({ easyRead: false, highContrast: false }), { 'data-easy-read': null, 'data-contrast': null });
+  assert.deepEqual(docSettingAttrs(undefined), { 'data-easy-read': null, 'data-contrast': null });
+  assert.deepEqual(docSettingAttrs({ easyRead: 'yes' }), { 'data-easy-read': null, 'data-contrast': null }, 'only a real true counts');
+  const attrs = new Map();
+  const el = { setAttribute: (k, v) => attrs.set(k, v), removeAttribute: (k) => attrs.delete(k) };
+  applyDocSettings(el, { easyRead: true, highContrast: false });
+  assert.deepEqual([...attrs], [['data-easy-read', 'true']]);
+  applyDocSettings(el, { easyRead: false, highContrast: true });
+  assert.deepEqual([...attrs], [['data-contrast', 'high']]);
+  applyDocSettings(el, {});
+  assert.equal(attrs.size, 0);
+  assert.doesNotThrow(() => applyDocSettings(null, { easyRead: true }));
+  assert.doesNotThrow(() => applyDocSettings({ setAttribute() { throw new Error('x'); }, removeAttribute() { throw new Error('x'); } }, { easyRead: true }));
+});
+
+test('the tab title names the book, never the child', () => {
+  assert.equal(pageTitle({ title: 'Goal, {name}!' }), 'Goal! — a Tiffin & Me story');
+  assert.equal(pageTitle({ title: 'Beep beep, {name}!' }), 'Beep beep! — a Tiffin & Me story');
+  assert.equal(pageTitle({ title: '{name} and the moon' }), 'and the moon — a Tiffin & Me story');
+  assert.equal(pageTitle(null), 'Tiffin & Me read-along');
+  assert.equal(pageTitle({ title: '{name}' }), 'Tiffin & Me read-along');
 });

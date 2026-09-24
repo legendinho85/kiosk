@@ -25,6 +25,8 @@ const ROOT = new URL('../../', import.meta.url).pathname;
 const BASE = `http://127.0.0.1:${PORT}`;
 const FIXTURE = `${BASE}/tests/fixtures/audio.html`;
 const BOOK = 'tiffin-football';
+// Every sound effect, including Book 2's digger horn and engine.
+const SFX = ['whistle', 'kick', 'cheer', 'pop', 'boing', 'clap', 'ding', 'swoosh', 'drum', 'sparkle', 'click', 'beep', 'rumble'];
 
 const { chromium } = await import('/opt/node22/lib/node_modules/playwright/index.mjs').catch(() => import('playwright'));
 
@@ -83,14 +85,12 @@ async function waitForServer(url, ms = 15000) {
   throw new Error(`server did not start on ${url}`);
 }
 
-/** Collect console errors and page errors, ignoring web fonts the sandbox can't fetch. */
+/** Collect console errors and page errors (the fonts are self-hosted: nothing is fetched from elsewhere). */
 function watchErrors(page) {
   const errors = [];
   page.on('console', (m) => {
     if (m.type() !== 'error') return;
     const url = m.location()?.url ?? '';
-    if (/fonts\.(googleapis|gstatic)\.com/.test(url) || /fonts\.(googleapis|gstatic)\.com/.test(m.text())) return;
-    if (/Failed to load resource/.test(m.text()) && !url) return; // font retries with no URL attached
     errors.push(`console: ${m.text()} ${url}`);
   });
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
@@ -263,12 +263,12 @@ try {
     });
 
     await step('every sound effect plays from a tap (AudioContext running)', async () => {
-      for (const name of ['whistle', 'kick', 'cheer', 'pop', 'boing', 'clap', 'ding', 'swoosh', 'drum', 'sparkle', 'click']) {
+      for (const name of SFX) {
         await page.click(`[data-testid=sfx-${name}]`);
         await page.waitForTimeout(80);
       }
       const log = await page.evaluate(() => audioLab.sfxLog);
-      check(log.length === 11, `${log.length} taps logged`);
+      check(log.length === SFX.length, `${log.length} taps logged`);
       const bad = log.filter((e) => !(e.ms > 0) || e.state !== 'running');
       check(bad.length <= 1, `sounds that did not play: ${JSON.stringify(bad)}`); // the overlap cap may drop one
     });
@@ -283,7 +283,7 @@ try {
 
     await step('sound effects are gentle: every peak between -30 and -3 dBFS and audible', async () => {
       await page.click('[data-testid=sfx-measure]');
-      await page.waitForFunction(() => audioLab.levels.length === 11, null, { timeout: 20000 });
+      await page.waitForFunction((n) => audioLab.levels.length === n, SFX.length, { timeout: 20000 });
       const levels = await page.evaluate(() => audioLab.levels);
       for (const l of levels) {
         check(l, 'offline render failed');
@@ -292,6 +292,61 @@ try {
         check(l.rms > 0.003, `${l.name} is nearly silent (rms ${l.rms})`);
         check(l.durationMs >= 60 && l.durationMs <= 2000, `${l.name} lasts ${l.durationMs} ms`);
       }
+    });
+
+    await step("Book 2's sounds: 'beep' is two soft pips near 1 kHz; 'rumble' is a low, soft, wobbling engine", async () => {
+      const r = await page.evaluate(async () => {
+        const m = await import('/js/audio/sfx.js');
+        const rate = 44100;
+        const render = async (name) => {
+          const ctx = new OfflineAudioContext(1, Math.ceil(rate * 2.2), rate);
+          const secs = m.renderSfx(ctx, name, { seed: 7 });
+          const d = (await ctx.startRendering()).getChannelData(0).slice(0, Math.ceil(secs * rate));
+          const win = (ms) => {
+            const n = Math.round((rate * ms) / 1000);
+            const out = [];
+            for (let i = 0; i + n <= d.length; i += n) {
+              let sum = 0;
+              for (let j = i; j < i + n; j++) sum += d[j] * d[j];
+              out.push(Math.sqrt(sum / n));
+            }
+            return out;
+          };
+          const zcHz = (from, to) => {
+            let zc = 0;
+            for (let i = from + 1; i < to; i++) if ((d[i - 1] < 0) !== (d[i] < 0)) zc++;
+            return (zc / 2) * (rate / Math.max(1, to - from));
+          };
+          return { d, win, zcHz, secs };
+        };
+        const b = await render('beep');
+        const bw = b.win(10);
+        const loud = bw.map((x) => x > Math.max(...bw) * 0.3);
+        const pips = [];
+        loud.forEach((on, i) => {
+          if (on && !loud[i - 1]) pips.push({ from: i, to: i });
+          if (on) pips[pips.length - 1].to = i;
+        });
+        const rr = await render('rumble');
+        const mid = rr.win(40).slice(6, -10); // the steady part, between the fade in and out
+        return {
+          pips: pips.map((p) => ({ ms: (p.to - p.from + 1) * 10, hz: Math.round(b.zcHz(p.from * 441, (p.to + 1) * 441)) })),
+          rumbleHz: Math.round(rr.zcHz(0, rr.d.length)),
+          wobble: (Math.max(...mid) - Math.min(...mid)) / Math.max(...mid),
+          rumbleSecs: rr.secs,
+        };
+      });
+      check(r.pips.length === 2, `beep has two pips (${JSON.stringify(r.pips)})`);
+      for (const p of r.pips) {
+        check(p.ms >= 80 && p.ms <= 160, `a pip lasts about 0.12 s (${p.ms} ms)`);
+        check(p.hz > 850 && p.hz < 1150, `a pip is near 1 kHz (${p.hz} Hz)`);
+      }
+      check(r.rumbleHz < 200, `rumble is low (${r.rumbleHz} Hz)`);
+      check(r.wobble > 0.2, `rumble wobbles (${r.wobble.toFixed(2)})`);
+      check(r.rumbleSecs >= 0.6 && r.rumbleSecs <= 1.6, `rumble lasts about a second (${r.rumbleSecs} s)`);
+      const levels = await page.evaluate(() => audioLab.levels.filter((l) => ['beep', 'rumble', 'cheer'].includes(l?.name)));
+      const by = Object.fromEntries(levels.map((l) => [l.name, l]));
+      for (const n of ['beep', 'rumble']) check(by[n].peak <= by.cheer.peak * 1.25, `${n} is no louder than the cheer (${by[n].peak.toFixed(3)} vs ${by.cheer.peak.toFixed(3)})`);
     });
 
     await step('recording with the (fake) microphone gives a trimmed 16-bit mono WAV and a live level meter', async () => {

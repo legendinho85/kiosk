@@ -2,7 +2,7 @@
 // tests/fixtures/reader/ with Playwright's Chromium:
 //   node tests/e2e/reader.e2e.mjs            (PORT=8104 by default)
 //   SHOTS=/some/dir node tests/e2e/reader.e2e.mjs   also saves screenshots
-//   REAL_BOOK=0 skips the smoke test of books/tiffin-football
+//   REAL_BOOK=0 skips the smoke tests of the real books (REAL_BOOKS=tiffin-digger picks which)
 // Starts and stops its own static server. Exits non-zero on any failure.
 
 import { spawn } from 'node:child_process';
@@ -88,8 +88,6 @@ async function openHarness(browser, query, { viewport = { width: 390, height: 84
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
   page.__missing = [];
   page.on('response', (r) => r.status() === 404 && page.__missing.push(new URL(r.url()).pathname));
-  // No network in tests: web fonts resolve to nothing (the fallback fonts are fine).
-  await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
   await page.addInitScript(() => {
     // Remember every word that was highlighted, per page (and when, and in which part).
     window.__seen = {};
@@ -653,25 +651,76 @@ try {
     await context.close();
   });
 
-  await step('recorded reading: pause stops the clip, play starts the part again; other languages play without word lighting', async () => {
-    const { page, context, errors } = await openHarness(browser, 'test=1&reading=tone&mainMs=3000&afterMs=900&lang=Urdu');
+  await step('recorded reading: pause stops the clip, play carries on from just before where it stopped', async () => {
+    const MAIN = 3000;
+    const { page, context, errors } = await openHarness(browser, `test=1&reading=tone&mainMs=${MAIN}&afterMs=900`);
     await page.waitForFunction(() => window.__log.clips.some((c) => c.end == null), null, { timeout: 8000 });
-    await page.waitForTimeout(500);
-    eq(await page.getByTestId('reading-badge-band').textContent(), 'Read by Grandma Rose in Urdu', 'badge names the language');
-    eq(await page.evaluate(() => window.__hl.length), 0, 'no word-by-word lighting for another language');
+    await page.waitForTimeout(1500);
+    const litBefore = await page.evaluate(() => window.__hl.map((h) => h.text));
+    assert(litBefore.length >= 2, `words lit before the pause (${litBefore})`);
     await page.getByTestId('pause').click();
     await page.waitForFunction(() => window.__log.clips.every((c) => c.end != null), null, { timeout: 1000 });
     const stopped = await page.evaluate(() => window.__log.clips[window.__log.clips.length - 1]);
-    assert(stopped.end - stopped.start < 1500, `clip stopped at once (${stopped.end - stopped.start} ms)`);
+    const heard = stopped.end - stopped.start;
+    assert(heard > 1200 && heard < 2000, `clip stopped at once (${heard} ms)`);
     await page.waitForTimeout(800);
     const n = (await realClips(page)).length;
     eq(await page.evaluate(() => window.__log.clips.filter((c) => c.end == null).length), 0, 'nothing plays while paused');
+    const hlPaused = await page.evaluate(() => window.__hl.length);
     await page.getByTestId('pause').click();
     await page.waitForFunction((n) => window.__log.clips.filter((c) => c.end == null || c.end - c.start > 300).length > n, n, { timeout: 3000 });
     await waitState(page, 1, 'done', 8000);
     const last = (await realClips(page)).pop();
-    assert(last.end - last.start > 2600, `the part played again from the start (${last.end - last.start} ms)`);
+    const from = last.offset * 1000;
+    // Back a little (~0.8 s, to the start of a word), not from the very beginning.
+    assert(from > heard - 1500 && from < heard - 300, `carried on from ${Math.round(from)} ms, having stopped at ${heard} ms`);
+    assert(Math.abs(last.end - last.start - (MAIN - from)) < 400, `played the rest of the clip (${last.end - last.start} ms from ${Math.round(from)} ms)`);
+    // The words pick up where the voice does: the first word lit after play is one from before the pause, not the first word.
+    const resumed = await page.evaluate((k) => window.__hl.slice(k).map((h) => h.text), hlPaused);
+    assert(resumed.length && resumed[0] !== 'Test,', `highlighting carried on mid-page (${resumed})`);
+    eq(await page.evaluate(() => [...document.querySelectorAll('[data-testid=page-text] .sb-word')].filter((w) => !w.classList.contains('is-read')).map((w) => w.textContent)), [], 'every word read by the end');
     noErrors(errors, 'reading pause');
+    await context.close();
+  });
+
+  await step('recorded reading: a clip that ends before the estimate still marks every word read', async () => {
+    // nolength=1: the clip's length can't be measured, so the plain estimate (longer than the clip) is used.
+    const { page, context, errors } = await openHarness(browser, 'test=1&reading=tone&mainMs=1500&afterMs=600&nolength=1&page=2');
+    await waitState(page, 2, 'waiting', 10000);
+    await page.waitForFunction(() => window.__log.clips.length && window.__log.clips.every((c) => c.end != null), null, { timeout: 8000 });
+    await page.waitForTimeout(100);
+    const unread = () => page.evaluate(() => [...document.querySelectorAll('[data-testid=page-text] .sb-word')].filter((w) => !w.classList.contains('is-read')).map((w) => w.textContent));
+    eq(await page.getByTestId('page-text').getAttribute('data-part'), 'prompt', 'the prompt shows once the clip has ended');
+    eq(await unread(), [], 'every prompt word marked read');
+    eq((await played(page)).filter((t) => /shirt|flap/.test(t)), [], 'still no computer voice');
+    await control(page).focus();
+    await page.keyboard.press('Enter');
+    await waitState(page, 2, 'done', 10000);
+    eq(await page.getByTestId('page-text').getAttribute('data-part'), 'after', 'after lines');
+    eq(await unread(), [], 'every "after" word marked read');
+    noErrors(errors, 'short clip');
+    await context.close();
+  });
+
+  await step('recorded reading in another language: no word-by-word lighting, the line glows, the badge says so', async () => {
+    const { page, context, errors } = await openHarness(browser, `test=1&reading=tone&mainMs=2600&afterMs=900&lang=Urdu&reader=Nana&label=${encodeURIComponent('Read by Nana in Urdu')}`);
+    await page.waitForFunction(() => window.__log.clips.some((c) => c.end == null), null, { timeout: 8000 });
+    await page.waitForTimeout(300);
+    eq(await page.getByTestId('reading-badge-band').textContent(), 'Read by Nana in Urdu', 'badge text from reading.label');
+    const during = await page.evaluate(() => ({
+      whole: document.querySelector('[data-testid=page-text]').hasAttribute('data-whole-line'),
+      active: [...document.querySelectorAll('[data-testid=page-text] .sb-r-line')].findIndex((l) => l.classList.contains('is-active-line')),
+      glow: getComputedStyle(document.querySelector('[data-testid=page-text] .sb-r-line.is-active-line')).backgroundColor,
+    }));
+    assert(during.whole && during.active === 0, `the first line glows while Nana reads (${JSON.stringify(during)})`);
+    assert(during.glow !== 'rgba(0, 0, 0, 0)', `a soft glow behind the line (${during.glow})`);
+    await shot(page, 'reading-urdu-line');
+    await page.waitForFunction(() => document.querySelectorAll('[data-testid=page-text] .sb-r-line')[1]?.classList.contains('is-active-line'), null, { timeout: 4000 });
+    await waitState(page, 1, 'done', 8000);
+    eq(await page.evaluate(() => window.__hl.length), 0, 'no word-by-word lighting for another language');
+    eq(await page.evaluate(() => document.querySelectorAll('[data-testid=page-text] .sb-word.is-read').length), 0, 'no words marked as read either');
+    eq(await page.getByTestId('page-text').getAttribute('data-whole-line'), null, 'the glow goes when the clip ends');
+    noErrors(errors, 'reading in Urdu');
     await context.close();
   });
 
@@ -918,17 +967,202 @@ try {
     }
   });
 
-  // Smoke test of the real book: every page whose scene the illustrators have
+  // ---- Round 3: the letter game, accessibility settings ---------------------------------
+
+  await step('end page: "Find Ava\'s letter" hands over to the letter game when the app offers it', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&letters=1&page=8&name=Ava');
+    await waitState(page, 8, 'done');
+    const pill = page.getByTestId('letter-game');
+    await pill.waitFor({ state: 'visible', timeout: 5000 });
+    eq((await pill.textContent()).trim(), "Find Ava's letter", 'pill text');
+    await page.waitForTimeout(900); // the pills pop in
+    const boxes = await page.evaluate(() => ['read-again', 'goodnight', 'letter-game'].map((id) => {
+      const r = document.querySelector(`[data-testid=${id}]`).getBoundingClientRect();
+      return { id, h: Math.round(r.height), inView: r.left >= 0 && r.right <= innerWidth && r.bottom <= innerHeight };
+    }));
+    for (const b of boxes) assert(b.h >= 56 && b.inView, `${b.id}: big and on screen (${JSON.stringify(b)})`);
+    await shot(page, 'end-letters-portrait');
+    await pill.click();
+    eq(await page.evaluate(() => window.__log.letters), 1, 'onLetters() called');
+    await pill.focus();
+    await page.keyboard.press('Enter');
+    eq(await page.evaluate(() => window.__log.letters), 2, 'works from the keyboard');
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.waitForTimeout(300);
+    const inView = await page.evaluate(() => {
+      const r = document.querySelector('[data-testid=letter-game]').getBoundingClientRect();
+      return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && document.scrollingElement.scrollWidth <= innerWidth;
+    });
+    assert(inView, 'landscape: the three pills fit on screen');
+    await shot(page, 'end-letters-landscape');
+    noErrors(errors, 'letter pill');
+    await context.close();
+
+    // No onLetters from the app: no pill.
+    const b = await openHarness(browser, 'test=1&page=8');
+    await waitState(b.page, 8, 'done');
+    await b.page.waitForTimeout(400);
+    eq(await b.page.getByTestId('letter-game').isVisible(), false, 'not offered without onLetters');
+    noErrors(b.errors, 'no letter pill');
+    await b.context.close();
+
+    // Siblings: their letters; siblings who share a letter: one letter.
+    for (const [sibs, label] of [['Amara,Zak', "Find Amara and Zak's letters"], ['Amara,Ava', "Find Amara and Ava's letter"]]) {
+      const c = await openHarness(browser, `test=1&letters=1&page=8&sibs=${sibs}`);
+      await waitState(c.page, 8, 'done');
+      await c.page.getByTestId('letter-game').waitFor({ state: 'visible', timeout: 5000 });
+      eq((await c.page.getByTestId('letter-game').textContent()).trim(), label, `siblings ${sibs}`);
+      noErrors(c.errors, `letter pill ${sibs}`);
+      await c.context.close();
+    }
+
+    // A first letter this device can't draw (e.g. no font for it): the game isn't offered.
+    const d = await openHarness(browser, `test=1&letters=1&page=8&name=${encodeURIComponent('小明')}`);
+    await waitState(d.page, 8, 'done');
+    await d.page.waitForTimeout(500);
+    const can = await d.page.evaluate(async () => (await import('/js/activities/letter-trace.js')).letterTraceAvailable({ display: '小明' }));
+    eq(await d.page.getByTestId('letter-game').isVisible(), can, `offered only when the letter can be drawn (${can})`);
+    noErrors(d.errors, 'letter pill CJK');
+    await d.context.close();
+  });
+
+  await step('bedtime: the letter game is offered but never opens by itself; spoken extras are slower too', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&bedtime=1&letters=1&page=8&name=Ava');
+    await waitState(page, 8, 'done');
+    await page.getByTestId('letter-game').waitFor({ state: 'visible', timeout: 5000 });
+    await shot(page, 'bedtime-end-letters');
+    // The lights go down as usual, and the game doesn't open.
+    await page.getByTestId('night').waitFor({ state: 'visible', timeout: 8000 });
+    await page.waitForTimeout(1500);
+    eq(await page.evaluate(() => window.__log.letters), 0, 'never opened by itself');
+    await page.getByTestId('night').click();
+    await page.getByTestId('letter-game').waitFor({ state: 'visible' });
+    await page.getByTestId('letter-game').click();
+    eq(await page.evaluate(() => window.__log.letters), 1, 'a tap opens it');
+    await page.waitForTimeout(800);
+    eq(await reader(page).evaluate((r) => r.classList.contains('is-lights-out')), false, 'no lights-out behind the game');
+    noErrors(errors, 'bedtime letter pill');
+    await context.close();
+
+    // "That says Ava!" and a tapped word use the bedtime pace as well.
+    const b = await openHarness(browser, 'test=1&scale=0.4&bedtime=1&name=Ava');
+    await waitState(b.page, 1, 'done', 10000);
+    await b.page.getByTestId('pause').click(); // hold the automatic turn
+    const nb = await b.page.locator('[data-testid=scene] #p1-name').boundingBox();
+    await b.page.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
+    await b.page.waitForFunction(() => window.__log.speakOpts.length === 1, null, { timeout: 3000 });
+    await b.page.waitForTimeout(1500); // a tapped word never talks over the name being said
+    await b.page.locator('[data-testid=page-text] .sb-word', { hasText: 'Starring' }).click();
+    await b.page.waitForFunction(() => window.__log.speakOpts.length === 2, null, { timeout: 3000 });
+    eq(await b.page.evaluate(() => window.__log.speakOpts), [{ text: 'That says Ava!', rateScale: 0.9 }, { text: 'Starring', rateScale: 0.9 }], 'slower at bedtime');
+    noErrors(b.errors, 'bedtime speech rate');
+    await b.context.close();
+  });
+
+  await step('easy read and high contrast: bigger, spaced-out words; darker text, stronger outlines (phone both ways)', async () => {
+    for (const [label, viewport] of [['portrait', { width: 390, height: 844 }], ['landscape', { width: 844, height: 390 }]]) {
+      const plain = await openHarness(browser, 'test=1&page=6&name=Maximilian', { viewport });
+      await waitState(plain.page, 6, 'waiting');
+      const base = await plain.page.evaluate(() => {
+        const cs = getComputedStyle(document.querySelector('[data-testid=page-text]'));
+        return { size: parseFloat(cs.fontSize), letter: cs.letterSpacing };
+      });
+      await plain.context.close();
+
+      const { page, context, errors } = await openHarness(browser, 'test=1&page=6&name=Maximilian&easy=1', { viewport });
+      await waitState(page, 6, 'waiting');
+      await page.waitForTimeout(300);
+      const easy = await page.evaluate(() => {
+        const t = document.querySelector('[data-testid=page-text]');
+        const cs = getComputedStyle(t);
+        const px = (v) => parseFloat(v) || 0;
+        return {
+          size: px(cs.fontSize),
+          letter: px(cs.letterSpacing) / px(cs.fontSize),
+          word: px(cs.wordSpacing) / px(cs.fontSize),
+          line: px(cs.lineHeight) / px(cs.fontSize),
+          align: cs.textAlign,
+          justified: [...document.querySelectorAll('.sb-reader *')].some((e) => getComputedStyle(e).textAlign === 'justify'),
+          scrollW: document.scrollingElement.scrollWidth,
+          w: innerWidth,
+        };
+      });
+      assert(easy.size >= base.size * 1.05, `${label}: easy read is bigger (${easy.size} vs ${base.size})`);
+      assert(easy.letter >= 0.05 && easy.word >= 0.1 && easy.line >= 1.45, `${label}: more letter/word/line space (${JSON.stringify(easy)})`);
+      assert(!easy.justified && easy.align !== 'justify', `${label}: never justified (${easy.align})`);
+      assert(easy.scrollW <= easy.w, `${label}: no sideways scroll`);
+      await shot(page, `a11y-easy-read-${label}`);
+      noErrors(errors, `easy read ${label}`);
+      await context.close();
+
+      const hc = await openHarness(browser, 'test=1&page=6&name=Maximilian&contrast=high', { viewport });
+      await waitState(hc.page, 6, 'waiting');
+      await hc.page.waitForTimeout(300);
+      const high = await hc.page.evaluate(() => {
+        const r = document.querySelector('[data-testid=reader]');
+        const cs = getComputedStyle(r);
+        const btn = getComputedStyle(document.querySelector('[data-testid=replay]'));
+        const prompt = getComputedStyle(document.querySelector('.sb-r-prompt'));
+        return { color: cs.color, bgImage: cs.backgroundImage, bg: cs.backgroundColor, btnBorder: parseFloat(btn.borderTopWidth), btnColour: btn.borderTopColor, promptBorder: parseFloat(prompt.borderTopWidth), scrollW: document.scrollingElement.scrollWidth, w: innerWidth };
+      });
+      eq([high.color, high.bgImage, high.bg], ['rgb(0, 0, 0)', 'none', 'rgb(255, 255, 255)'], `${label}: black text on plain white`);
+      assert(high.btnBorder >= 4 && high.btnColour === 'rgb(0, 0, 0)' && high.promptBorder >= 4, `${label}: stronger outlines (${JSON.stringify(high)})`);
+      assert(high.scrollW <= high.w, `${label}: no sideways scroll (high contrast)`);
+      await shot(hc.page, `a11y-high-contrast-${label}`);
+      // A word being read and the name in the text get a solid outline.
+      await hc.page.evaluate(() => window.__reader.goTo(1));
+      await hc.page.waitForFunction(() => document.querySelector('.sb-word.is-name'));
+      const name = await hc.page.evaluate(() => {
+        const cs = getComputedStyle(document.querySelector('.sb-word.is-name'));
+        return { colour: cs.color, deco: cs.textDecorationStyle, line: cs.textDecorationColor };
+      });
+      eq(name, { colour: 'rgb(158, 11, 48)', deco: 'solid', line: 'rgb(0, 0, 0)' }, `${label}: the name is dark red with a solid black underline`);
+      noErrors(hc.errors, `high contrast ${label}`);
+      await hc.context.close();
+
+      // Both at once, at bedtime, with the end page's three pills.
+      const both = await openHarness(browser, 'test=1&page=8&name=Maximilian&easy=1&contrast=high&bedtime=1&letters=1', { viewport });
+      await waitState(both.page, 8, 'done');
+      await both.page.getByTestId('letter-game').waitFor({ state: 'visible', timeout: 5000 });
+      await both.page.waitForTimeout(300);
+      const night = await both.page.evaluate(() => ({ colour: getComputedStyle(document.querySelector('[data-testid=reader]')).color, scrollW: document.scrollingElement.scrollWidth, w: innerWidth }));
+      eq(night.colour, 'rgb(255, 248, 232)', `${label}: bright words at bedtime in high contrast`);
+      assert(night.scrollW <= night.w, `${label}: no sideways scroll (both)`);
+      await shot(both.page, `a11y-both-bedtime-end-${label}`);
+      noErrors(both.errors, `easy read + high contrast ${label}`);
+      await both.context.close();
+    }
+  });
+
+  // Smoke test of the real books: every page whose scene the illustrators have
   // delivered opens, its mechanism completes, and the name appears in the art.
-  const realDir = path.join(ROOT, 'books/tiffin-football');
-  const draft = existsSync(path.join(realDir, 'book.draft.json')) ? JSON.parse(readFileSync(path.join(realDir, 'book.draft.json'), 'utf8')) : null;
-  const ready = (draft?.pages ?? []).filter((p) => existsSync(path.join(realDir, p.scene)));
-  if (process.env.REAL_BOOK !== '0' && ready.length) {
-    await step(`real book: ${ready.length}/${draft.pages.length} pages open, mechanisms complete, names in the art`, async () => {
+  const REAL_BOOKS = (process.env.REAL_BOOKS ?? 'tiffin-football,tiffin-digger').split(',').filter(Boolean);
+  for (const bookId of process.env.REAL_BOOK === '0' ? [] : REAL_BOOKS) {
+    const realDir = path.join(ROOT, 'books', bookId);
+    const draft = existsSync(path.join(realDir, 'book.draft.json')) ? JSON.parse(readFileSync(path.join(realDir, 'book.draft.json'), 'utf8')) : null;
+    const ready = (draft?.pages ?? []).filter((p) => existsSync(path.join(realDir, p.scene)));
+    if (!ready.length) {
+      console.log(`  skip real book ${bookId} (no scenes yet)`);
+      continue;
+    }
+    // The built book.json must match the draft plus its page fragments (tools/build-book.mjs was run).
+    await step(`real book ${bookId}: book.json is up to date with the draft and page fragments`, async () => {
+      const built = JSON.parse(readFileSync(path.join(realDir, 'book.json'), 'utf8'));
+      const merged = JSON.parse(JSON.stringify(draft));
+      for (const page of merged.pages) {
+        const f = path.join(realDir, 'pages', `p${page.n}.json`);
+        if (!existsSync(f)) continue;
+        const patch = JSON.parse(readFileSync(f, 'utf8'));
+        for (const key of ['text', 'prompt', 'after', 'n', 'kind']) delete patch[key];
+        Object.assign(page, patch);
+      }
+      eq(built, merged, `${bookId}/book.json (run: node tools/build-book.mjs ${bookId})`);
+    });
+    await step(`real book ${bookId}: ${ready.length}/${draft.pages.length} pages open, mechanisms complete, names in the art`, async () => {
       for (const viewport of [{ width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 844, height: 390 }]) {
         // merge=1: the draft plus the illustrators' page fragments, exactly what
         // tools/build-book.mjs produces, so this works before the build step too.
-        const { page, context, errors } = await openHarness(browser, `test=1&book=tiffin-football&merge=1&name=Siobh%C3%A1n&page=${ready[0].n}`, { viewport });
+        const { page, context, errors } = await openHarness(browser, `test=1&book=${bookId}&merge=1&name=Siobh%C3%A1n&page=${ready[0].n}`, { viewport });
         for (const p of ready) {
           if (p.n !== ready[0].n) {
             await page.evaluate((n) => window.__reader.goTo(n), p.n);
@@ -943,35 +1177,40 @@ try {
             { timeout: 15000 },
           ).then((h) => h.jsonValue()).then((s) => s === 'waiting');
           await page.waitForTimeout(250);
-          await shot(page, `real-${viewport.width}-p${p.n}-before`);
+          await shot(page, `real-${bookId}-${viewport.width}-p${p.n}-before`);
           if (hasControl) {
             await control(page).focus();
             await page.keyboard.press('Enter');
           }
           await waitState(page, p.n, 'done', 15000);
           await page.waitForTimeout(700);
-          await shot(page, `real-${viewport.width}-p${p.n}-after`);
+          await shot(page, `real-${bookId}-${viewport.width}-p${p.n}-after`);
           const names = await page.evaluate(() =>
             [...document.querySelectorAll('[data-testid=scene] text.sb-name')]
               .filter((t) => t.closest('[display=none]') === null)
               .map((t) => t.textContent),
           );
+          assert(names.length > 0, `page ${p.n}: the name is somewhere in the picture`);
           for (const t of names) assert(/Siobh[aá]n|SIOBH[AÁ]N/.test(t), `page ${p.n}: name slot shows "${t}"`);
           const letters = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] .sb-letter')].map((t) => t.textContent).join(''));
           if (letters) eq(letters, 'SIOBHÁN', `page ${p.n}: bunting letters`);
+          // The page's sounds are ones the app can make (no silent stand-ins).
+          const sounds = [p.sfx?.open, ...(p.mechanic?.complete?.sfx ?? [])].filter(Boolean);
+          const known = await page.evaluate(async () => (await import('/js/audio/sfx.js')).SFX_NAMES);
+          for (const x of sounds) assert(known.includes(x), `page ${p.n}: unknown sound "${x}"`);
         }
         // Pages without a mechanism may have no fragment, and neighbours may not be drawn yet: those 404s are expected.
         const unexpected = page.__missing.filter((x) => !/\/pages\/p\d+\.json$|\/scenes\/p\d+\.svg$/.test(x));
         eq(unexpected, [], 'no other missing files');
-        noErrors(errors.filter((e) => !/status of 404/.test(e)), `real book ${viewport.width}x${viewport.height}`);
+        noErrors(errors.filter((e) => !/status of 404/.test(e)), `real book ${bookId} ${viewport.width}x${viewport.height}`);
         await context.close();
       }
     });
-    await step('real book: tricky names fit every name spot (shrink, wrap, overflow banner)', async () => {
+    await step(`real book ${bookId}: tricky names fit every name spot (shrink, wrap, overflow banner)`, async () => {
       // The last "name" is three children reading together ("AMARA & ZAK & LI" in the art).
       for (const name of ['Maximilian', 'Anna-Sophia', 'Xiao Ming', '小明', 'Bo', 'sibs:Amara,Zak,Li']) {
         const who = name.startsWith('sibs:') ? `sibs=${encodeURIComponent(name.slice(5))}` : `name=${encodeURIComponent(name)}`;
-        const { page, context, errors } = await openHarness(browser, `test=1&book=tiffin-football&merge=1&${who}&page=${ready[0].n}`, { viewport: { width: 1024, height: 768 } });
+        const { page, context, errors } = await openHarness(browser, `test=1&book=${bookId}&merge=1&${who}&page=${ready[0].n}`, { viewport: { width: 1024, height: 768 } });
         for (const p of ready) {
           if (p.n !== ready[0].n) await page.evaluate((n) => window.__reader.goTo(n), p.n);
           const st = await page.waitForFunction(
@@ -1000,14 +1239,12 @@ try {
             for (const t of art) assert(/AMARA ?& ?ZAK ?& ?LI|Amara ?& ?Zak ?& ?Li/.test(t), `siblings: page ${p.n} art shows "${t}"`);
             eq(await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] .sb-letter')].map((t) => t.textContent).join('')), '', `siblings: page ${p.n} bunting uses the banner`);
           }
-          if (name !== 'Bo') await shot(page, `real-names-${encodeURIComponent(name)}-p${p.n}`);
+          if (name !== 'Bo') await shot(page, `real-${bookId}-names-${encodeURIComponent(name)}-p${p.n}`);
         }
-        noErrors(errors.filter((e) => !/status of 404/.test(e)), `real book names (${name})`);
+        noErrors(errors.filter((e) => !/status of 404/.test(e)), `real book ${bookId} names (${name})`);
         await context.close();
       }
     });
-  } else {
-    console.log('  skip real book smoke test (no scenes yet or REAL_BOOK=0)');
   }
 } finally {
   await browser.close().catch(() => {});

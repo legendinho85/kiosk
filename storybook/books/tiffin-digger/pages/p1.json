@@ -1,6 +1,6 @@
 {
   "sfx": {
-    "open": "drum"
+    "open": "beep"
   },
   "mechanic": {
     "type": "none"

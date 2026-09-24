@@ -112,6 +112,20 @@ test('layoutName shrinks long single names and wraps very long double names', ()
   close(fixed.fontSize, 5);
 });
 
+test('layoutName re-measures at the chosen size (screen text does not shrink exactly in proportion)', () => {
+  // Like a phone drawing a scene small: widths get relatively wider as the size drops.
+  const nonLinear = (t, s) => t.length * s * 0.6 * (1 + (46 - s) * 0.012);
+  const l = layoutName({ text: "Oluwaseun's", fontSize: 46, maxWidth: 220, measure: nonLinear });
+  assert.ok(nonLinear("Oluwaseun's", l.fontSize) <= 220 * 1.002, `fits: ${nonLinear("Oluwaseun's", l.fontSize)} at ${l.fontSize}`);
+  assert.ok(l.fontSize > 46 * MIN_SCALE);
+  // Two lines are checked the same way.
+  const two = layoutName({ text: 'ANNA-SOPHIA', fontSize: 80, maxWidth: 220, wrap: true, measure: (t, s) => t.length * s * 0.62 * (1 + (80 - s) * 0.01) });
+  assert.equal(two.lines.length, 2);
+  for (const line of two.lines) assert.ok(line.length * two.fontSize * 0.62 * (1 + (80 - two.fontSize) * 0.01) <= 220 * 1.002, `${line} fits`);
+  // A proportional measure is unchanged by the check.
+  close(layoutName({ text: 'AB', fontSize: 10, maxWidth: 50, measure: (t, s) => t.length * s * 5 }).fontSize, 5);
+});
+
 test('layoutName handles non-Latin names', () => {
   const l = layoutName({ text: '小明', fontSize: 64, maxWidth: 320 });
   assert.deepEqual(l.lines, ['小明']);

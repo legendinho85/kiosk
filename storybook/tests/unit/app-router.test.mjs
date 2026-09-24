@@ -13,6 +13,11 @@ const routes = [
   { path: '/settings', name: 'settings' },
   { path: '/qr/:book', name: 'qr' },
   { path: '/print/:book', name: 'print' },
+  { path: '/stickers/:book', name: 'stickers' },
+  { path: '/b/:book/letters', name: 'letters' },
+  { path: '/b/:book/record', name: 'record' },
+  { path: '/b/:book/gift', name: 'gift' },
+  { path: '/open', name: 'open' },
 ];
 const nameOf = (hash) => matchRoute(routes, hash)?.route.name ?? null;
 
@@ -43,6 +48,23 @@ test('every contract route matches with its params', () => {
   assert.equal(nameOf('#/settings/'), 'settings');
   assert.deepEqual(matchRoute(routes, '#/qr/tiffin-football').params, { book: 'tiffin-football' });
   assert.equal(nameOf('#/print/tiffin-football'), 'print');
+  // Round 2 and 3 routes, for either book.
+  assert.deepEqual(matchRoute(routes, '#/stickers/tiffin-digger?from=qr').params, { book: 'tiffin-digger' });
+  assert.equal(matchRoute(routes, '#/stickers/tiffin-digger?from=qr').query.from, 'qr');
+  assert.equal(nameOf('#/b/tiffin-digger/letters'), 'letters');
+  assert.equal(nameOf('#/b/tiffin-digger/record'), 'record');
+  assert.equal(nameOf('#/b/tiffin-digger/gift'), 'gift');
+  assert.equal(nameOf('#/b/tiffin-digger/read/2'), 'read');
+  assert.equal(nameOf('#/open'), 'open');
+  assert.equal(nameOf('#/stickers'), null);
+});
+
+test('main.js registers every route (contract §8, §11, §12)', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../../js/main.js', import.meta.url), 'utf8');
+  for (const path of ['/', '/b/:book', '/b/:book/name', '/b/:book/say', '/b/:book/read/:page', '/b/:book/magic/:page', '/settings', '/qr/:book', '/print/:book', '/b/:book/record', '/b/:book/gift', '/open', '/stickers/:book', '/b/:book/letters']) {
+    assert.ok(src.includes(`path: '${path}'`), `route ${path}`);
+  }
 });
 
 test('unknown paths and extra segments do not match', () => {

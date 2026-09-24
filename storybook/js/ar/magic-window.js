@@ -20,7 +20,7 @@
 // with import() so a missing module shows a friendly message, not an error.
 
 import { bookUrl } from '../core/book.js';
-import { blobs } from '../core/storage.js';
+import { prefs, blobs } from '../core/storage.js';
 import { fillTemplate } from '../core/personalise.js';
 import { planLines } from '../narrator/plan.js';
 
@@ -896,25 +896,49 @@ export async function mountMagicWindow(root, opts = {}) {
     saveTimer = setTimeout(saveAlign, 400);
   }
 
+  // The fit is a few numbers per book, kept with the other small per-device
+  // preferences (storage.js prefs: localStorage, or memory when that's blocked).
+  const alignKey = `magic-align:${bookId}`;
   function saveAlign() {
     clearTimeout(saveTimer);
     saveTimer = 0;
     alignStore = writeAlignStore(alignStore, orientation, align);
-    // blobs.put falls back to memory and never throws; the catch is belt and braces.
-    Promise.resolve()
-      .then(() => blobs.put(`magic-align:${bookId}`, alignStore))
-      .catch(() => {});
+    try {
+      prefs.set(alignKey, alignStore);
+    } catch {
+      /* memory only: the fit lasts until the page is closed */
+    }
   }
 
   async function loadAlign() {
+    let raw = null;
     try {
-      const raw = await blobs.get(`magic-align:${bookId}`);
-      alignStore = raw && typeof raw === 'object' ? raw : null;
+      raw = prefs.get(alignKey, null);
     } catch {
-      alignStore = null;
+      raw = null;
     }
+    if (!raw || typeof raw !== 'object') raw = await migrateAlign();
+    alignStore = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : null;
     align = readAlignStore(alignStore, orientation) ?? { ...DEFAULT_ALIGN };
     applyAlign();
+  }
+
+  /**
+   * Earlier versions kept the fit in the blob store, next to the recordings.
+   * Read it once, move it to prefs and tidy up the old copy.
+   */
+  async function migrateAlign() {
+    try {
+      const old = await blobs.get(alignKey);
+      if (!old || typeof old !== 'object' || Array.isArray(old) || (typeof Blob === 'function' && old instanceof Blob)) return null;
+      prefs.set(alignKey, old);
+      Promise.resolve()
+        .then(() => blobs.delete(alignKey))
+        .catch(() => {});
+      return old;
+    } catch {
+      return null;
+    }
   }
 
   function setAligning(on, { ghost: withGhost = null } = {}) {

@@ -43,7 +43,7 @@
       "prompt": "",
       "after": [],
       "sfx": {
-        "open": "drum"
+        "open": "beep"
       },
       "mechanic": {
         "type": "none"
@@ -104,7 +104,7 @@
         "Rumble, rumble, beep, beep, beep!"
       ],
       "sfx": {
-        "open": "drum"
+        "open": "rumble"
       },
       "mechanic": {
         "type": "pull-tab"

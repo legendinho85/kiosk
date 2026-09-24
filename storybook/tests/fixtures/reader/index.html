@@ -4,9 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Reader harness</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+  <!-- The app's own self-hosted fonts (no request leaves for Google). -->
+  <link rel="stylesheet" href="../../../css/fonts.css">
   <link rel="stylesheet" href="../../../css/reader.css">
   <style>
     html, body { margin: 0; height: 100%; background: #FFF8EC; }
@@ -22,7 +21,9 @@
       autoTurn=1  highlight=0  prompts=0  stub=1 (force the stub narrator/sfx)  idle=<ms> (re-prompt delay)  gate=1|0 (force/skip "Tap to start")
       bedtime=1  sibs=Amara,Zak (reading together)
       reading=mic|tone (a recorded reading: WAV clips from the fake microphone or a tone)  parts=all|1:main,2:after
-        mainMs=2000  afterMs=1200  reader=Grandma Rose  lang=<language>  broken=3:main (a part that isn't audio)
+        mainMs=2000  afterMs=1200  reader=Grandma Rose  lang=<language>  label=<badge text>  broken=3:main (a part that isn't audio)
+        nolength=1 (the reader can't measure clips, so its estimate may outlast them)
+      letters=1 (offer the letter game at the end)  easy=1 (html[data-easy-read])  contrast=high (html[data-contrast])
   -->
   <main id="app"></main>
   <script type="module" src="./harness.js"></script>

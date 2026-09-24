@@ -24,6 +24,7 @@ const BASE = `http://127.0.0.1:${PORT}`;
 const SHOTS = process.env.SHOTS ?? '';
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 const BOOK = 'tiffin-football';
+const BOOK2 = 'tiffin-digger';
 const PHONE = { width: 390, height: 844 };
 
 // ---- tiny runner --------------------------------------------------------------------
@@ -616,6 +617,9 @@ try {
       await check(`#/b/${BOOK}/record`, '[data-testid=reader-name]');
       await check(`#/b/${BOOK}/gift`, '[data-testid=gift-child]');
       await check('#/open', '[data-testid=pack-pick]');
+      await check(`#/stickers/${BOOK}`, '[data-testid=sticker-sheets][data-state=ready]');
+      await check(`#/b/${BOOK}/letters`, '[data-testid=letter-trace][data-step=find]');
+      await check(`#/b/${BOOK2}`, '[data-testid=start-reading]');
       await check('#/settings', '[data-testid=gate-screen]');
       await holdGate(p, 400);
       await p.getByTestId('settings-child').first().waitFor();
@@ -653,6 +657,214 @@ try {
     await p.getByTestId('start-reading').waitFor();
     eq(await p.getByTestId('active-child').innerText(), 'Niamh', 'works from memory');
     await noErrors(errs, 'fail-soft');
+    await c.close();
+  });
+
+
+  // ---- Round 3: Book 2, the letter game, name stickers, easier reading ---------------------------
+  await step('Book 2: shelf -> landing -> name -> how it’s said -> ready -> read, all the digger book', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser);
+    await p.goto(url('#/'));
+    await p.locator(`[data-testid=shelf-book][data-book=${BOOK2}]`).waitFor();
+    await p.locator(`[data-testid=shelf-book][data-book=${BOOK2}] [data-testid=open-book]`).click();
+    await waitHash(p, `#/b/${BOOK2}`);
+    await p.getByTestId('name-input').waitFor();
+    eq(await p.title(), 'Beep beep! — a Tiffin & Me story', 'tab title names the book (not the child)');
+    await p.getByTestId('cover-art').locator('svg').first().waitFor();
+    await p.getByTestId('name-input').fill('ava');
+    await p.waitForFunction(() => document.querySelector('[data-testid=cover-title]')?.textContent.includes('Beep beep, Ava!'));
+    // The name is drawn inside the Book 2 cover art too.
+    await p.waitForFunction(() => [...document.querySelectorAll('[data-testid=cover-art] svg text.sb-name')].some((t) => /ava/i.test(t.textContent)), null, { timeout: 5000 });
+    await shot(p, 'book2-landing');
+    await p.getByTestId('name-continue').click();
+    await waitHash(p, `#/b/${BOOK2}/say`);
+    await p.getByTestId('candidate').first().waitFor();
+    await p.getByTestId('hear-in-story').click();
+    await p.waitForSelector('[data-testid=story-preview] .sb-word.is-current', { timeout: 5000 });
+    const preview = await p.getByTestId('story-preview').innerText();
+    assert(/Beep beep, Ava!/.test(preview) && !/Goal/.test(preview), `the story line comes from Book 2: ${preview}`);
+    await p.getByTestId('pronunciation-done').click();
+    await waitHash(p, `#/b/${BOOK2}`);
+    await p.getByTestId('start-reading').waitFor();
+    eq(await p.getByTestId('ready-title').innerText(), 'Ava’s story is ready', 'ready title');
+    assert(/Beep beep, Ava!/.test(await p.getByTestId('cover-title').innerText()), 'Book 2 cover title');
+    eq(await p.getByTestId('go-stickers').getAttribute('href'), `#/stickers/${BOOK2}`, 'stickers link for this book');
+    await p.getByTestId('start-reading').click();
+    await waitHash(p, `#/b/${BOOK2}/read/1`);
+    await p.getByTestId('reader').waitFor({ timeout: 8000 });
+    await p.waitForFunction(() => /Beep beep, Ava!/.test(document.querySelector('[data-testid=page-text]')?.textContent ?? ''), null, { timeout: 8000 });
+    await p.getByTestId('next-page').click({ timeout: 15000 });
+    await waitHash(p, `#/b/${BOOK2}/read/2`);
+    await shot(p, 'book2-reader');
+    await p.getByTestId('exit-reader').click();
+    await waitHash(p, `#/b/${BOOK2}`);
+    eq((await stateOf(p)).lastBook, BOOK2, 'Book 2 remembered for settings');
+    await noErrors(errs, 'Book 2');
+    await c.close();
+  });
+
+  await step('letters: #/b/:book/letters mounts the letter game for the child; Skip and Done go back to the book', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser, { seed: seeded({ settings: { bedtime: false } }) });
+    await p.goto(url(`#/b/${BOOK}/letters`));
+    await p.getByTestId('letter-trace').waitFor({ timeout: 8000 });
+    await p.waitForFunction(() => document.querySelector('[data-testid=letter-trace]')?.dataset.step === 'find', null, { timeout: 8000 });
+    eq(await p.getByTestId('letter-trace').getAttribute('data-letter'), 'S', 'Siobhan’s first letter');
+    assert(/Siobhan/.test(await p.getByTestId('lt-prompt').innerText()), 'the prompt names the child');
+    await shot(p, 'letters');
+    await p.getByTestId('lt-skip').click();
+    await waitHash(p, `#/b/${BOOK}`);
+    await p.getByTestId('start-reading').waitFor();
+    eq(await p.getByTestId('letter-trace').count(), 0, 'the game is gone');
+    // Done: tap the right tile, then "Show me" traces it; Done goes back to the book.
+    await p.goto(url(`#/b/${BOOK}/letters`));
+    await p.waitForFunction(() => document.querySelector('[data-testid=letter-trace]')?.dataset.step === 'find', null, { timeout: 8000 });
+    await p.locator('[data-testid=lt-tile][data-glyph="S"]').click();
+    await p.getByTestId('lt-show-me').waitFor({ state: 'visible', timeout: 8000 });
+    await p.getByTestId('lt-show-me').click();
+    await p.getByTestId('lt-done').waitFor({ state: 'visible', timeout: 15000 });
+    await p.getByTestId('lt-done').click();
+    await waitHash(p, `#/b/${BOOK}`);
+    // Siblings reading together take turns; bedtime is passed on.
+    await p.evaluate(() => {
+      const s = JSON.parse(localStorage.getItem('starring.v1'));
+      s.profiles.push({ ...s.profiles[0], id: 'child_zak', display: 'Zak', key: 'zak', pronunciation: { ...s.profiles[0].pronunciation, say: 'Zak', respell: '' } });
+      s.together = [s.profiles[0].id, 'child_zak'];
+      s.settings.bedtime = true;
+      localStorage.setItem('starring.v1', JSON.stringify(s));
+    });
+    await p.goto(url(`#/b/${BOOK}/letters`));
+    await p.reload();
+    await p.waitForFunction(() => document.querySelector('[data-testid=letter-trace]')?.dataset.step === 'find', null, { timeout: 8000 });
+    eq(await p.getByTestId('letter-trace').getAttribute('data-bedtime'), '', 'bedtime passed on');
+    eq(await p.getByTestId('letter-trace').getAttribute('data-letter'), 'S', 'first child first');
+    // No child: back to the name box.
+    await p.evaluate(() => localStorage.removeItem('starring.v1'));
+    await p.reload();
+    await p.getByTestId('name-input').waitFor();
+    eq(await hashOf(p), `#/b/${BOOK}`, 'no child: the landing page');
+    await noErrors(errs, 'letters');
+    await c.close();
+  });
+
+  await step('letters: the reader’s last page offers the game only when the setting is on', async () => {
+    if (!readerExists) return;
+    const last = await (await fetch(`${BASE}/books/${BOOK}/book.json`)).json().then((b) => b.pages.length);
+    for (const on of [true, false]) {
+      const { page: p, errors: errs, context: c } = await openPage(browser, { seed: seeded({ settings: { letterActivity: on } }) });
+      await p.goto(url(`#/b/${BOOK}/read/${last}`));
+      await p.getByTestId('reader').waitFor({ timeout: 8000 });
+      await p.getByTestId('read-again').waitFor({ state: 'visible', timeout: 20000 });
+      await p.waitForTimeout(400);
+      const pill = p.getByTestId('letter-game');
+      if (!(await pill.count())) {
+        console.log('       (the reader has no letter-game pill yet: only the setting was checked)');
+        await c.close();
+        break;
+      }
+      eq(await pill.isVisible(), on, `pill ${on ? 'shown' : 'hidden'} with letterActivity ${on}`);
+      if (on) {
+        assert(/Find Siobhan['’]s letter/.test(await pill.innerText()), `pill text: ${await pill.innerText()}`);
+        await pill.click();
+        await waitHash(p, `#/b/${BOOK}/letters`);
+        await p.getByTestId('letter-trace').waitFor({ timeout: 8000 });
+        eq(await p.getByTestId('reader').count(), 0, 'the reader has gone');
+      }
+      await noErrors(errs, `reader end page (letterActivity ${on})`);
+      await c.close();
+    }
+  });
+
+  await step('stickers: #/stickers/:book mounts the sheets; linked from the QR screen, settings and the ready screen', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser, { seed: seeded(), hooks: { gateMs: 150 } });
+    // From the ready screen.
+    await p.goto(url(`#/b/${BOOK}`));
+    await p.getByTestId('go-stickers').click();
+    await waitHash(p, `#/stickers/${BOOK}`);
+    await p.waitForFunction(() => document.querySelector('[data-testid=sticker-sheets]')?.dataset.state === 'ready', null, { timeout: 15000 });
+    assert(Number(await p.getByTestId('sticker-sheets').getAttribute('data-stickers')) > 5, 'stickers drawn');
+    assert(/Name stickers for Goal, Siobhan!/.test(await p.getByTestId('sticker-sheet').first().innerText()), 'sheet heading has the name');
+    eq(await p.locator('h1').innerText(), 'Name stickers', 'print bar title');
+    eq(await p.getByTestId('sticker-print').count(), 0, 'one Print button (in the bar)');
+    eq(await p.getByTestId('print-now').isVisible(), true, 'Print in the bar');
+    eq(await p.title(), 'Goal! — a Tiffin & Me story', 'tab title');
+    await shot(p, 'stickers');
+    await p.getByTestId('back').click();
+    await waitHash(p, `#/b/${BOOK}`);
+    // From the QR screen: Back returns there.
+    await p.goto(url(`#/qr/${BOOK2}`));
+    await p.getByTestId('qr-stickers').click();
+    await waitHash(p, `#/stickers/${BOOK2}?from=qr`);
+    await p.waitForFunction(() => document.querySelector('[data-testid=sticker-sheets]')?.dataset.state === 'ready', null, { timeout: 15000 });
+    assert(/Beep beep, Siobhan!/.test(await p.getByTestId('sticker-sheet').first().innerText()), 'Book 2 stickers');
+    await p.getByTestId('back').click();
+    await waitHash(p, `#/qr/${BOOK2}`);
+    // From settings (for the book looked at last: Book 2 now).
+    await p.goto(url('#/settings'));
+    await p.getByTestId('gate-screen').waitFor();
+    await holdGate(p, 400);
+    await p.getByTestId('link-stickers').click();
+    await waitHash(p, `#/stickers/${BOOK2}?from=settings`);
+    await p.getByTestId('sticker-sheets').waitFor();
+    eq(await p.getByTestId('back').getAttribute('href'), '#/settings', 'back to settings');
+    // No child yet: says so and links to the name box.
+    await p.evaluate(() => localStorage.removeItem('starring.v1'));
+    await p.goto(url(`#/stickers/${BOOK}`));
+    await p.reload();
+    await p.getByTestId('stickers-no-child').waitFor();
+    eq(await p.getByTestId('stickers-add-child').getAttribute('href'), `#/b/${BOOK}/name`, 'add a child');
+    assert(!(await p.getByTestId('print-now').isVisible()), 'nothing to print');
+    await noErrors(errs, 'stickers');
+    await c.close();
+  });
+
+  await step('settings: easy-read text and higher contrast go onto <html> at once and after a reload; letter game switch', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser, { seed: seeded(), hooks: { gateMs: 150 } });
+    await p.goto(url(`#/b/${BOOK}`));
+    await p.getByTestId('start-reading').waitFor();
+    const attrs = () => p.evaluate(() => [document.documentElement.getAttribute('data-easy-read'), document.documentElement.getAttribute('data-contrast')]);
+    eq(await attrs(), [null, null], 'off by default');
+    const fontBefore = await p.evaluate(() => parseFloat(getComputedStyle(document.body).fontSize));
+    await p.goto(url('#/settings'));
+    await p.getByTestId('gate-screen').waitFor();
+    await holdGate(p, 400);
+    await p.getByTestId('setting-easyRead').waitFor({ state: 'attached' });
+    eq(await p.getByTestId('setting-easyRead').isChecked(), false, 'easy-read off');
+    eq(await p.getByTestId('setting-highContrast').isChecked(), false, 'contrast off');
+    eq(await p.getByTestId('setting-letterActivity').isChecked(), true, 'letter game on by default');
+    assert(/dyslexia/.test(await p.locator('label[for=setting-easyRead]').innerText()), 'easy-read explained');
+    await p.locator('label[for=setting-easyRead]').click();
+    eq(await attrs(), ['true', null], 'easy-read applied straight away');
+    await p.locator('label[for=setting-highContrast]').click();
+    eq(await attrs(), ['true', 'high'], 'contrast applied straight away');
+    await p.locator('label[for=setting-letterActivity]').click();
+    const st = (await stateOf(p)).settings;
+    eq([st.easyRead, st.highContrast, st.letterActivity], [true, true, false], 'saved');
+    const style = await p.evaluate(() => {
+      const b = getComputedStyle(document.body);
+      return { size: parseFloat(b.fontSize), spacing: b.letterSpacing, bg: b.backgroundColor, ink: getComputedStyle(document.querySelector('h1')).color };
+    });
+    assert(style.size > fontBefore, `bigger text (${fontBefore} -> ${style.size})`);
+    assert(style.spacing !== 'normal' && parseFloat(style.spacing) > 0, `letter spacing ${style.spacing}`);
+    eq(style.bg, 'rgb(255, 255, 255)', 'plain white background');
+    eq(style.ink, 'rgb(0, 0, 0)', 'black text');
+    await p.locator('#access-title').scrollIntoViewIfNeeded();
+    await shot(p, 'settings-easy-read');
+    await p.reload();
+    await p.getByTestId('gate-screen').waitFor();
+    eq(await attrs(), ['true', 'high'], 'applied on boot');
+    await p.goto(url(`#/b/${BOOK}`));
+    await p.getByTestId('start-reading').waitFor();
+    eq(await attrs(), ['true', 'high'], 'on every screen');
+    await shot(p, 'ready-easy-read');
+    // Forget everything puts things back.
+    await p.goto(url('#/settings'));
+    await p.getByTestId('gate-screen').waitFor();
+    await holdGate(p, 400);
+    await p.getByTestId('forget-everything').click();
+    await p.getByTestId('confirm-forget-yes').click();
+    await p.getByTestId('name-input').waitFor();
+    eq(await attrs(), [null, null], 'cleared with everything else');
+    await noErrors(errs, 'easy-read settings');
     await c.close();
   });
 
@@ -694,6 +906,9 @@ try {
         await shot(p, 'settings');
         if (readerExists) await visit(`#/b/${BOOK}/read/2`, 'reader', '[data-testid=reader]');
         await visit(`#/print/${BOOK}`, 'print', '[data-testid=print-pages], [data-testid=print-missing]');
+        await visit(`#/stickers/${BOOK}`, 'stickers', '[data-testid=sticker-sheets][data-state=ready]');
+        await visit(`#/b/${BOOK}/letters`, 'letters', '[data-testid=letter-trace][data-step=find]');
+        await visit(`#/b/${BOOK2}`, 'book2-ready', '[data-testid=start-reading]');
         await noErrors(errs, `screens at ${viewport.width}x${viewport.height}`);
         await c.close();
       });

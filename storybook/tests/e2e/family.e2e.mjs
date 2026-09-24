@@ -576,6 +576,56 @@ try {
     await context.close();
   }
 
+  // ===== 4b. Home languages: Nana records Book 2 in Urdu ============================================
+  {
+    const BOOK2 = 'tiffin-digger';
+    const { page, errors, context } = await openPage(browser, { seed: { profiles: [kid('child_ava', 'Ava')], activeProfileId: 'child_ava', settings: {}, lastBook: BOOK2 }, hooks: { gateMs: 150 } });
+    await step('home language: Nana is invited to read in hers; "Read by Nana in Urdu" everywhere, and the reader is told the language', async () => {
+      await page.goto(url(`#/b/${BOOK2}/record`));
+      await page.getByTestId('record-lang-invite').waitFor();
+      assert(/Urdu, Polish, Cymraeg/.test(await page.getByTestId('record-lang-invite').innerText()), 'the invitation names some languages');
+      assert(!(await page.getByTestId('reader-language').isVisible()), 'the language box starts folded away');
+      await page.getByTestId('record-lang-open').click();
+      assert(await page.getByTestId('reader-language').isVisible(), '"Choose your language" opens it');
+      eq(await page.evaluate(() => document.activeElement?.dataset.testid), 'reader-language', 'and puts the cursor there');
+      assert(/Urdu, Polish, Cymraeg/.test(await page.getByTestId('reader-language').getAttribute('placeholder')), 'placeholder');
+      await page.getByTestId('reader-language').fill('Urdu');
+      await page.getByTestId('reader-name').fill('Nana');
+      await shot(page, 'family-record-language');
+      await page.getByTestId('record-begin').click();
+      await page.getByTestId('teleprompter').waitFor();
+      assert(/Beep beep, Ava!/.test(await page.getByTestId('teleprompter').innerText()), 'Book 2 words');
+      assert(/Reading in Urdu/.test(await page.getByTestId('tp-lang').innerText()), 'the teleprompter says the English is only a guide');
+      await recordPart(page);
+      const st = await stateOf(page);
+      eq([st.readings.length, st.readings[0].language, st.readings[0].bookId], [1, 'Urdu', BOOK2], 'the language is saved on the reading');
+      await page.getByTestId('rec-finish').click();
+      await page.getByTestId('record-done').waitFor();
+      eq(await page.getByTestId('record-done-label').innerText(), 'Read by Nana in Urdu', 'done screen label');
+      // The ready screen: the pill and the "who reads" choice.
+      await page.goto(url(`#/b/${BOOK2}`));
+      await page.getByTestId('reading-pill').waitFor();
+      eq(await page.getByTestId('reading-pill').innerText(), 'Read by Nana in Urdu', 'ready pill');
+      assert(/Read by Nana in Urdu/.test(await page.getByTestId('who-reads').innerText()), 'who reads lists it by its label');
+      // The shelf.
+      await page.goto(url('#/'));
+      await page.locator(`[data-testid=shelf-book][data-book=${BOOK2}] .shelf-pill`).waitFor();
+      eq(await page.locator(`[data-testid=shelf-book][data-book=${BOOK2}] .shelf-pill`).innerText(), 'Read by Nana in Urdu', 'shelf pill');
+      // Settings.
+      await page.goto(url('#/settings'));
+      await page.getByTestId('gate-screen').waitFor();
+      await holdGate(page, 400);
+      await page.getByTestId('settings-reading').first().waitFor();
+      assert(/Read by Nana in Urdu/.test(await page.getByTestId('settings-reading').first().innerText()), 'settings row');
+      // The reader gets the label and the language: the badge says so.
+      await page.goto(url(`#/b/${BOOK2}/read/1`));
+      await page.getByTestId('reader').waitFor({ timeout: 8000 });
+      await page.waitForFunction(() => [...document.querySelectorAll('[data-testid^=reading-badge]')].some((b) => !b.hidden && /Nana/.test(b.textContent) && /Urdu/.test(b.textContent)), null, { timeout: 8000 });
+      noErrors(errors, 'home language');
+    });
+    await context.close();
+  }
+
   // ===== 5. Nicknames ===========================================================================
   {
     const { page, errors, context } = await openPage(browser);
@@ -593,7 +643,10 @@ try {
       await shot(page, 'family-nickname');
       await page.getByTestId('nickname-input').press('Enter');
       await waitHash(page, `#/b/${BOOK}/say`);
-      assert(/How do we say Max\?/.test(await page.locator('h1').innerText()), 'pronunciation of the nickname');
+      // The route loads the name dictionary first: wait for the new screen, not just the new address.
+      await page.waitForFunction(() => /How do we say Max\?/.test(document.querySelector('h1')?.textContent ?? ''), null, { timeout: 8000 }).catch(() => {
+        throw new Error('pronunciation of the nickname');
+      });
       const p = (await stateOf(page)).profiles[0];
       eq([p.display, p.fullName, p.key], ['Max', 'Maximilian-James', 'max'], 'profile');
       await page.getByTestId('pronunciation-done').click();

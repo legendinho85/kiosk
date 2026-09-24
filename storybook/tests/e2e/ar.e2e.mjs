@@ -69,6 +69,9 @@ async function step(name, fn) {
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
+function eq(a, b, msg) {
+  if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${msg}: expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`);
+}
 function near(a, b, tol, msg) {
   if (!(Math.abs(a - b) <= tol)) throw new Error(`${msg}: ${a} is not within ${tol} of ${b}`);
 }
@@ -161,7 +164,6 @@ async function newPage(browser, { viewport = { width: 390, height: 844 }, init =
     errors.push(`${m.text()} ${url ? `(${url})` : ''}`);
   });
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
-  await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
   await page.route(`${HARNESS}*`, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: HARNESS_HTML }));
   if (routes) await routes(page);
   // Keep every camera stream the page opens, to check they get stopped.
@@ -575,8 +577,10 @@ try {
     await shot(page, 'mw-read-caption');
     await page.waitForFunction(() => document.querySelector('[data-testid=mw-caption]').hidden, null, { timeout: 15000 });
 
-    // The fit is remembered for the book (IndexedDB via storage.js).
+    // The fit is remembered for the book (a small per-device preference via storage.js prefs).
     await page.waitForTimeout(500);
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('starring.prefs.v1') ?? '{}')['magic-align:tiffin-football'] ?? null);
+    assert(stored?.v === 1 && stored.portrait && Math.abs(stored.portrait.scale - saved[2]) < 0.001, `fit saved in prefs: ${JSON.stringify(stored)}`);
     await page.evaluate(() => window.__h.handle.destroy());
     assert((await liveTracks(page)) === 0, 'destroy stops the camera');
     assert((await page.getByTestId('magic-window').count()) === 0, 'destroy removes the view');
@@ -666,6 +670,84 @@ try {
     await shot(t.page, 'mw-p7-after-magic');
     noErrors(t.errors, 'storage blocked');
     await t.context.close();
+  });
+
+  await step('magic window: a fit saved by an earlier version (with the recordings) is moved to prefs once', async () => {
+    const { page, context, errors } = await newPage(browser);
+    await page.goto(`${BASE}/package.json`);
+    const OLD = { v: 1, portrait: { x: 0.2, y: -0.1, scale: 1.3, rotate: 2 } };
+    // The old home of the fit: the IndexedDB store that also holds recordings.
+    await page.evaluate((old) => new Promise((resolve, reject) => {
+      const req = indexedDB.open('starring', 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('recordings');
+      req.onsuccess = () => {
+        const t = req.result.transaction('recordings', 'readwrite');
+        t.objectStore('recordings').put(old, 'magic-align:tiffin-football');
+        t.oncomplete = () => (req.result.close(), resolve());
+        t.onerror = () => reject(t.error);
+      };
+      req.onerror = () => reject(req.error);
+    }), OLD);
+    await page.goto(`${HARNESS}?page=4&explain=always`);
+    await page.waitForFunction(() => window.__ready === true);
+    await page.getByTestId('mw-allow').click();
+    await waitState(page, 'live');
+    eq((await alignOf(page)).join(), '0.2,-0.1,1.3,2', 'the old fit is used');
+    assert(!(await page.getByTestId('mw-align-panel').isVisible()), 'no line-up step: the old fit counts');
+    await page.waitForTimeout(300);
+    const after = await page.evaluate(() => new Promise((resolve) => {
+      const prefs = JSON.parse(localStorage.getItem('starring.prefs.v1') ?? '{}')['magic-align:tiffin-football'] ?? null;
+      const req = indexedDB.open('starring', 1);
+      req.onsuccess = () => {
+        const g = req.result.transaction('recordings').objectStore('recordings').get('magic-align:tiffin-football');
+        g.onsuccess = () => (req.result.close(), resolve({ prefs, old: g.result ?? null }));
+      };
+    }));
+    eq(after.prefs, OLD, 'moved to prefs');
+    eq(after.old, null, 'the old copy is tidied away');
+    noErrors(errors, 'fit migration');
+    await context.close();
+  });
+
+  await step('magic window works on every page of Book 2 (names, digital layer only, Magic! plays)', async () => {
+    const { page, context, errors } = await newPage(browser, { viewport: { width: 844, height: 390 } });
+    await page.goto(`${HARNESS}?book=tiffin-digger&page=1&explain=always`);
+    await page.waitForFunction(() => window.__ready === true);
+    await page.getByTestId('mw-allow').click();
+    await waitState(page, 'live');
+    await page.getByTestId('mw-align-done').click();
+    const book = await page.evaluate(() => window.__h.book);
+    eq(book.id, 'tiffin-digger', 'Book 2 is loaded');
+    for (const p of book.pages) {
+      if (p.n > 1) {
+        await page.getByTestId('mw-next').click();
+        await page.waitForFunction((n) => document.querySelector('[data-testid=magic-window]').dataset.page === String(n), p.n);
+      }
+      await page.waitForFunction(() => document.querySelector('.mw-layer svg'), null, { timeout: 8000 });
+      await page.waitForTimeout(400);
+      const layer = await page.evaluate(() => {
+        const svg = document.querySelector('.mw-layer svg');
+        const vis = (el) => getComputedStyle(el).visibility;
+        const art = [...svg.querySelectorAll('path, use, rect, circle')].filter((el) => !el.closest('.sb-name, .sb-letters, .sb-digital'));
+        return { art: art.length, artVisible: art.filter((el) => vis(el) !== 'hidden').length, names: svg.querySelectorAll('text.sb-name').length };
+      });
+      assert(layer.art > 20 && layer.artVisible === 0, `page ${p.n}: only the digital layer shows (${layer.artVisible} of ${layer.art} art shapes visible)`);
+      assert(layer.names > 0, `page ${p.n}: has a name spot`);
+      const before = (await page.evaluate(() => window.__h.sfx.length));
+      await page.getByTestId('mw-play').click();
+      await page.waitForFunction(() => !document.querySelector('[data-testid=magic-window]').dataset.playing, null, { timeout: 10000 });
+      await page.waitForTimeout(250);
+      const names = await page.evaluate(() => [...document.querySelectorAll('.mw-layer text.sb-name')].filter((t) => !t.closest('[display=none]')).map((t) => ({ text: t.textContent, pending: t.classList.contains('is-pending'), vis: getComputedStyle(t).visibility })));
+      assert(names.length > 0, `page ${p.n}: a name shows after Magic!`);
+      for (const n of names) assert(/^(Siobhan|SIOBHAN|Siobhan's)$/.test(n.text) && !n.pending && n.vis === 'visible', `page ${p.n}: name "${n.text}" written and visible (${JSON.stringify(n)})`);
+      const sfx = (await page.evaluate(() => window.__h.sfx)).slice(before);
+      if (p.mechanic?.complete?.sfx?.length) for (const x of p.mechanic.complete.sfx) assert(sfx.includes(x), `page ${p.n}: Magic! played ${x} (${sfx})`);
+      if (p.n === 3 || p.n === 7) await shot(page, `mw-book2-p${p.n}-magic`);
+    }
+    const letters = await page.evaluate(() => [...document.querySelectorAll('.mw-layer .sb-letter')].map((t) => t.textContent).join(''));
+    eq(letters, '', 'page 8 has no bunting');
+    noErrors(errors, 'Book 2 magic window');
+    await context.close();
   });
 
   await step('magic window via the app route (#/b/…/magic/3), reduced motion, tablet', async () => {

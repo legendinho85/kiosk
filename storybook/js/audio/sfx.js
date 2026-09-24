@@ -11,7 +11,7 @@
 // lets later sounds (and the parent's name recording, see recorder.js) play
 // without another tap.
 
-export const SFX_NAMES = Object.freeze(['whistle', 'kick', 'cheer', 'pop', 'boing', 'clap', 'ding', 'swoosh', 'drum', 'sparkle', 'click']);
+export const SFX_NAMES = Object.freeze(['whistle', 'kick', 'cheer', 'pop', 'boing', 'clap', 'ding', 'swoosh', 'drum', 'sparkle', 'click', 'beep', 'rumble']);
 
 const DEFAULT_VOLUME = 0.55;
 const MAX_VOICES = 6; // concurrent sounds; extra taps are dropped rather than piled up
@@ -456,7 +456,76 @@ function click(ctx, out, t0) {
   return 0.07;
 }
 
-const SOUNDS = { whistle, kick, cheer, pop, boing, clap, ding, swoosh, drum, sparkle, click };
+/**
+ * A friendly digger horn: "beep beep". Two short pips of a square-ish tone
+ * near 1 kHz with the edges rounded off (a low-pass takes away the buzz, and
+ * soft attacks avoid clicks), so it sounds like a toy, not an alarm.
+ */
+function beep(ctx, out, t0) {
+  const len = 0.12;
+  const gap = 0.2;
+  for (let i = 0; i < 2; i++) {
+    const s = t0 + i * gap;
+    const o = osc(ctx, 'square', 988, s, s + len + 0.04); // B5, just under 1 kHz
+    const lp = filter(ctx, 'lowpass', 2300, 0.6);
+    const env = gainNode(ctx);
+    env.gain.setValueAtTime(0, s);
+    env.gain.linearRampToValueAtTime(0.11, s + 0.012);
+    env.gain.setValueAtTime(0.11, s + len - 0.03);
+    env.gain.linearRampToValueAtTime(0, s + len);
+    o.connect(lp);
+    lp.connect(env);
+    env.connect(out);
+  }
+  return gap + len + 0.04;
+}
+
+/**
+ * A digger's engine idling: low-passed noise around 70-90 Hz that wobbles
+ * slowly, with a soft low hum under it so small phone speakers (which can't
+ * play 80 Hz) still hear a gentle "rrrr".
+ */
+function rumble(ctx, out, t0) {
+  const len = 1.1;
+  const end = t0 + len;
+  // Slow wobble shared by both layers: the engine chugging.
+  const lfo = osc(ctx, 'sine', 4.2, t0, end + 0.05);
+  const env = gainNode(ctx);
+  env.gain.setValueAtTime(0, t0);
+  env.gain.linearRampToValueAtTime(1, t0 + 0.18);
+  env.gain.setValueAtTime(1, end - 0.35);
+  env.gain.linearRampToValueAtTime(0, end);
+  const wobble = gainNode(ctx, 0.7);
+  const wobbleDepth = gainNode(ctx, 0.3);
+  lfo.connect(wobbleDepth);
+  wobbleDepth.connect(wobble.gain);
+  wobble.connect(env);
+  env.connect(out);
+
+  // The rumble itself: noise through a resonant low-pass at ~80 Hz.
+  const n = noise(ctx, t0, end + 0.05);
+  const lp1 = filter(ctx, 'lowpass', 82, 7);
+  const lp2 = filter(ctx, 'lowpass', 160, 0.7);
+  const ng = gainNode(ctx, 0.7);
+  n.connect(lp1);
+  lp1.connect(lp2);
+  lp2.connect(ng);
+  ng.connect(wobble);
+
+  // A soft hum an octave or two up, low-passed, pitch wobbling with the engine.
+  const hum = osc(ctx, 'sawtooth', 55, t0, end + 0.05);
+  const humWobble = gainNode(ctx, 2.5); // Hz of pitch wobble (a modulation depth, not a level)
+  lfo.connect(humWobble);
+  humWobble.connect(hum.frequency);
+  const humLp = filter(ctx, 'lowpass', 260, 0.8);
+  const hg = gainNode(ctx, 0.15);
+  hum.connect(humLp);
+  humLp.connect(hg);
+  hg.connect(wobble);
+  return len + 0.05;
+}
+
+const SOUNDS = { whistle, kick, cheer, pop, boing, clap, ding, swoosh, drum, sparkle, click, beep, rumble };
 
 /**
  * Schedule one sound on any context (live or offline).

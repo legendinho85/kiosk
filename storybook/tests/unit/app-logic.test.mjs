@@ -5,8 +5,10 @@ import { createHold, HOLD_MS } from '../../js/app/parent-gate.js';
 import { letterCount, longNameHint, nameError, defaultPronunciation, LONG_NAME_LETTERS, nicknameOffer, nicknameSuggestion, resolveNames } from '../../js/app/screens/name.js';
 import { storyLines, mergeCandidates, findSaved, candidateTitle, candidateNote, recognitionMessage, storedPronunciation } from '../../js/app/screens/pronunciation.js';
 import { pronunciationSummary, profilePerson } from '../../js/app/screens/ready.js';
-import { pageParam } from '../../js/app/screens/read.js';
-import { speedFor, SPEEDS, TOGGLES, voiceLabel, ONLINE_VOICES_TEXT } from '../../js/app/screens/settings.js';
+import { pageParam, lettersOffered } from '../../js/app/screens/read.js';
+import { speedFor, SPEEDS, TOGGLES, ACCESS_TOGGLES, settingOn, voiceLabel, ONLINE_VOICES_TEXT } from '../../js/app/screens/settings.js';
+import { letterTraceOptions } from '../../js/app/screens/letters.js';
+import { stickersBack, trimFor } from '../../js/app/screens/stickers.js';
 import { fallbackLandingUrl } from '../../js/app/screens/qr.js';
 import { respellParts, debounce } from '../../js/app/ui.js';
 import { createQuietNarrator } from '../../js/app/services.js';
@@ -15,6 +17,7 @@ import { DEFAULT_SETTINGS } from '../../js/core/storage.js';
 import { NAME_ERRORS } from '../../js/core/personalise.js';
 
 const book = JSON.parse(readFileSync(new URL('../../books/tiffin-football/book.json', import.meta.url), 'utf8'));
+const digger = JSON.parse(readFileSync(new URL('../../books/tiffin-digger/book.json', import.meta.url), 'utf8'));
 const lexicon = buildIndex(JSON.parse(readFileSync(new URL('../../data/names.json', import.meta.url), 'utf8')));
 
 // ---- Parent gate -------------------------------------------------------------------------
@@ -140,7 +143,12 @@ test('story lines: the title line and the goodnight line', () => {
   assert.equal(lines.length, 2);
   assert.equal(lines[0], 'Goal, {name}!');
   assert.match(lines[1], /Night night, \{name\}\./);
-  assert.deepEqual(storyLines(null), ['Goal, {name}!']);
+  assert.deepEqual(storyLines(null), ['Hello, {name}!']);
+  assert.deepEqual(storyLines({ title: 'Beep beep, {name}!', pages: [] }), ['Beep beep, {name}!'], 'no lines: the title');
+  // Book 2's own lines, not Book 1's.
+  const dig = storyLines(digger);
+  assert.equal(dig[0], 'Beep beep, {name}!');
+  assert.ok(dig.every((l) => !/Goal/.test(l)), `Book 2 lines: ${dig}`);
   assert.deepEqual(storyLines({ pages: [{ text: ['Hello {name}!'] }] }), ['Hello {name}!']);
   assert.deepEqual(storyLines({ pages: [{ text: ['A {name}.', 'B {name}.', 'C {name}.'] }] }, 3), ['A {name}.', 'C {name}.', 'B {name}.']);
   // Possessive-only lines are skipped: the plain name is what we're checking.
@@ -217,11 +225,53 @@ test('reading speeds map to the nearest preset', () => {
   assert.equal(speedFor(1.2).id, 'normal');
   assert.equal(speedFor(undefined).id, 'normal');
   assert.ok(SPEEDS.every((s) => s.rate > 0.5 && s.rate <= 1));
-  assert.deepEqual(TOGGLES.map((t) => t.key).sort(), ['autoTurn', 'bedtime', 'highlight', 'readPrompts', 'sfx']);
+  assert.deepEqual(TOGGLES.map((t) => t.key).sort(), ['autoTurn', 'bedtime', 'highlight', 'letterActivity', 'readPrompts', 'sfx']);
+  assert.deepEqual(ACCESS_TOGGLES.map((t) => t.key), ['easyRead', 'highContrast']);
+  for (const t of [...TOGGLES, ...ACCESS_TOGGLES]) assert.ok(t.key in DEFAULT_SETTINGS, `${t.key} is a stored setting`);
+  assert.match(ACCESS_TOGGLES[0].text, /dyslexia/);
+  assert.match(TOGGLES.find((t) => t.key === 'letterActivity').text, /Find your first letter/);
   assert.match(ONLINE_VOICES_TEXT, /Google or Microsoft/);
   assert.match(ONLINE_VOICES_TEXT, /name/);
   assert.equal(voiceLabel({ label: 'Serena', lang: 'en-GB', local: true }), 'Serena (en-GB)');
   assert.equal(voiceLabel({ name: 'Google UK English Female', lang: 'en-GB', local: false }), 'Google UK English Female (en-GB) · online');
+});
+
+test('switches: saved values win; settings saved before a switch existed use its default', () => {
+  assert.equal(settingOn({ easyRead: true }, 'easyRead'), true);
+  assert.equal(settingOn({ highlight: false }, 'highlight'), false);
+  assert.equal(settingOn({}, 'highlight'), true, 'highlight defaults on');
+  assert.equal(settingOn({}, 'easyRead'), false, 'easy-read defaults off');
+  assert.equal(settingOn({}, 'letterActivity'), true, 'the letter game defaults on');
+  assert.equal(settingOn(null, 'highContrast'), false);
+});
+
+test('the letter game: offered only when switched on; the whole family takes part', () => {
+  assert.equal(lettersOffered({ letterActivity: true }), true);
+  assert.equal(lettersOffered({ letterActivity: false }), false);
+  assert.equal(lettersOffered(undefined), false);
+  assert.equal(lettersOffered({ ...DEFAULT_SETTINGS }), true, 'on by default');
+  const kid = (id, display, say = display) => ({ id, display, key: display.toLowerCase(), pronunciation: { say } });
+  const done = () => {};
+  const one = letterTraceOptions({ profiles: [kid('a', 'Siobhan', 'Shi vawn')], activeProfileId: 'a', settings: { bedtime: true } }, { book, done });
+  assert.deepEqual(one.person, { display: 'Siobhan', say: 'Shi vawn' });
+  assert.equal(one.bedtime, true);
+  assert.equal(one.lang, 'en-GB');
+  assert.equal(one.onDone, done);
+  assert.equal(one.onSkip, done);
+  const two = letterTraceOptions({ profiles: [kid('a', 'Amara'), kid('z', 'Zak')], activeProfileId: 'a', together: ['a', 'z'], settings: {} }, { book: null, done });
+  assert.deepEqual([two.person.display, two.person.art, two.person.count, two.bedtime, two.lang], ['Amara and Zak', 'Amara & Zak', 2, false, '']);
+});
+
+test('name stickers: Back goes where the grown-up came from; the print scale', () => {
+  assert.equal(stickersBack('qr', 'tiffin-digger').href, '#/qr/tiffin-digger');
+  assert.equal(stickersBack('settings', 'tiffin-digger').href, '#/settings');
+  assert.equal(stickersBack(undefined, 'tiffin-digger').href, '#/b/tiffin-digger');
+  assert.equal(stickersBack('elsewhere', 'x').href, '#/b/x', 'unknown values go to the book');
+  assert.match(stickersBack('qr', 'x').label, /^Back/);
+  assert.equal(trimFor(book), 180);
+  assert.equal(trimFor({ print: { trimMm: 200 } }), 200);
+  assert.equal(trimFor({ print: { trimMm: -3 } }), 180);
+  assert.equal(trimFor(null), 180);
 });
 
 test('the fallback landing URL points at the app folder with ?b=', () => {

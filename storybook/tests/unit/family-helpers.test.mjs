@@ -13,7 +13,7 @@ import { setTogether, loadState } from '../../js/core/storage.js';
 import { togetherIds, readingMeta } from '../../js/app/screens/ready.js';
 import { packHeadline } from '../../js/app/screens/open.js';
 import { giftInstructions } from '../../js/app/screens/gift.js';
-import { recorderMessage, READING_MAX_MS } from '../../js/app/screens/record.js';
+import { recorderMessage, READING_MAX_MS, otherLanguage, LANGUAGE_INVITE } from '../../js/app/screens/record.js';
 import { shelfTitle } from '../../js/app/screens/home.js';
 
 const book = JSON.parse(readFileSync(new URL('../../books/tiffin-football/book.json', import.meta.url), 'utf8'));
@@ -73,6 +73,8 @@ test('coverage, blob ids and the adapter the reader plays', async () => {
   assert.equal(await broken.getPart(1, 'main'), null, 'storage errors never reach the reader');
   assert.equal(readingAdapter(null, {}), null);
   assert.equal(readingAdapter({ ...reading, language: 'Urdu' }, {}).label, 'Read by Grandma Rose in Urdu');
+  assert.equal(readingAdapter({ ...reading, language: 'Urdu' }, {}).language, 'Urdu', 'the reader gets the language (no word-by-word highlighting)');
+  assert.equal(adapter.language, '');
 });
 
 test('one audio file: parts in page order, a pause for little hands, a chime between pages', async () => {
@@ -134,4 +136,15 @@ test('the gift draft lives in memory, one book at a time', () => {
   assert.equal(giftDraft('tiffin-digger').childName, '', 'another book starts fresh');
   assert.equal(hasGiftDraft('tiffin-football'), false);
   clearGiftDraft();
+});
+
+test('home languages: grandparents are invited to read in theirs', () => {
+  assert.equal(otherLanguage({ language: 'Urdu' }), 'Urdu');
+  assert.equal(otherLanguage({ language: '  Cymraeg  ' }), 'Cymraeg');
+  assert.equal(otherLanguage({ language: 'English' }), '');
+  assert.equal(otherLanguage({ language: 'en-GB' }), '');
+  assert.equal(otherLanguage({}), '');
+  assert.equal(otherLanguage(null), '');
+  assert.match(LANGUAGE_INVITE, /Urdu, Polish, Cymraeg/);
+  assert.match(LANGUAGE_INVITE, /your own|in yours/);
 });

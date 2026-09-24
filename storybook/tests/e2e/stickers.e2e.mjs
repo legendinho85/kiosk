@@ -117,8 +117,7 @@ async function open(browser, { qs = 'name=Ava', viewport = VIEWPORTS.phone, init
     if (m.type() === 'warning') warnings.push(m.text());
   });
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
-  // No network in tests: the harness serves the app's fonts from /fonts.
-  await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
+  // The harness serves the app's own fonts from /fonts (no network needed).
   if (routes) await routes(page);
   if (init) await page.addInitScript(init);
   await page.goto(`${HARNESS}?${qs}`);

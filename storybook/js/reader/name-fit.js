@@ -141,14 +141,33 @@ export function fitText(naturalWidth, fontSize, maxWidth, { chars = 1, minScale 
  */
 export function layoutName({ text, fontSize, maxWidth, wrap = false, measure = estimateTextWidth }) {
   const single = { lines: [text], ...fitText(measure(text, fontSize), fontSize, maxWidth, { chars: graphemes(text).length }) };
+  if (single.fontSize < fontSize && !single.letterSpacing && !single.squeeze) single.fontSize = settleSize([text], single.fontSize, maxWidth, measure, fontSize * MIN_SCALE);
   if (!wrap || single.fontSize >= fontSize * WRAP_BELOW) return single;
   const parts = splitForWrap(text);
   if (!parts) return single;
   const fits = parts.map((t) => fitText(measure(t, fontSize), fontSize, maxWidth, { chars: graphemes(t).length }));
-  const size = Math.min(...fits.map((f) => f.fontSize), fontSize * TWO_LINE_MAX);
+  const size = settleSize(parts, Math.min(...fits.map((f) => f.fontSize), fontSize * TWO_LINE_MAX), maxWidth, measure, fontSize * MIN_SCALE);
   // Two lines only when every line fits by shrinking alone and ends up bigger.
   if (fits.some((f) => f.letterSpacing || f.squeeze) || size <= single.fontSize) return single;
   return { lines: parts, fontSize: size, letterSpacing: 0, squeeze: false };
+}
+
+/**
+ * Text doesn't shrink exactly in proportion on screen: at the small sizes a
+ * phone draws a scene at, glyph widths are rounded, so a name scaled to fit
+ * by its full-size width can still come out a few per cent too wide. Measure
+ * again at the chosen size and take a little more off if needed.
+ */
+function settleSize(lines, size, maxWidth, measure, minSize) {
+  let s = size;
+  if (!(maxWidth > 0)) return s;
+  for (let i = 0; i < 3; i++) {
+    const w = Math.max(...lines.map((t) => measure(t, s)));
+    if (!(w > maxWidth * 1.002)) break;
+    s = Math.max(minSize, s * (maxWidth / w) * 0.995);
+    if (s === minSize) break;
+  }
+  return s;
 }
 
 /**

@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Audio lab · Tiffin &amp; Me</title>
 <meta name="description" content="Manual test bench for the storybook's speech voice, read-along highlighting, sound effects, name recording and speech recognition.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Non-blocking: a slow or offline font server must never hold up the page. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" media="print" onload="this.media='all'">
+<!-- The app's own self-hosted fonts (no request leaves for Google). -->
+<link rel="stylesheet" href="../../css/fonts.css">
 <style>
   :root {
     --ink: #2B2A33;
@@ -557,8 +555,10 @@
     drum: '<ellipse cx="12" cy="9" rx="8" ry="3"/><path d="M4 9v7c0 1.7 3.6 3 8 3s8-1.3 8-3V9M7 3l3 5M17 3l-3 5"/>',
     sparkle: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
     click: '<path d="M9 3v10l2.5-2.5L14 16l2-1-2.4-5.4H17z"/><path d="M4 7h2M5 3.5l1.5 1.5M4 11l1.5-1"/>',
+    beep: '<path d="M4 10h3l5-4v12l-5-4H4z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10"/>',
+    rumble: '<path d="M3 16h18M5 16v-4h6l2-4h4l2 4v4"/><circle cx="8" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/><path d="M3 21c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/>',
   };
-  const TINTS = { whistle: '#FFF0C2', kick: '#E3F5DA', cheer: '#FDE2E4', pop: '#DDF1FC', boing: '#E3F5DA', clap: '#FFF0C2', ding: '#FFF0C2', swoosh: '#DDF1FC', drum: '#FDE2E4', sparkle: '#F1E6FB', click: '#EEE' };
+  const TINTS = { whistle: '#FFF0C2', kick: '#E3F5DA', cheer: '#FDE2E4', pop: '#DDF1FC', boing: '#E3F5DA', clap: '#FFF0C2', ding: '#FFF0C2', swoosh: '#DDF1FC', drum: '#FDE2E4', sparkle: '#F1E6FB', click: '#EEE', beep: '#FDE2E4', rumble: '#F3E6D8' };
   const tiles = {};
   $('#sfx-grid').replaceChildren(...sfxMod.SFX_NAMES.map((name) => {
     const tile = h('button', { class: 'sfx', type: 'button', 'data-sfx': name, 'data-testid': `sfx-${name}`, style: `background:${TINTS[name]}`,

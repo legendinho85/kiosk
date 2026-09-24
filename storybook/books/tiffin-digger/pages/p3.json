@@ -71,8 +71,8 @@
       ],
       "sfx": [
         "click",
-        "whistle",
-        "drum"
+        "beep",
+        "rumble"
       ]
     }
   }

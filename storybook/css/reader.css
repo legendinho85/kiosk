@@ -435,6 +435,9 @@
 .sb-r-pill-icon svg { width: 100%; height: 100%; }
 .sb-r-goodnight { background: #2F3A66; color: #FFF4D6; }
 .sb-r-goodnight:nth-child(2) { animation-delay: .12s; }
+/* "Find Ava's letter": the first-letter game (only when the app offers it). */
+.sb-r-letters { background: #BFE6FA; max-width: 100%; text-align: left; line-height: 1.12; animation-delay: .24s; }
+.sb-r-letters .sb-r-pill-icon { color: var(--ink); }
 .sb-r-hear {
   position: absolute;
   left: 50%;
@@ -902,3 +905,119 @@
 @keyframes sb-hint-calm { 0%, 100% { opacity: .9; } 50% { opacity: .45; } }
 @keyframes sb-confetti-calm { 0% { opacity: 0; transform: translate(calc(var(--x) * .4), calc(var(--up) * .3)); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(var(--x) * .4), calc(var(--up) * .3)); } }
 .sb-reader.is-reduced-motion .sb-r-page { animation-duration: .2s; }
+
+/* ---- A reading in another language: the line being read, not word by word ---------------- */
+/* The words on the page are English, so they can't follow Grandma's Urdu one by one:
+   the line she is on glows softly instead (a guess, so it is gentle). */
+.sb-r-text[data-whole-line] .sb-r-line.is-active-line:not(.sb-r-prompt) {
+  width: fit-content;
+  margin-inline: auto;
+  border-radius: .4em;
+  background: rgba(255, 216, 79, .34);
+  box-shadow: 0 0 0 .18em rgba(255, 216, 79, .34);
+  transition: background-color .5s ease, box-shadow .5s ease;
+}
+.sb-reader.is-bedtime .sb-r-text[data-whole-line] .sb-r-line.is-active-line:not(.sb-r-prompt) {
+  background: rgba(255, 214, 120, .14);
+  box-shadow: 0 0 0 .18em rgba(255, 214, 120, .14);
+}
+
+/* ---- Easy read (settings.easyRead -> html[data-easy-read="true"]) -------------------------- */
+/* Dyslexia-friendly reading text: bigger, more space between letters, words and lines,
+   lines that start at the same place (never justified, never hyphenated). */
+html[data-easy-read="true"] .sb-reader { --r-read: clamp(25px, 1.3vh + 3.3vw, 44px); }
+html[data-easy-read="true"] .sb-r-text {
+  max-width: 30em;
+  text-align: left;
+  text-align-last: auto;
+  line-height: 1.75;
+  letter-spacing: .07em;
+  word-spacing: .18em;
+  hyphens: none;
+  -webkit-hyphens: none;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+html[data-easy-read="true"] .sb-r-text[data-long] { font-size: calc(var(--r-read) * .92); line-height: 1.7; }
+html[data-easy-read="true"] .sb-r-line { margin-bottom: .35em; }
+html[data-easy-read="true"] .sb-r-text .sb-word { padding: 0 .14em; margin: 0 -.14em; }
+html[data-easy-read="true"] .sb-r-text .sb-word.is-current { transform: none; } /* no jumping letters */
+html[data-easy-read="true"] .sb-r-prompt { justify-content: flex-start; row-gap: .1em; column-gap: .34em; line-height: 1.45; }
+html[data-easy-read="true"] .sb-r-pill { letter-spacing: .04em; word-spacing: .12em; }
+@media (orientation: portrait) and (max-width: 600px) {
+  html[data-easy-read="true"] .sb-reader { --r-read: clamp(26px, 8.2vw, 36px); }
+}
+@media (orientation: portrait) and (max-height: 700px) {
+  html[data-easy-read="true"] .sb-r-text[data-long] { font-size: calc(var(--r-read) * .86); line-height: 1.6; }
+}
+@media (orientation: landscape) and (max-height: 560px) {
+  html[data-easy-read="true"] .sb-reader { --r-read: clamp(21px, 6vh, 28px); }
+  html[data-easy-read="true"] .sb-r-text { line-height: 1.5; }
+  html[data-easy-read="true"] .sb-r-text[data-long] { font-size: var(--r-read); }
+}
+
+/* ---- High contrast (settings.highContrast -> html[data-contrast="high"]) -------------------- */
+/* Darker text on plain backgrounds, thicker outlines on every control and on the name. */
+html[data-contrast="high"] .sb-reader {
+  --ink: #000000;
+  --name-ink: #9E0B30;   /* 9:1 on white */
+  --hl: #FFE14D;
+  --focus: #0047B3;
+  color: #000000;
+  background: #FFFFFF;
+}
+html[data-contrast="high"] .sb-r-frame { box-shadow: 0 0 0 3px #000000; }
+html[data-contrast="high"] .sb-r-btn { border-width: 4px; }
+html[data-contrast="high"] .sb-r-btn:focus-visible,
+html[data-contrast="high"] .sb-r-pill:focus-visible,
+html[data-contrast="high"] .sb-r-startbtn:focus-visible { outline-width: 5px; outline-offset: 3px; box-shadow: 0 0 0 9px #FFFFFF; }
+html[data-contrast="high"] .sb-r-dot { background: rgba(0, 0, 0, .3); }
+html[data-contrast="high"] .sb-r-dot.is-past { background: rgba(0, 0, 0, .6); }
+html[data-contrast="high"] .sb-r-dot.is-current { background: #000000; }
+html[data-contrast="high"] .sb-r-bubble,
+html[data-contrast="high"] .sb-r-bubble::after { border-width: 4px; background: #FFFFFF; }
+html[data-contrast="high"] .sb-r-text .sb-word.is-current { outline: 3px solid #000000; outline-offset: 1px; box-shadow: none; }
+html[data-contrast="high"] .sb-r-text .sb-word.is-name {
+  text-decoration: underline solid #000000;
+  text-decoration-thickness: .1em;
+}
+html[data-contrast="high"] .sb-r-text .sb-word.is-name.is-current { background: #FFE14D; }
+html[data-contrast="high"] .sb-r-text .sb-word.is-name::after { filter: drop-shadow(0 0 1px #000); }
+html[data-contrast="high"] .sb-r-prompt { border-width: 4px; background: #FFFFFF; }
+html[data-contrast="high"] .sb-r-prompt-icon { color: #B0102B; }
+html[data-contrast="high"] .sb-r-pill { border-width: 4px; }
+html[data-contrast="high"] .sb-r-badge,
+html[data-contrast="high"] .sb-r-paused { border-width: 3.5px; background: #FFFFFF; color: #000000; }
+html[data-contrast="high"] .sb-spot-word { border-width: 4px; color: var(--name-ink); }
+html[data-contrast="high"] .sb-spot-glow { background: radial-gradient(closest-side, rgba(255, 225, 77, .95), rgba(255, 225, 77, .5) 65%, rgba(255, 225, 77, 0)); }
+html[data-contrast="high"] .sb-r-text[data-whole-line] .sb-r-line.is-active-line:not(.sb-r-prompt) { background: #FFF1A6; box-shadow: 0 0 0 .18em #FFF1A6, 0 0 0 calc(.18em + 2px) #000000; }
+/* The moving part in the picture: a dark edge round it, a solid hint ring, a bold focus ring. */
+html[data-contrast="high"] .sb-reader .sb-control-art { filter: drop-shadow(0 0 1.5px #000) drop-shadow(0 0 1px #000); }
+html[data-contrast="high"] .sb-reader .sb-hint circle:first-child { stroke-opacity: .9; fill-opacity: .55; }
+html[data-contrast="high"] .sb-reader .sb-focus-ring * { stroke: #0047B3; opacity: 1; }
+/* Phone landscape: the words sit on solid paper, not a fade over the picture. */
+@media (orientation: landscape) and (max-height: 560px) {
+  html[data-contrast="high"] .sb-r-band { background: linear-gradient(to top, #FFFFFF 0%, #FFFFFF 78%, rgba(255, 255, 255, 0) 100%); }
+  html[data-contrast="high"] .sb-reader[data-state="waiting"] .sb-r-band { background: none; }
+  html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-band { background: linear-gradient(to top, #05071A 0%, #05071A 78%, rgba(5, 7, 26, 0) 100%); }
+  html[data-contrast="high"] .sb-reader.is-bedtime[data-state="waiting"] .sb-r-band { background: none; }
+}
+/* High contrast at bedtime: still dark, but plain, with brighter words and edges. */
+html[data-contrast="high"] .sb-reader.is-bedtime {
+  --b-text: #FFF8E8;
+  --b-card: #0B1033;
+  --b-line: #C9D0FF;
+  --name-ink: #FFC2CE;
+  --hl: rgba(255, 214, 120, .3);
+  --focus: #9CC8FF;
+  color: var(--b-text);
+  background: #05071A;
+}
+html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-frame { box-shadow: 0 0 0 3px var(--b-line); }
+html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-text .sb-word.is-current { outline-color: #FFE7A3; background: rgba(255, 214, 120, .3); }
+html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-text .sb-word.is-name { text-decoration-color: #FFE7A3; }
+html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-dot { background: rgba(255, 248, 232, .35); }
+html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-dot.is-past { background: rgba(255, 248, 232, .65); }
+html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-dot.is-current { background: #FFE7A3; }
+html[data-contrast="high"] .sb-reader.is-bedtime :is(.sb-r-badge, .sb-r-paused) { background: var(--b-card); color: var(--b-text); }
+html[data-contrast="high"] .sb-reader.is-bedtime .sb-r-text[data-whole-line] .sb-r-line.is-active-line:not(.sb-r-prompt) { background: rgba(255, 214, 120, .22); box-shadow: 0 0 0 .18em rgba(255, 214, 120, .22), 0 0 0 calc(.18em + 2px) #FFE7A3; }

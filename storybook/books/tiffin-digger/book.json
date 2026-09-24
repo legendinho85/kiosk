@@ -43,7 +43,7 @@
       "prompt": "",
       "after": [],
       "sfx": {
-        "open": "drum"
+        "open": "beep"
       },
       "mechanic": {
         "type": "none"
@@ -280,8 +280,8 @@
           ],
           "sfx": [
             "click",
-            "whistle",
-            "drum"
+            "beep",
+            "rumble"
           ]
         }
       }
@@ -300,7 +300,7 @@
         "Rumble, rumble, beep, beep, beep!"
       ],
       "sfx": {
-        "open": "drum"
+        "open": "rumble"
       },
       "mechanic": {
         "type": "pull-tab",
@@ -468,7 +468,7 @@
           "sfx": [
             "swoosh",
             "pop",
-            "drum"
+            "rumble"
           ]
         }
       }
@@ -885,7 +885,7 @@
           ],
           "sfx": [
             "drum",
-            "whistle",
+            "beep",
             "cheer",
             "clap"
           ],

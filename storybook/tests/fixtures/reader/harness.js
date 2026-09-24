@@ -8,7 +8,11 @@ if (params.get('test') === '1') {
   if (params.has('idle')) globalThis.SB_TEST.idleMs = Number(params.get('idle'));
 }
 
-const log = (window.__log = { speakText: [], play: [], sfx: [], sfxOpts: [], pages: [], exit: 0, magic: [], parts: [], clips: [] });
+const log = (window.__log = { speakText: [], speakOpts: [], play: [], sfx: [], sfxOpts: [], pages: [], exit: 0, magic: [], parts: [], clips: [], letters: 0 });
+
+// Accessibility settings as the app applies them (docs/architecture.md section 12).
+if (params.get('easy') === '1') document.documentElement.dataset.easyRead = 'true';
+if (params.get('contrast') === 'high') document.documentElement.dataset.contrast = 'high';
 
 // Watch recorded clips start and stop (recorder.js plays them with Web Audio
 // once the page has had a tap, or an <audio> element before that).
@@ -17,7 +21,7 @@ const log = (window.__log = { speakText: [], play: [], sfx: [], sfxOpts: [], pag
   const mediaPlay = HTMLMediaElement.prototype.play;
   HTMLMediaElement.prototype.play = function play(...args) {
     if (String(this.src).startsWith('blob:')) {
-      const entry = { how: 'element', start: t(), end: null };
+      const entry = { how: 'element', start: t(), end: null, offset: Number(this.currentTime) || 0 };
       log.clips.push(entry);
       const end = () => (entry.end ??= t());
       this.addEventListener('pause', end, { once: true });
@@ -31,8 +35,8 @@ const log = (window.__log = { speakText: [], play: [], sfx: [], sfxOpts: [], pag
   AudioBufferSourceNode.prototype.start = function start(...args) {
     const ms = (this.buffer?.duration ?? 0) * 1000;
     if ((window.__clipMs ?? []).some((x) => Math.abs(ms - x) < 80)) {
-      // one of the reading's clips (not a sound effect's noise buffer)
-      this.__entry = { how: 'webaudio', start: t(), end: null };
+      // one of the reading's clips (not a sound effect's noise buffer); offset in seconds
+      this.__entry = { how: 'webaudio', start: t(), end: null, offset: Number(args[1]) || 0 };
       log.clips.push(this.__entry);
       this.addEventListener('ended', () => (this.__entry.end ??= t()), { once: true });
     }
@@ -121,6 +125,7 @@ const narrator = {
   unlock: () => realNarrator.unlock?.(),
   speakText(text, opts) {
     log.speakText.push(text);
+    log.speakOpts.push({ text, rateScale: opts?.rateScale ?? 1 });
     return realNarrator.speakText(text, opts);
   },
   play(plan, opts) {
@@ -150,7 +155,9 @@ const sfx = {
 // microphone (--use-fake-device-for-media-stream) through js/audio/recorder.js,
 // looped to the length each part should last (mainMs, afterMs). "tone" (or no
 // microphone) uses a soft sine tone instead.
-//   parts=all | "1:main,2:after"  which parts exist    reader=Grandma Rose    lang=Urdu
+//   parts=all | "1:main,2:after"  which parts exist    reader=Grandma Rose    lang=Urdu    label=Read by Nana in Urdu
+//   nolength=1: the reader can't find out how long a clip is (as when a phone's recording won't report
+//   its length), so it highlights on the plain estimate, which may run past the end of the clip
 async function makeReading() {
   const kind = params.get('reading');
   if (!kind) return null;
@@ -169,7 +176,7 @@ async function makeReading() {
       console.info('fake microphone unavailable; using a tone', err?.message ?? err);
     }
   }
-  const make = (ms) => {
+  const make = async (ms) => {
     const n = Math.round((ms / 1000) * rate);
     const out = new Float32Array(n);
     for (let i = 0; i < n; i++) out[i] = samples?.length ? samples[i % samples.length] * 0.5 : Math.sin((i / rate) * 2 * Math.PI * 330) * 0.15;
@@ -186,17 +193,24 @@ async function makeReading() {
   return {
     readerName: params.get('reader') ?? 'Grandma Rose',
     language: params.get('lang') ?? undefined,
+    label: params.get('label') ?? undefined,
     async getPart(n, part) {
       log.parts.push(`${n}:${part}`);
       const key = `${n}:${part}`;
       if (broken.includes(key)) return new Blob([new TextEncoder().encode('not a recording '.repeat(40))], { type: 'audio/wav' });
       if (!has(n, part)) return null;
-      if (!clips.has(key)) clips.set(key, make(ms[part]));
+      if (!clips.has(key)) clips.set(key, await make(ms[part]));
       return clips.get(key);
     },
   };
 }
 const reading = await makeReading();
+if (params.get('nolength') === '1') {
+  // js/reader/clip.js measures clips with an <audio> element, then OfflineAudioContext: take both away.
+  window.Audio = undefined;
+  window.OfflineAudioContext = undefined;
+  window.webkitOfflineAudioContext = undefined;
+}
 
 // sibs=Amara,Zak: children reading together.
 const sibs = (params.get('sibs') ?? '').split(',').map((x) => x.trim()).filter(Boolean);
@@ -219,6 +233,8 @@ window.__reader = await mountReader(document.getElementById('app'), {
     document.body.dataset.exited = '1';
   },
   onMagic: (n) => log.magic.push(n),
+  // letters=1: the app offers the first-letter game at the end.
+  onLetters: params.get('letters') === '1' ? () => void log.letters++ : undefined,
   requireTap: params.has('gate') ? params.get('gate') === '1' : undefined,
 });
 window.__ready = true;

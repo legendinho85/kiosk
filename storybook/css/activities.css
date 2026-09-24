@@ -476,6 +476,83 @@
   transform: translate(calc(var(--x) * .45), calc(var(--up) * .55)) rotate(calc(var(--r) * .2));
 }
 
+/* ---- Easy read (settings.easyRead -> html[data-easy-read="true"]) -------------------------- */
+/* What the voice says, dyslexia-friendly: bigger, more space between letters, words and
+   lines, every line starting at the same place (never justified or hyphenated). */
+html[data-easy-read="true"] .sb-lt { --lt-say: clamp(24px, 1.6vh + 3.4vw, 40px); }
+html[data-easy-read="true"] .sb-lt-say {
+  width: 100%;
+  max-width: 26em;
+  justify-self: center;
+  text-align: left;
+  text-wrap: pretty;
+  line-height: 1.6;
+  letter-spacing: .07em;
+  word-spacing: .18em;
+  hyphens: none;
+  -webkit-hyphens: none;
+  overflow-wrap: break-word;
+}
+html[data-easy-read="true"] .sb-lt-say-letter { letter-spacing: 0; margin: 0 .12em; }
+html[data-easy-read="true"] .sb-lt-kicker,
+html[data-easy-read="true"] .sb-lt-pill,
+html[data-easy-read="true"] .sb-lt-skip { letter-spacing: .04em; word-spacing: .12em; }
+@media (orientation: landscape) and (max-height: 560px) {
+  html[data-easy-read="true"] .sb-lt { --lt-say: clamp(20px, 2.6vh + 1.8vw, 30px); }
+  html[data-easy-read="true"] .sb-lt-say { line-height: 1.5; letter-spacing: .06em; }
+}
+
+/* ---- High contrast (settings.highContrast -> html[data-contrast="high"]) -------------------- */
+/* Black text and edges on plain white; a dark edge round the big letter; bold outlines. */
+html[data-contrast="high"] .sb-lt {
+  --lt-ink: #000000;
+  --lt-text: #000000;
+  --lt-line: #000000;
+  --lt-name: #9E0B30;
+  --lt-focus: #0047B3;
+  --lt-dots: transparent;
+  --lt-card: #FFFFFF;
+  --lt-glyph: #FFFFFF;
+  --lt-glyph-edge: #1B4F72;
+  --lt-glyph-shadow: #C8C8C8;
+  --lt-guide: rgba(0, 0, 0, .88);
+  --lt-dot-first: #1E7A34;
+  --lt-chip: #FFFFFF;
+  background: #FFFFFF;
+}
+html[data-contrast="high"] .sb-lt :focus-visible { outline-width: 5px; }
+html[data-contrast="high"] .sb-lt-kicker { box-shadow: inset 0 0 0 2px #000000; }
+html[data-contrast="high"] .sb-lt-skip { border: 3px solid #000000; }
+html[data-contrast="high"] .sb-lt-tile-face { border-width: 5px; }
+html[data-contrast="high"] .sb-lt-stage { border-width: 5px; background: #FFFFFF; }
+html[data-contrast="high"] .sb-lt-pill { border-width: 4px; }
+html[data-contrast="high"] .sb-lt-say-letter { box-shadow: inset 0 0 0 4px #000000; }
+html[data-contrast="high"] .sb-lt-say-name { text-decoration: underline solid .08em; text-underline-offset: .18em; }
+html[data-contrast="high"] .sb-lt-tile.is-hint .sb-lt-tile-face,
+html[data-contrast="high"] .sb-lt-tile.is-found .sb-lt-tile-face { box-shadow: 0 5px 0 #000000, 0 0 0 6px #FFFFFF, 0 0 0 11px #000000; }
+html[data-contrast="high"] .sb-lt-pen { border-width: 5px; box-shadow: 0 0 0 6px #FFE14D, 0 0 0 8px #000000; }
+/* High contrast at bedtime: still dark and calm, but plain, with bright words and edges. */
+html[data-contrast="high"] .sb-lt[data-bedtime] {
+  --lt-ink: #FFF8E8;
+  --lt-text: #FFF8E8;
+  --lt-line: #C9D0FF;
+  --lt-name: #FFC2CE;
+  --lt-focus: #9CC8FF;
+  --lt-card: #0B1033;
+  --lt-glyph: #3A4690;
+  --lt-glyph-edge: #E3E7FF;
+  --lt-glyph-shadow: #05071A;
+  --lt-guide: rgba(255, 248, 232, .9);
+  --lt-dot-first: #5DAA66;
+  --lt-chip: #0B1033;
+  background: #05071A;
+}
+html[data-contrast="high"] .sb-lt[data-bedtime] .sb-lt-skip { border-color: #C9D0FF; }
+html[data-contrast="high"] .sb-lt[data-bedtime] .sb-lt-kicker { box-shadow: inset 0 0 0 2px #C9D0FF; }
+html[data-contrast="high"] .sb-lt[data-bedtime] .sb-lt-stage { background: var(--lt-card); }
+html[data-contrast="high"] .sb-lt[data-bedtime] .sb-lt-tile.is-hint .sb-lt-tile-face,
+html[data-contrast="high"] .sb-lt[data-bedtime] .sb-lt-tile.is-found .sb-lt-tile-face { box-shadow: 0 5px 0 #C9D0FF, 0 0 0 6px #05071A, 0 0 0 11px #FFE7A3; }
+
 /* Windows high contrast / forced colours: keep edges visible. */
 @media (forced-colors: active) {
   .sb-lt-tile-face, .sb-lt-pill, .sb-lt-stage, .sb-lt-skip { border-color: CanvasText; }

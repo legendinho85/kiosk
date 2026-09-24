@@ -2,13 +2,13 @@
 // run against tests/fixtures/activities/ with Playwright's Chromium:
 //   node tests/e2e/activities.e2e.mjs                 (PORT=8131 by default)
 //   SHOTS=/some/dir node tests/e2e/activities.e2e.mjs  also saves screenshots
-//   FONTS_DIR=/dir/with/woff2 ...                      use real Fredoka/Andika files
-//     (fredoka-latin-600-normal.woff2, Andika-400-latin.woff2, Andika-700-latin.woff2)
+//   NO_FONTS=1 ...                                     leave out the app's self-hosted fonts
+//     (css/fonts.css), to check the fallback system fonts
 //   ONLY=<text> runs only the steps whose name contains it
 // Starts and stops its own static server. Exits non-zero on any failure.
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -19,7 +19,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const PORT = Number(process.env.PORT ?? 8131);
 const BASE = `http://127.0.0.1:${PORT}`;
 const SHOTS = process.env.SHOTS ?? '';
-const FONTS_DIR = process.env.FONTS_DIR ?? '';
+const NO_FONTS = process.env.NO_FONTS === '1';
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 const HARNESS = `${BASE}/tests/fixtures/activities/index.html`;
 const FAST = 'test=1&stub=1&scale=0.05&idle=60000&seed=3';
@@ -76,12 +76,6 @@ function stopServer(proc) {
 }
 
 // ---- page helpers -----------------------------------------------------------------
-const FACES = FONTS_DIR
-  ? `@font-face{font-family:Fredoka;font-weight:500 700;src:url(https://fonts.gstatic.com/local/fredoka-latin-600-normal.woff2) format('woff2');}
-@font-face{font-family:Andika;font-weight:400;src:url(https://fonts.gstatic.com/local/Andika-400-latin.woff2) format('woff2');}
-@font-face{font-family:Andika;font-weight:700;src:url(https://fonts.gstatic.com/local/Andika-700-latin.woff2) format('woff2');}`
-  : '';
-
 let browser;
 const consoleErrors = [];
 async function open(query, { viewport = { width: 390, height: 844 }, reducedMotion = 'no-preference', hasTouch = false, waitFor = 'find' } = {}) {
@@ -92,13 +86,8 @@ async function open(query, { viewport = { width: 390, height: 844 }, reducedMoti
     if (m.type() === 'error') consoleErrors.push(`${query}: ${m.text()}`);
   });
   page.on('pageerror', (e) => consoleErrors.push(`${query}: pageerror ${e.message}`));
-  // No network in tests: web fonts are either local files (FONTS_DIR) or nothing (fallback fonts).
-  await page.route(/fonts\.googleapis\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: FACES }));
-  await page.route(/fonts\.gstatic\.com/, (r) => {
-    const file = path.join(FONTS_DIR, new URL(r.request().url()).pathname.split('/').pop());
-    if (FONTS_DIR && existsSync(file)) r.fulfill({ status: 200, contentType: 'font/woff2', body: readFileSync(file) });
-    else r.fulfill({ status: 404, body: '' });
-  });
+  // The harness links the app's self-hosted fonts (css/fonts.css); NO_FONTS=1 checks the fallback fonts.
+  if (NO_FONTS) await page.route(/\/css\/fonts\.css$/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
   await page.addInitScript(() => {
     window.__ptypes = [];
     document.addEventListener('pointerdown', (e) => window.__ptypes.push(e.pointerType), true);
@@ -576,6 +565,47 @@ try {
       await check('celebrate');
       await shot(page, `celebrate-${w}x${h}`);
       await close(page);
+    });
+  }
+
+  for (const [w, h] of [[390, 844], [844, 390]]) {
+    await step(`easy read and high contrast at ${w}x${h}: spaced-out words, black on white, bold edges`, async () => {
+      const plain = await open(`${FAST}&name=Ava`, { viewport: { width: w, height: h } });
+      const base = await plain.evaluate(() => parseFloat(getComputedStyle(document.querySelector('.sb-lt-say')).fontSize));
+      await close(plain);
+      const page = await open(`${FAST}&name=Ava&easy=1`, { viewport: { width: w, height: h } });
+      const easy = await page.evaluate(() => {
+        const cs = getComputedStyle(document.querySelector('.sb-lt-say'));
+        const px = (v) => parseFloat(v) || 0;
+        return { size: px(cs.fontSize), letter: px(cs.letterSpacing) / px(cs.fontSize), word: px(cs.wordSpacing) / px(cs.fontSize), line: px(cs.lineHeight) / px(cs.fontSize), align: cs.textAlign, scrollW: document.scrollingElement.scrollWidth, w: innerWidth };
+      });
+      assert(easy.size >= base * 1.05, `bigger (${easy.size} vs ${base})`);
+      assert(easy.letter >= 0.05 && easy.word >= 0.1 && easy.line >= 1.45 && easy.align !== 'justify', `spaced out, not justified (${JSON.stringify(easy)})`);
+      assert(easy.scrollW <= easy.w, 'no sideways scroll (easy read)');
+      await findLetter(page);
+      await stepIs(page, 'trace');
+      await page.waitForTimeout(700); // the card slides in
+      await shot(page, `easy-read-trace-${w}x${h}`);
+      await close(page);
+
+      const hc = await open(`${FAST}&name=Ava&contrast=high`, { viewport: { width: w, height: h } });
+      const high = await hc.evaluate(() => {
+        const root = getComputedStyle(document.querySelector('.sb-lt'));
+        const tile = getComputedStyle(document.querySelector('.sb-lt-tile-face'));
+        const skip = getComputedStyle(document.querySelector('[data-testid=lt-skip]'));
+        return { colour: root.color, bgImage: root.backgroundImage, bg: root.backgroundColor, tile: parseFloat(tile.borderTopWidth), tileColour: tile.borderTopColor, skip: parseFloat(skip.borderTopWidth), skipColour: skip.borderTopColor, scrollW: document.scrollingElement.scrollWidth, w: innerWidth };
+      });
+      eq([high.colour, high.bgImage, high.bg], ['rgb(0, 0, 0)', 'none', 'rgb(255, 255, 255)'], 'black on plain white');
+      assert(high.tile >= 5 && high.tileColour === 'rgb(0, 0, 0)' && high.skip >= 3 && high.skipColour === 'rgb(0, 0, 0)', `bold edges (${JSON.stringify(high)})`);
+      assert(high.scrollW <= high.w, 'no sideways scroll (high contrast)');
+      await shot(hc, `high-contrast-find-${w}x${h}`);
+      await findLetter(hc);
+      await stepIs(hc, 'trace');
+      const edge = await hc.evaluate(() => getComputedStyle(document.querySelector('.sb-lt')).getPropertyValue('--lt-glyph-edge').trim());
+      eq(edge, '#1B4F72', 'the big letter gets a dark edge');
+      await hc.waitForTimeout(700); // the card slides in
+      await shot(hc, `high-contrast-trace-${w}x${h}`);
+      await close(hc);
     });
   }
 

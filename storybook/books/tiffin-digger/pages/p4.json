@@ -1,6 +1,6 @@
 {
   "sfx": {
-    "open": "drum"
+    "open": "rumble"
   },
   "mechanic": {
     "type": "pull-tab",
@@ -168,7 +168,7 @@
       "sfx": [
         "swoosh",
         "pop",
-        "drum"
+        "rumble"
       ]
     }
   }
