@@ -336,7 +336,7 @@ So withdrawing the audio without clear warning in advance is both a legal and a 
 - [ ] **Keep personal data and tracking IDs out of the code.** One code per title, carrying only the book ID.
 - [ ] **Print the short web address beside the code**, for phones that won't scan and for people who'd rather type.
 - [ ] **Label the code "For grown-ups".**
-- [ ] **Put a clear promise in the terms**, such as "this book's audio is free, with no subscription, for at least N years". Pick a promise you can keep. Get a lawyer to word it (see the lawyer box).
+- [ ] **Put a clear promise in the terms.** The research suggests a public commitment that the audio stays available "for at least N years" or "forever", with no subscription. "Free forever" is the stronger selling point, but make it only if the plain fallback below (static files on a domain paid years ahead) makes it realistic. Otherwise promise a number of years you can keep. Get a lawyer to word it (see the lawyer box).
 - [ ] **Keep a plain fallback** that survives even if the app is switched off: downloadable MP3s of the non-personalised read for each title, hosted as static files on the same domain.
 - [ ] **Write a shutdown plan**: what happens to the domain, the fallback files and the promise if Made Happy is sold or closes.
 - [ ] **Plan one resolver that can later serve the EU toy Digital Product Passport** as well as the read-along (from 1 Aug 2030).
@@ -352,7 +352,7 @@ So withdrawing the audio without clear warning in advance is both a legal and a 
 |---|---|---|
 | **2.5.7 Dragging Movements** (AA, new in 2.2) | Every drag needs a single-pointer alternative. | [x] Every slider, wheel, pull-tab and flap also works with a tap ("show me") and with the keyboard. |
 | **2.5.8 Target Size (Minimum)** (AA) | At least 24×24 CSS px. The research suggests 64-96 px for toddlers. | [x] Reader buttons are 56 px. [ ] Consider 64 px or more in the reader. |
-| **1.4.2 Audio Control** | Audio that plays automatically for more than 3 seconds needs pause, stop or volume control. | [ ] Changing page stops the voice, and there are replay and exit buttons, but I found no pause button in the reader code. Add one. |
+| **1.4.2 Audio Control** | Audio that plays automatically for more than 3 seconds needs pause, stop or volume control. | [ ] Changing page stops the voice, and there are replay and exit buttons, but no pause button turned up in the reader code on 24 September 2026. Add one. |
 | **2.2.2 Pause, Stop, Hide** | Moving content that lasts more than 5 seconds needs a way to pause it. | [ ] The idle animations (bobbing, swaying, twinkling) respect "reduce motion", but check there's a pause for everyone. |
 | **2.3.1 Three Flashes** | Nothing flashes more than 3 times a second. | [x] This is a design rule in the architecture. |
 | **1.1.1 Non-text Content** | Alternative text for the illustrations. | [ ] Check that each scene has a short description. |

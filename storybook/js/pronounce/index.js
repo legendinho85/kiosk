@@ -71,7 +71,9 @@ export function customCandidate(text, source = 'custom') {
   if (looksLikeRespelling(t)) {
     return { id: source, say: respellToSay(t), ipa: respellToIpa(t), respell: t, label: source === 'heard' ? 'What we heard' : 'Your spelling', source };
   }
-  return { id: source, say: t, ipa: '', respell: '', label: source === 'heard' ? 'What we heard' : 'Your spelling', source };
+  // "NEEV" typed in capitals would be spelled out letter by letter by some voices.
+  const say = t === t.toUpperCase() && /[A-Z]{2}/.test(t) ? t.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()) : t;
+  return { id: source, say, ipa: '', respell: '', label: source === 'heard' ? 'What we heard' : 'Your spelling', source };
 }
 
 /** What gets stored on the child's profile. */

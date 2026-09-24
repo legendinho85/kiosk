@@ -559,6 +559,61 @@ try {
     await c.close();
   });
 
+  await step('no horizontal scroll on any screen at 360x640 and 768x1024', async () => {
+    for (const viewport of [{ width: 360, height: 640 }, { width: 768, height: 1024 }]) {
+      const { page: p, errors: errs, context: c } = await openPage(browser, { viewport, seed: seeded(), hooks: { gateMs: 150 } });
+      const check = async (hash, ready) => {
+        await p.goto(url(hash));
+        await p.waitForSelector(ready, { timeout: 8000 });
+        await p.waitForTimeout(250);
+        const over = await p.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+        assert(over <= 0, `${hash} scrolls sideways by ${over}px at ${viewport.width}x${viewport.height}`);
+      };
+      await check(`#/b/${BOOK}`, '[data-testid=start-reading]');
+      await check(`#/b/${BOOK}/name`, '[data-testid=name-input]');
+      await check(`#/b/${BOOK}/say`, '[data-testid=candidate]');
+      await check('#/', '[data-testid=shelf-book]');
+      await check(`#/qr/${BOOK}`, '[data-testid=qr-url]');
+      await check('#/settings', '[data-testid=gate-screen]');
+      await holdGate(p, 400);
+      await p.getByTestId('settings-child').first().waitFor();
+      eq(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth <= 0), true, 'settings fits');
+      await noErrors(errs, `layout at ${viewport.width}x${viewport.height}`);
+      await c.close();
+    }
+  });
+
+  await step('fails soft: blocked storage, no speech engine, reduced motion', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser, {
+      reducedMotion: 'reduce',
+      init: () => {
+        // Private mode / sandboxed: storage throws; no speechSynthesis at all.
+        Storage.prototype.setItem = () => {
+          throw new DOMException('blocked', 'SecurityError');
+        };
+        delete window.speechSynthesis;
+        delete window.SpeechSynthesisUtterance;
+        try {
+          Object.defineProperty(window, 'indexedDB', { get: () => undefined });
+        } catch {
+          /* ignore */
+        }
+      },
+    });
+    await p.goto(`${BASE}/?b=${BOOK}`);
+    await p.getByTestId('name-input').fill('Niamh');
+    await p.getByTestId('name-continue').click();
+    await p.getByTestId('candidate').first().waitFor();
+    await p.getByTestId('no-voice').waitFor(); // explains why nothing is heard
+    await p.getByTestId('hear-in-story').click();
+    await p.waitForSelector('[data-testid=story-preview] .sb-word.is-current', { timeout: 5000 });
+    await p.getByTestId('pronunciation-done').click();
+    await p.getByTestId('start-reading').waitFor();
+    eq(await p.getByTestId('active-child').innerText(), 'Niamh', 'works from memory');
+    await noErrors(errs, 'fail-soft');
+    await c.close();
+  });
+
   // ---- Screenshots of every screen at three sizes ------------------------------------------
   if (SHOTS) {
     for (const viewport of [PHONE, { width: 844, height: 390 }, { width: 1024, height: 768 }]) {

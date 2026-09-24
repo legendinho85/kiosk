@@ -847,6 +847,7 @@ h1[tabindex="-1"]:focus { outline: none; }
 .alt-hint { margin: 8px 0 12px; font-size: 15.5px; color: var(--ink-2); }
 .alt-hint strong { font-family: var(--font-head); font-weight: 600; color: var(--ink); }
 .alt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.alt-type .alt-actions > .btn { flex: 1 1 auto; padding: 0 16px; max-width: 220px; }
 .alt-status { margin-top: 10px; font-size: 15.5px; color: var(--ink-2); min-height: 0; }
 .alt-status:empty { display: none; }
 .custom-preview {

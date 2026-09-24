@@ -151,6 +151,8 @@ test('customCandidate converts respellings and keeps plain spellings', () => {
   assert.equal(s.say, 'Shivawn');
   assert.equal(s.ipa, '');
   assert.equal(customCandidate('   '), null);
+  assert.equal(customCandidate('NEEV').say, 'Neev', 'capitals would be spelled out by some voices');
+  assert.equal(customCandidate('MARY KATE').say, 'Mary Kate');
   assert.equal(customCandidate('Neeve', 'heard').label, 'What we heard');
   const p = toPronunciation(r);
   assert.deepEqual(Object.keys(p).sort(), ['ipa', 'label', 'recordingId', 'respell', 'say', 'source', 'useRecording']);

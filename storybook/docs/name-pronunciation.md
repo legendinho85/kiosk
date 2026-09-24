@@ -67,7 +67,7 @@ How lookup works:
 - Double names are tried whole first ("Anne-Marie"), then part by part ("Mary Kate" is Mary plus Kate), and the most likely combinations are offered.
 - Up to three dictionary variants are shown, followed by "As written" (unless it would sound the same).
 
-**Status.** The repo's `data/names.json` is still a three-name placeholder (Siobhan, Niamh, Isla). A first batch of several hundred names is being drafted and machine-checked in a separate step: Irish, Scottish Gaelic, Welsh and Cornish, European, and other names common in UK families. **None of it has yet been checked by native speakers**, and that check is needed before launch (see section 5).
+**Status.** `data/names.json` holds **545 names with 657 pronunciations**: Irish, Scottish Gaelic, Welsh and Cornish; South Asian, Arabic, Somali, West and East African, East Asian, Eastern European, Hebrew, Turkish, Greek and Albanian; and the most popular names in England and Wales plus often-mispronounced European names. Each segment was written twice, independently. A sceptical reviewer checked each segment, a final adjudicator settled the 35 names where the two passes disagreed, and every "say" spelling was machine-checked. **None of it has yet been checked by native speakers**, and that check is needed before launch (see section 5).
 
 **What to curate first**, following the research:
 - The most common names in the ONS England and Wales lists, and the Scottish (NRS) and Northern Irish lists. Muhammad was the top boys' name in 2024 and 2025 and Olivia the top girls' name in 2025 *(to verify)*. Add fast risers such as Eliana, Anaya and Alba *(to verify)*.
@@ -225,7 +225,7 @@ It makes three checks:
 2. **Consistency.** Does the respelling (shih-VAWN) turn into roughly the same sounds as the IPA (ʃɪˈvɔːn)? It warns below 60% similarity.
 3. **Speakability.** Does a plain English voice reading the "say" text produce something close to the IPA? It uses **espeak-ng**, a free, open-source British English voice that can print the sounds it would make, and compares them with the IPA. Small dialect differences are ignored. It warns below 70% similarity, and it also checks that the stress lands on the same syllable.
 
-Only structural errors fail the check. The other two produce warnings, because espeak-ng is a **stand-in**: it sounds robotic, and commercial voices and phone voices may read the same spelling differently. On the current placeholder dictionary the check reports 3 entries, 4 variants, 0 errors, 0 warnings and 95% average similarity.
+Only structural errors fail the check. The other two produce warnings, because espeak-ng is a **stand-in**: it sounds robotic, and commercial voices and phone voices may read the same spelling differently. On the current dictionary the check reports 545 entries, 657 variants, 0 errors, 8 warnings and 96% average similarity. The warnings are known limits: sounds a plain English voice cannot make (Welsh "ll", the "ch" in Fiachra), and a few cases where espeak-ng reads a spelling slightly differently from a phone voice.
 
 **What it can't check** is whether the IPA is how families actually say the name. That needs native speakers. The plan is to have each origin group reviewed by speakers, starting with the names flagged medium or low confidence in the dictionary.
 
@@ -297,7 +297,7 @@ What leaves the phone, and when:
 
 ## 9. Known gaps in the prototype (as of 24 September 2026)
 
-- [ ] The dictionary in the repo is a 3-name placeholder; the drafted batch still needs merging and native-speaker checks.
+- [ ] The dictionary needs native-speaker checks, especially for names with more than one family pronunciation.
 - [ ] Online browser voices are not yet opt-in (section 8).
 - [ ] No steering to "Record your voice" for sounds English voices can't make (section 7).
 - [ ] A one-syllable respelling typed in capitals (e.g. "NEEV") isn't recognised as a respelling, so the voice is given "NEEV" in capitals. Some voices spell capitals out letter by letter. Test and fix.
