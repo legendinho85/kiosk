@@ -912,7 +912,12 @@ export function createControl(svgRoot, mechanic, { label = '', onProgress, onCom
   function settle() {
     if (destroyed) return;
     if (type === 'wheel') {
-      if (state.done && kind.acc < kind.total) glide(kind.total, 250, 'easeOut');
+      // Once done, the wheel settles on the nearest whole turn, so it always
+      // comes to rest on the finished picture however far it was spun.
+      if (state.done) {
+        const target = Math.max(1, Math.round(kind.acc / kind.total)) * kind.total;
+        if (Math.abs(target - kind.acc) > 0.5) glide(target, reducedMotion ? 150 : 250 + Math.abs(target - kind.acc) * 2, 'easeOut');
+      }
       return;
     }
     if (returnTrip) {

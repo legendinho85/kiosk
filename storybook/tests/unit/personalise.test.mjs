@@ -94,3 +94,21 @@ test('parseTemplate and unknownPlaceholders', () => {
   assert.deepEqual(parseTemplate('Hi {name}!').map((c) => c.kind), ['text', 'name', 'text']);
   assert.deepEqual(unknownPlaceholders('Hi {nmae} and {name} {NAME}'), ['{nmae}']);
 });
+
+test('siblings: joined names, plural choices and art form', async () => {
+  const { joinNames, togetherPerson } = await import('../../js/core/personalise.js');
+  assert.equal(joinNames(['Amara']), 'Amara');
+  assert.equal(joinNames(['Amara', 'Zak']), 'Amara and Zak');
+  assert.equal(joinNames(['Amara', 'Zak', 'Li']), 'Amara, Zak and Li');
+  const two = togetherPerson([{ display: 'Amara' }, { display: 'Niamh', say: 'Neeve' }]);
+  assert.deepEqual(two, { display: 'Amara and Niamh', say: 'Amara and Neeve', count: 2, art: 'Amara & Niamh' });
+  const line = "Where {is|are} {name's} {shirt|shirts}?";
+  assert.equal(fillTemplate(line, two), "Where are Amara and Niamh's shirts?");
+  assert.equal(fillTemplate(line, person('Ava')), "Where is Ava's shirt?");
+  const t = tokenizeLine(line, two);
+  assert.equal(t.spoken, "Where are Amara and Neeve's shirts?");
+  assert.deepEqual(t.units.map((u) => u.isName), [false, false, true, false]);
+  assert.deepEqual(unknownPlaceholders(line), []);
+  assert.deepEqual(togetherPerson([{ display: 'Ava' }]), { display: 'Ava', say: 'Ava' });
+  assert.equal(togetherPerson([1, 2, 3, 4].map((i) => ({ display: `K${'a'.repeat(i)}` }))).count, 3);
+});

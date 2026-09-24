@@ -121,7 +121,7 @@
   --berry: #E8505B;
   --focus: #1D6FE0;
   --name-ink: #C0264B; /* 5.4:1 on paper */
-  --hl: #FFE27A;
+  --hl: #FFD84F;
   --r-read: clamp(22px, 1.1vh + 2.9vw, 40px);
   --r-btn: 56px;
   --r-nav: 68px;
@@ -328,17 +328,21 @@
   100% { transform: translate(var(--x), calc(var(--up) + var(--fall))) rotate(var(--r)) scale(1); opacity: 0; }
 }
 
-/* Text band */
+/* Text band. The inner column centres the words when they fit and scrolls
+   from the top when they don't (plain flex centring would cut off the top). */
 .sb-r-band {
   grid-area: band;
+  min-height: 0;
+  padding: 12px 18px;
+  overflow-y: auto;
+}
+.sb-r-band-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  min-height: 0;
-  padding: 12px 18px;
-  overflow-y: auto;
+  min-height: 100%;
 }
 .sb-r-text {
   max-width: 34em;
@@ -521,7 +525,8 @@
     border-radius: 18px;
     box-shadow: 0 2px 0 rgba(43, 42, 51, .18), 0 22px 44px -12px rgba(43, 42, 51, .35), 0 0 0 1px rgba(43, 42, 51, .08);
   }
-  .sb-r-band { min-height: 150px; padding: 12px 24px 20px; justify-content: flex-start; overflow: visible; }
+  .sb-r-band { min-height: 150px; padding: 12px 24px 20px; overflow: visible; }
+  .sb-r-band-inner { justify-content: flex-start; }
   .sb-r-prev { grid-area: prev; justify-self: center; margin: 0; }
   .sb-r-next-wrap {
     grid-area: next;
@@ -530,7 +535,7 @@
     gap: 16px;
     margin: 0;
   }
-  .sb-r-bubble { white-space: normal; text-align: center; width: 7.2em; transform-origin: center bottom; transform: scale(.6) translateY(10px); }
+  .sb-r-bubble { white-space: normal; text-align: center; width: 6.4em; font-size: 16px; padding: 7px 8px; transform-origin: center bottom; transform: scale(.6) translateY(10px); }
   .sb-r-bubble::after { right: auto; left: 50%; top: auto; bottom: -11px; margin: 0 0 0 -8px; transform: rotate(135deg); }
 }
 
@@ -564,7 +569,6 @@
     grid-row: 1 / -1;
     align-self: end;
     justify-self: stretch;
-    justify-content: flex-end;
     padding: 28px 16px 8px;
     overflow: visible;
     /* soft paper backdrop so the words are readable over any picture */
@@ -572,6 +576,7 @@
     pointer-events: none;
     z-index: 4;
   }
+  .sb-r-band-inner { justify-content: flex-end; gap: 10px; }
   .sb-r-band .sb-word, .sb-r-band button { pointer-events: auto; }
   .sb-r-text { line-height: 1.35; }
   /* Karaoke: only the line being read, so the words never cover the picture. */
@@ -592,10 +597,21 @@
 /* Portrait phones: the words get the room under the picture. */
 @media (orientation: portrait) and (max-width: 600px) {
   .sb-reader { --r-read: clamp(24px, 7.4vw, 32px); }
+  .sb-r-band { padding: 10px 12px; }
+  .sb-r-endbar { gap: 10px; }
+  .sb-r-pill { min-height: 56px; font-size: 19px; padding: 6px 16px 6px 8px; gap: 8px; }
+  .sb-r-pill-icon { width: 30px; height: 30px; }
 }
 /* Small portrait phones */
+@media (orientation: portrait) and (max-height: 700px) {
+  .sb-r-text[data-long] { font-size: calc(var(--r-read) * .8); line-height: 1.34; }
+}
 @media (orientation: portrait) and (max-width: 380px) {
   .sb-reader { --r-nav: 62px; }
+  .sb-r-top { gap: 6px; padding-inline: 8px; }
+  .sb-r-dots { gap: 5px; }
+  .sb-r-dot { width: 9px; height: 9px; }
+  .sb-r-dot.is-current { width: 20px; }
   .sb-r-bubble { font-size: 16px; padding: 7px 11px; }
 }
 

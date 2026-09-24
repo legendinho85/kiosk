@@ -599,6 +599,38 @@ try {
         await context.close();
       }
     });
+    await step('real book: tricky names fit every name spot (shrink, wrap, overflow banner)', async () => {
+      for (const name of ['Maximilian', 'Anna-Sophia', 'Xiao Ming', '小明', 'Bo']) {
+        const { page, context, errors } = await openHarness(browser, `test=1&book=tiffin-football&merge=1&name=${encodeURIComponent(name)}&page=${ready[0].n}`, { viewport: { width: 1024, height: 768 } });
+        for (const p of ready) {
+          if (p.n !== ready[0].n) await page.evaluate((n) => window.__reader.goTo(n), p.n);
+          const st = await page.waitForFunction(
+            (n) => {
+              const r = document.querySelector('[data-testid=reader]');
+              return r.dataset.page === String(n) && ['waiting', 'done'].includes(r.dataset.state) && r.dataset.state;
+            },
+            p.n,
+            { timeout: 15000 },
+          ).then((h) => h.jsonValue());
+          if (st === 'waiting') {
+            await control(page).focus();
+            await page.keyboard.press('Enter');
+          }
+          await waitState(page, p.n, 'done', 15000);
+          await page.waitForTimeout(400);
+          const over = await page.evaluate(() =>
+            [...document.querySelectorAll('[data-testid=scene] text.sb-name')]
+              .filter((t) => !t.closest('[display=none]') && t.textContent)
+              .map((t) => ({ id: t.id || t.parentNode.id, w: Math.round(t.getBBox().width), max: Number(t.dataset.maxWidth), text: t.textContent }))
+              .filter((x) => x.max && x.w > x.max * 1.04),
+          );
+          eq(over, [], `${name}: name spots on page ${p.n} fit`);
+          if (name !== 'Bo') await shot(page, `real-names-${encodeURIComponent(name)}-p${p.n}`);
+        }
+        noErrors(errors.filter((e) => !/status of 404/.test(e)), `real book names (${name})`);
+        await context.close();
+      }
+    });
   } else {
     console.log('  skip real book smoke test (no scenes yet or REAL_BOOK=0)');
   }

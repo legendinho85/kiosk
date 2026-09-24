@@ -468,7 +468,7 @@ export function render(root, ctx) {
 
   // ---- Done ----------------------------------------------------------------------------------
   const live = h('p', { class: 'sr-only', 'aria-live': 'polite' });
-  const done = button({ text: 'That’s right — let’s read!', iconAfter: 'arrow', variant: 'primary', size: 'lg', testid: 'pronunciation-done', class: 'done-button' });
+  const done = button({ text: 'Done — let’s read!', iconAfter: 'arrow', variant: 'primary', size: 'lg', testid: 'pronunciation-done', class: 'done-button' });
   done.addEventListener('click', async () => {
     stopPlaying();
     const chosen = selected ?? candidates[0] ?? { say: display, label: 'As written', source: 'as-written' };

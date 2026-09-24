@@ -5,6 +5,8 @@
 //   {name's}               possessive ("Siobhan's")
 //   {NAME}                 upper case, for shirts / banners ("SIOBHAN")
 //   {say:display|spoken}   show one thing, say another (for words TTS gets wrong)
+//   {one|many}             singular/plural choice when reading for siblings,
+//                          e.g. "Where {is|are} {name's} {shirt|shirts}?"
 //
 // A "person" is { display, say }: `display` is what appears on the page and
 // `say` is the text we hand to the speech engine so the name is pronounced
@@ -91,13 +93,42 @@ export function upper(name) {
   return String(name).toLocaleUpperCase('en-GB');
 }
 
-/** Normalise a person object; `say` defaults to the displayed name. */
-export function person(display, say) {
+/**
+ * Normalise a person object; `say` defaults to the displayed name.
+ * `count` > 1 means several children share the story (siblings), which picks
+ * the plural side of {one|many} choices. `art` is the form used inside the
+ * pictures (e.g. "Amara & Zak"); read it as `p.art ?? p.display`.
+ */
+export function person(display, say, { count = 1, art } = {}) {
   const s = String(say ?? '').trim();
-  return { display: String(display), say: s || String(display) };
+  const p = { display: String(display), say: s || String(display) };
+  // Only siblings carry the extra fields, so single-child objects stay {display, say}.
+  if ((count | 0) > 1) p.count = count | 0;
+  if (art != null && art !== p.display) p.art = String(art);
+  return p;
 }
 
-const PLACEHOLDER = /\{(name's|name|NAME|Name|say:[^|{}]*\|[^{}]*)\}/g;
+/** UK style list without an Oxford comma: "Amara", "Amara and Zak", "Amara, Zak and Li". */
+export function joinNames(names) {
+  const list = names.map((n) => String(n).trim()).filter(Boolean);
+  if (list.length <= 1) return list[0] ?? '';
+  return `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`;
+}
+
+/**
+ * One "person" for up to three children reading together.
+ * @param {Array<{display: string, say?: string}>} children
+ */
+export function togetherPerson(children) {
+  const list = children.slice(0, 3);
+  if (list.length === 1) return person(list[0].display, list[0].say);
+  return person(joinNames(list.map((c) => c.display)), joinNames(list.map((c) => c.say || c.display)), {
+    count: list.length,
+    art: list.map((c) => c.display).join(' & '),
+  });
+}
+
+const PLACEHOLDER = /\{(name's|name|NAME|Name|say:[^|{}]*\|[^{}]*|(?!say:)[^{}|]*\|[^{}|]*)\}/g;
 
 /** Split a template into text and placeholder chunks. */
 export function parseTemplate(template) {
@@ -109,6 +140,9 @@ export function parseTemplate(template) {
     if (tag.startsWith('say:')) {
       const [display, spoken] = tag.slice(4).split('|');
       chunks.push({ kind: 'say', display, spoken });
+    } else if (tag.includes('|')) {
+      const [one, many] = tag.split('|');
+      chunks.push({ kind: 'choice', one, many });
     } else {
       chunks.push({ kind: 'name', form: tag === "name's" ? 'poss' : tag === 'NAME' ? 'upper' : 'plain' });
     }
@@ -123,6 +157,10 @@ export function unknownPlaceholders(template) {
   const known = new Set();
   for (const m of String(template).matchAll(PLACEHOLDER)) known.add(m.index);
   return [...String(template).matchAll(/\{[^}]*\}/g)].filter((m) => !known.has(m.index)).map((m) => m[0]);
+}
+
+function choose(chunk, p) {
+  return (p.count ?? 1) > 1 ? chunk.many : chunk.one;
 }
 
 function nameDisplay(p, form) {
@@ -140,7 +178,7 @@ function nameSpoken(p, form) {
 export function fillTemplate(template, p) {
   const pp = typeof p === 'string' ? person(p) : p;
   return parseTemplate(template)
-    .map((c) => (c.kind === 'text' ? c.text : c.kind === 'say' ? c.display : nameDisplay(pp, c.form)))
+    .map((c) => (c.kind === 'text' ? c.text : c.kind === 'choice' ? choose(c, pp) : c.kind === 'say' ? c.display : nameDisplay(pp, c.form)))
     .join('');
 }
 
@@ -175,8 +213,8 @@ export function tokenizeLine(template, p) {
   const ensure = () => (cur ??= { text: '', say: '', isName: false, nameForm: null, hasSay: false });
 
   for (const chunk of parseTemplate(template)) {
-    if (chunk.kind === 'text') {
-      for (const ch of chunk.text) {
+    if (chunk.kind === 'text' || chunk.kind === 'choice') {
+      for (const ch of chunk.kind === 'text' ? chunk.text : choose(chunk, pp)) {
         if (/\s/.test(ch)) flush();
         else {
           const u = ensure();

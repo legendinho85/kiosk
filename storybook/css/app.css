@@ -696,6 +696,23 @@ h1[tabindex="-1"]:focus { outline: none; }
 }
 .chips-or::before, .chips-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
+/* Typing on a phone: the keyboard covers half the screen, so tuck the
+   extras away and keep the name box and the cover (with the name appearing
+   on it) in view together. */
+.screen-name.is-typing .lead,
+.screen-name.is-typing .reassure,
+.screen-name.is-typing .child-chips,
+.screen-name.is-typing .cover-sub,
+.screen-name.is-typing .cover-note,
+.screen-name.is-typing .field-hint { display: none !important; }
+.screen-name.is-typing .name-title { font-size: 24px; }
+.screen-name.is-typing .name-body { gap: 14px; }
+.screen-name.is-typing .name-row { grid-template-columns: minmax(0, 1fr) auto; margin-top: 10px; }
+.screen-name.is-typing .name-input { min-height: 58px; font-size: 24px; }
+.screen-name.is-typing .name-continue { width: auto; --btn-h: 58px; padding: 0 18px; }
+.screen-name.is-typing .cover-caption { margin-top: 6px; }
+.screen-name.is-typing .cover-title { font-size: 20px; }
+
 /* ---- Pronunciation screen ------------------------------------------------------------------- */
 
 .say-body { display: grid; gap: 22px; align-content: start; padding-bottom: 120px; }
@@ -927,7 +944,8 @@ h1[tabindex="-1"]:focus { outline: none; }
 .child-card-text { flex: 1; min-width: 0; }
 .child-card-title { font-size: 21px; }
 .child-name { color: var(--accent-strong); }
-.said-as { margin-top: 2px; color: var(--ink-2); font-size: 16px; }
+.said-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-top: 12px; padding: 8px 8px 8px 14px; border-radius: 16px; background: var(--paper); }
+.said-as { color: var(--ink-2); font-size: 16px; }
 .said-as .respell { font-family: var(--font-head); font-size: 18px; }
 .hear-name { flex: none; }
 .child-links { display: flex; flex-wrap: wrap; gap: 2px 4px; margin: 12px 0 0 -10px; }
@@ -1182,9 +1200,13 @@ div.dialog {
     max-width: var(--maxw);
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
     align-items: center;
+    align-content: center;
     gap: 40px;
     min-height: calc(100dvh - var(--appbar-h) - 60px);
   }
+  /* The column is narrow here: give the name the full width, button below. */
+  .name-row { grid-template-columns: minmax(0, 1fr); }
+  .name-continue { justify-self: start; min-width: 240px; }
   .ready-body {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
     align-items: start;
@@ -1208,7 +1230,8 @@ div.dialog {
   h1 { font-size: 28px; }
   .lead { font-size: 16px; margin-top: 4px; }
   .name-body { gap: 28px; min-height: 0; padding-top: 0; }
-  .name-row { margin-top: 12px; }
+  .name-row { margin-top: 12px; grid-template-columns: minmax(0, 1fr) auto; }
+  .name-continue { min-width: 0; padding: 0 22px; }
   .name-input { min-height: 58px; font-size: 24px; }
   .reassure { margin-top: 10px; }
   .cover-caption { margin-top: 8px; }

@@ -1,8 +1,4 @@
 {
-  "sfx": {
-    "open": "ding"
-  },
-  "mechanic": {
-    "type": "none"
-  }
+  "sfx": {"open": "ding"},
+  "mechanic": {"type": "none"}
 }

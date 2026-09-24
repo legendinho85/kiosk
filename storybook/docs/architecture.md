@@ -109,8 +109,9 @@ storybook/
 
 ### `js/core/personalise.js`
 - `normaliseName(raw) -> {ok, display, key} | {ok:false, error}`; `NAME_ERRORS[error]` is parent-friendly text.
-- `person(display, say) -> {display, say}` — `say` is what the voice is given.
-- `fillTemplate(template, person)` — display text (`{name}`, `{name's}`, `{NAME}`, `{say:shown|spoken}`).
+- `person(display, say, {count, art}) -> {display, say, count?, art?}` — `say` is what the voice is given; `count > 1` for siblings reading together; `art` is the form drawn inside pictures (read as `p.art ?? p.display`).
+- `togetherPerson(children)` / `joinNames(names)` — up to 3 children: "Amara and Zak" (spoken/text), "Amara & Zak" (art).
+- `fillTemplate(template, person)` — display text (`{name}`, `{name's}`, `{NAME}`, `{say:shown|spoken}`, and `{one|many}` choices such as `Where {is|are} {name's} {shirt|shirts}?` which pick the plural side when `count > 1`).
 - `tokenizeLine(template, person) -> {display, spoken, units[]}`; each unit
   `{text, say, isName, nameForm, isWord, dStart, dEnd, sStart, sEnd}`.
 

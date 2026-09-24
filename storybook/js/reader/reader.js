@@ -249,7 +249,7 @@ export async function mountReader(root, opts) {
   const againBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-again', 'data-testid': 'read-again' }, h('span', { class: 'sb-r-pill-icon', html: ICONS.replay }), 'Read again');
   const nightBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-goodnight', 'data-testid': 'goodnight' }, h('span', { class: 'sb-r-pill-icon', html: ICONS.moon }), 'Goodnight');
   const endBar = h('div', { class: 'sb-r-endbar', hidden: true }, againBtn, nightBtn);
-  const band = h('div', { class: 'sb-r-band' }, textEl, endBar);
+  const band = h('div', { class: 'sb-r-band' }, h('div', { class: 'sb-r-band-inner' }, textEl, endBar));
   const hearBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-hear', 'data-testid': 'tap-to-hear', hidden: true }, h('span', { class: 'sb-r-pill-icon', html: ICONS.play }), 'Tap to hear the story');
   const night = h('div', { class: 'sb-r-night', hidden: true, 'aria-live': 'polite' });
   const startLayer = h('div', { class: 'sb-r-start', hidden: true },

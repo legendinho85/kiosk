@@ -5,7 +5,7 @@
 import { h, icon, button, linkButton, respellNode } from '../ui.js';
 import { screen, privacyLine } from '../chrome.js';
 import { createCover } from '../cover.js';
-import { person as makePerson, possessive } from '../../core/personalise.js';
+import { person as makePerson } from '../../core/personalise.js';
 import { planLines } from '../../narrator/plan.js';
 
 /** How the saved pronunciation is described to the parent ("shih-VAWN", or “Siobhan” as written). */
@@ -63,7 +63,7 @@ export function renderReady(root, ctx, profile) {
 
   // ---- Who we're reading for ---------------------------------------------------------
   const summary = pronunciationSummary(profile);
-  const hearBtn = button({ label: `Hear how we say ${profile.display}`, icon: 'speaker', variant: 'soft', size: 'md', testid: 'hear-name', class: 'hear-name' });
+  const hearBtn = button({ text: 'Listen', label: `Listen to how we say ${profile.display}`, icon: 'speaker', variant: 'soft', size: 'sm', testid: 'hear-name', class: 'hear-name' });
   hearBtn.addEventListener('click', async () => {
     hearBtn.classList.add('is-playing');
     await sayName(ctx, profile, { signal: life.signal });
@@ -81,8 +81,8 @@ export function renderReady(root, ctx, profile) {
     { class: 'card child-card', 'aria-labelledby': 'reading-for' },
     h('div', { class: 'child-card-top' },
       h('span', { class: 'child-avatar', 'aria-hidden': 'true' }, [...profile.display][0]?.toLocaleUpperCase('en-GB') ?? '★'),
-      h('div', { class: 'child-card-text' }, h('h2', { id: 'reading-for', class: 'child-card-title' }, 'Reading for ', h('span', { class: 'child-name', 'data-testid': 'active-child' }, profile.display)), saidAs),
-      hearBtn),
+      h('div', { class: 'child-card-text' }, h('h2', { id: 'reading-for', class: 'child-card-title' }, 'Reading for ', h('span', { class: 'child-name', 'data-testid': 'active-child' }, profile.display)))),
+    h('div', { class: 'said-row' }, saidAs, hearBtn),
     h('div', { class: 'child-links' },
       linkButton({ text: 'Change name', href: `#/b/${bookId}/name?child=${encodeURIComponent(profile.id)}`, icon: 'edit', variant: 'link', size: 'sm', testid: 'change-child' }),
       linkButton({ text: 'Change how we say it', href: `#/b/${bookId}/say`, icon: 'ear', variant: 'link', size: 'sm', testid: 'change-say' }),
@@ -118,7 +118,7 @@ export function renderReady(root, ctx, profile) {
     'section',
     { class: 'ready-hero' },
     h('p', { class: 'eyebrow' }, 'All set'),
-    h('h1', { class: 'ready-title' }, `${possessive(profile.display)} story is ready`),
+    h('h1', { class: 'ready-title' }, `${profile.display}’s story is ready`),
     h('div', { class: 'ready-cover' }, cover.el),
     h('div', { class: 'ready-actions' }, start, magicWrap),
   );

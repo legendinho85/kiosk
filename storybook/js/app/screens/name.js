@@ -166,6 +166,22 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
     ctx.navigate(`#/b/${bookId}/say`);
   });
 
+  // Phones: while the keyboard is up, keep the box and the cover in view together.
+  const vv = globalThis.visualViewport;
+  const narrow = globalThis.matchMedia?.('(max-width: 759px)');
+  let typing = false;
+  const syncTyping = () => {
+    const short = (vv?.height ?? innerHeight) < 600 && Boolean(narrow?.matches);
+    const next = document.activeElement === input && short;
+    if (next === typing) return;
+    typing = next;
+    el.classList.toggle('is-typing', typing);
+    if (typing) requestAnimationFrame(() => formPanel.scrollIntoView?.({ block: 'start' }));
+  };
+  input.addEventListener('focus', syncTyping);
+  input.addEventListener('blur', () => setTimeout(syncTyping, 120));
+  vv?.addEventListener('resize', syncTyping);
+
   // First visit on a big screen: the cursor waits in the box. On phones we
   // don't pop the keyboard over the cover before the parent has seen it.
   if (mode !== 'first' || matchMedia?.('(pointer: fine)').matches) {
@@ -177,7 +193,10 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
   }
   if (editing) update();
 
-  return () => update.cancel();
+  return () => {
+    update.cancel();
+    vv?.removeEventListener('resize', syncTyping);
+  };
 }
 
 /** #/b/:book/name — add a child, or ?child=<id> to change a name. */
