@@ -2018,3 +2018,12 @@ html[data-contrast="high"] { --berry-strong: #9E1F2B; }
   .toast.is-leaving { transform: translateY(-8px); }
 }
 @keyframes toast-in-top { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+
+/* Goodnight card on a phone held sideways: everything in one view. */
+@media (max-height: 520px) {
+  .goodnight-card { gap: 10px; grid-template-columns: auto auto; column-gap: 40px; align-items: center; }
+  .goodnight-card > :not(.goodnight-grownups) { grid-column: 1; justify-self: center; }
+  .goodnight-moon svg { width: 56px; height: 56px; }
+  .goodnight-grownups { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; }
+  .goodnight-grownups .gate-button { width: 104px; height: 104px; margin: 8px; }
+}

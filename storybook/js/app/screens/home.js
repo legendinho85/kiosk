@@ -4,9 +4,9 @@ import { h, icon, linkButton } from '../ui.js';
 import { screen } from '../chrome.js';
 import { createCover } from '../cover.js';
 import { loadBookList, loadBook, bookUrl } from '../../core/book.js';
-import { activeProfile, activeReadingFor, readingLabel } from '../../core/storage.js';
+import { activeProfile, readingLabel } from '../../core/storage.js';
 import { fillTemplate, person as makePerson } from '../../core/personalise.js';
-import { readingPerson } from '../../family/family.js';
+import { readingPerson, childReading } from '../../family/family.js';
 
 /** A shelf title with the child's name (or names) in it: "Goal, Ava!" / "Goal, you!" with no child yet. */
 export function shelfTitle(entry, who) {
@@ -73,7 +73,8 @@ export function render(root, ctx) {
 
   function bookCard(entry) {
     const coverHost = h('div', { class: 'shelf-cover' }, h('div', { class: 'shelf-cover-loading', 'aria-hidden': 'true' }));
-    const reading = activeReadingFor(ctx.state, entry.id);
+    // The reading chosen for this child (a recording says one child's name; siblings together: none).
+    const reading = childReading(ctx.state, entry.id);
     const card = h(
       'li',
       { class: 'card shelf-book', 'data-testid': 'shelf-book', 'data-book': entry.id },
