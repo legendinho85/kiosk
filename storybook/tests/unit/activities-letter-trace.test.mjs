@@ -289,6 +289,9 @@ test('arrowMarks point along the strokes and keep clear of the dots', () => {
   assert.equal(long.length, 2, 'long strokes get two arrows');
   assert.equal(long[0].angle, 90, 'down the stem');
   assert.equal(long[1].angle, 0, 'along the foot');
+  const v = arrowMarks(layoutGuide(strokeGuide('V'), { x: 0, y: 0, width: 200, height: 300 }), { spacing: 400 });
+  assert.equal(v.length, 1);
+  assert.ok(Math.abs(v[0].y - 300) > 20, 'not on the point of the V, where it would point nowhere');
   const blocked = arrowMarks([[{ x: 0, y: 0 }, { x: 0, y: 100 }]], { avoid: [{ x: 0, y: 56 }], minDist: 20 });
   assert.equal(blocked.length, 1);
   assert.ok(Math.abs(blocked[0].y - 56) >= 20, 'moved off the dot');

@@ -622,15 +622,22 @@ export function startDots(polys, minGap) {
 export function arrowMarks(polys, { spacing = 160, avoid = [], minDist = 0 } = {}) {
   const marks = [];
   const clear = (p) => [...avoid, ...marks].every((q) => Math.hypot(q.x - p.x, q.y - p.y) >= minDist);
+  const span = Math.max(10, minDist * 0.5);
+  // An arrow on a corner (the bottom of a V) points nowhere useful.
+  const straight = (poly, d) => {
+    const a = pointAlong(poly, Math.max(0, d - span)).angle;
+    const b = pointAlong(poly, d + span).angle;
+    return Math.abs(((b - a + 540) % 360) - 180) < 40;
+  };
   polys.forEach((poly, i) => {
     const len = polylineLength(poly);
     if (len < 8) return;
     const at = len > spacing * 2.6 ? [0.36, 0.74] : [0.56];
     for (const t of at) {
-      for (const dt of [0, -0.12, 0.12, -0.22, 0.22, 0.3]) {
+      for (const dt of [0, -0.08, 0.08, -0.16, 0.16, -0.24, 0.24, 0.32]) {
         const tt = Math.min(0.9, Math.max(0.14, t + dt));
         const p = pointAlong(poly, len * tt);
-        if (p && clear(p)) {
+        if (p && clear(p) && straight(poly, len * tt)) {
           marks.push({ stroke: i, x: p.x, y: p.y, angle: p.angle });
           break;
         }

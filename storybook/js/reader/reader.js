@@ -27,7 +27,7 @@ import { planLines, estimateTimeline, estimateUnitMs } from '../narrator/plan.js
 import { loadScene, prefetchScene, parseSvg, animationWrapper, needsAnimationWrapper, hoistAnimations, ANIMATION_CLASSES } from './scene.js';
 import { createDriver, pick, applyMatrix } from './drive.js';
 import { createControl } from './controls.js';
-import { fillNameSlots, isShown } from './name-fit.js';
+import { fillNameSlots, isShown, nameForForm } from './name-fit.js';
 import { clipTimeline, stretchTimeline, resumePlan, testScale } from './timeline.js';
 import { clipDurationMs } from './clip.js';
 
@@ -895,7 +895,8 @@ export async function mountReader(root, opts) {
       if (!state.control) return;
       idleTimer = setTimeout(() => {
         if (cur !== state || state.completed || paused || destroyed) return;
-        if (narrating) return rearmIdle(); // never over the words
+        // Never over the words, and never out from under a finger.
+        if (narrating || state.control.el?.dataset.state === 'dragging') return rearmIdle();
         el.dataset.autoplayed = String(state.n);
         state.control.complete();
       }, testScale(BEDTIME.showMeMs));
@@ -1181,7 +1182,6 @@ export async function mountReader(root, opts) {
 
   // ---- Name spotting: "That says Ava!" ----------------------------------------------
   const NAME_SLOTS = 'text.sb-name, .sb-letters';
-  const artName = String(person.art ?? person.display);
   let spotCtl = null;
 
   /** A name the child can see right now (written in, not hidden, not the empty bunting). */
@@ -1219,6 +1219,26 @@ export async function mountReader(root, opts) {
     return best;
   }
 
+  /**
+   * A press on a control's invisible margin (its generous hit area) that lands
+   * on a name drawn beneath it: the name you can see wins. Anything visible on
+   * top (the knob, the wheel, other art) keeps the press.
+   */
+  function nameUnderMargin(ev, svg) {
+    let stack;
+    try {
+      stack = document.elementsFromPoint(ev.clientX, ev.clientY);
+    } catch {
+      return null;
+    }
+    for (const node of stack) {
+      if (node.closest?.('.sb-control-hit')) continue; // invisible: look underneath
+      const slot = node.closest?.(NAME_SLOTS);
+      return slot && spottable(slot, svg) ? slot : null;
+    }
+    return null;
+  }
+
   function restartClass(node, cls, driven, delayMs = 0) {
     const target = needsAnimationWrapper(node, driven) ? animationWrapper(node) : node;
     target.classList.remove(cls);
@@ -1254,8 +1274,9 @@ export async function mountReader(root, opts) {
       );
     }
     // The name itself, big and clear, just above the one in the picture:
-    // this is how it's written, and the voice says it.
-    const word = h('span', { class: 'sb-spot-word' }, artName);
+    // this is how it's written (capitals where the picture has capitals), and the voice says it.
+    const caps = slot.matches('.sb-letters') || slot.dataset.form === 'upper';
+    const word = h('span', { class: 'sb-spot-word' }, nameForForm(person, caps ? 'upper' : 'plain'));
     const below = r.top - frame.top < 64;
     const half = Math.min(frame.width / 2 - 8, 170);
     const shift = Math.max(half - cx, Math.min(frame.width - half - cx, 0));
@@ -1341,7 +1362,9 @@ export async function mountReader(root, opts) {
     night.firstChild?.append(h('p', { class: 'sb-r-night-hint' }, 'Tap to see the last page again'));
     night.classList.add('is-sleepy');
     night.setAttribute('data-testid', 'night');
-    night.title = 'Tap to turn the lights back on';
+    night.setAttribute('role', 'button');
+    night.tabIndex = 0;
+    night.title = 'Tap to see the last page again';
     el.classList.add('is-lights-out');
     releaseWakeLock();
   }
@@ -1349,6 +1372,8 @@ export async function mountReader(root, opts) {
   function lightsOn() {
     if (!night.classList.contains('is-sleepy')) return;
     night.classList.remove('is-on', 'is-sleepy');
+    night.removeAttribute('role');
+    night.removeAttribute('tabindex');
     el.classList.remove('is-goodnight', 'is-lights-out');
     setTimeout(() => {
       if (!night.classList.contains('is-on')) night.hidden = true;
@@ -1385,15 +1410,61 @@ export async function mountReader(root, opts) {
   on(pauseBtn, 'click', togglePause);
   on(pausedChip, 'click', () => setPaused(false));
   on(night, 'click', lightsOn);
+  on(night, 'keydown', (ev) => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    ev.preventDefault();
+    lightsOn();
+  });
   // Name spotting. Capture phase, so a name inside something that makes a
-  // sound when tapped (data-sfx) is spotted first; controls always win.
+  // sound when tapped (data-sfx) is spotted first; the moving part wins,
+  // except for its invisible margin over a name you can see.
+  const currentSvg = () => {
+    const svg = bookEl.querySelector('.sb-r-page.is-current > svg');
+    return svg && !svg.classList.contains('sb-scene-missing') ? svg : null;
+  };
+  let claimed = null; // a press on a control's margin that is really on a name
+  let claimedAt = 0;
+  on(
+    bookEl,
+    'pointerdown',
+    (ev) => {
+      claimed = null;
+      const svg = cur && currentSvg();
+      if (!svg || !ev.target.closest?.('.sb-control-hit') || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+      const slot = nameUnderMargin(ev, svg);
+      if (!slot) return;
+      claimed = { slot, id: ev.pointerId, x: ev.clientX, y: ev.clientY };
+      ev.stopPropagation(); // the control never sees it
+    },
+    { capture: true },
+  );
+  // Touch: keep the control from cancelling the tap (it prevents default on touchstart).
+  on(bookEl, 'touchstart', (ev) => claimed && ev.stopPropagation(), { capture: true, passive: true });
+  on(
+    bookEl,
+    'pointerup',
+    (ev) => {
+      const c = claimed;
+      claimed = null;
+      if (!c || c.id !== ev.pointerId || Math.hypot(ev.clientX - c.x, ev.clientY - c.y) > 14) return;
+      ev.stopPropagation();
+      claimedAt = Date.now();
+      spotName(c.slot);
+    },
+    { capture: true },
+  );
+  on(bookEl, 'pointercancel', () => (claimed = null), { capture: true });
   on(
     bookEl,
     'click',
     (ev) => {
       if (!cur || Date.now() - lastSwipeAt < 400) return;
-      const svg = bookEl.querySelector('.sb-r-page.is-current > svg');
-      if (!svg || svg.classList.contains('sb-scene-missing') || !svg.contains(ev.target)) return;
+      const svg = currentSvg();
+      if (!svg || !svg.contains(ev.target)) return;
+      if (Date.now() - claimedAt < 500) {
+        ev.stopPropagation(); // already spotted on pointerup
+        return;
+      }
       const slot = nameAt(ev, svg);
       if (!slot) return;
       ev.stopPropagation();

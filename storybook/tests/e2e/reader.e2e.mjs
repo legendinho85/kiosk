@@ -871,6 +871,15 @@ try {
     eq((await page.locator('[data-testid=scene] .sb-letter').allTextContents()).join(''), '', 'no letters on the bunting');
     eq(await shown(page, '#p3-banner'), true, 'the banner instead');
     eq(await text(page, '#p3-banner'), 'AMARA & ZAK', 'banner text');
+    // At phone size the banner sits in the wheel's generous, invisible margin:
+    // the name you can see wins, and the wheel stays put.
+    const bb = await page.locator('[data-testid=scene] #p3-banner').boundingBox();
+    await page.mouse.click(bb.x + bb.width / 2, bb.y + bb.height / 2);
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.spotted === '1', null, { timeout: 3000 });
+    eq(await page.locator('.sb-spot-word').textContent(), 'AMARA & ZAK', 'the name as the banner writes it');
+    await page.waitForTimeout(300);
+    eq(await control(page).getAttribute('data-progress'), '0', 'the wheel did not turn');
+    eq(await reader(page).getAttribute('data-state'), 'waiting', 'still waiting for the wheel');
     await page.evaluate(() => window.__reader.goTo(6));
     await waitState(page, 6, 'waiting');
     eq(await text(page, '#p6-name'), "Amara & Zak's", 'possessive art form');
@@ -880,10 +889,11 @@ try {
     // "waiting" starts as the prompt is read; spotting speaks once that's said.
     await page.waitForFunction(() => window.__log.play.some((p) => p.text[0] === 'Press the button three times!'));
     await page.waitForTimeout(500);
+    const said = await page.evaluate(() => window.__log.speakText.length);
     const b = await page.locator('[data-testid=scene] #p6-name').boundingBox();
     await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2);
-    await page.waitForFunction(() => window.__log.speakText.length === 1);
-    eq(await page.evaluate(() => window.__log.speakText), ['That says Amara and Zak!'], 'name spotting says both');
+    await page.waitForFunction((n) => window.__log.speakText.length === n + 1, said);
+    eq(await page.evaluate(() => window.__log.speakText.at(-1)), 'That says Amara and Zak!', 'name spotting says both');
     noErrors(errors, 'siblings');
     await context.close();
   });
