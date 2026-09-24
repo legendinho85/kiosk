@@ -1,0 +1,22 @@
+{
+  "sfx": { "open": "click" },
+  "mechanic": {
+    "type": "wheel",
+    "control": { "center": [1000, 520], "radius": 220, "turns": 1, "knob": "#dg-p5-drum" },
+    "drives": [
+      { "target": "#dg-p5-frog-uhoh", "visible": [0, 0.5] },
+      { "target": "#dg-p5-frog-grin", "visible": [0.5, 1] },
+      { "target": "#dg-p5-pour", "visible": [0.72, 1] },
+      { "target": "#dg-p5-pour", "scale": [[1, 0.05], [1, 1]], "origin": [0, 0], "range": [0.72, 0.9], "ease": "easeOut" },
+      { "target": "#dg-p5-splash", "visible": [0.86, 1] },
+      { "target": "#dg-p5-splash", "scale": [[0.3, 0.3], [1, 1]], "origin": [0, 0], "range": [0.86, 1], "ease": "easeOut" }
+    ],
+    "complete": {
+      "at": 0.95,
+      "show": ["#dg-p5-sparkles"],
+      "hide": ["#dg-p5-arrows"],
+      "addClass": [["#dg-p5-frog", "sb-cheer"]],
+      "sfx": ["swoosh", "swoosh", "clap"]
+    }
+  }
+}

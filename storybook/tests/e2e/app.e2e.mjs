@@ -54,7 +54,16 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // ---- server ----------------------------------------------------------------------------
 async function startServer() {
   const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  const proc = spawn(npx, ['--yes', 'http-server', ROOT, '-p', String(PORT), '-a', '127.0.0.1', '-c-1', '-s'], { stdio: 'ignore' });
+  // Own process group, so stopping it also stops the http-server that npx starts.
+  const proc = spawn(npx, ['--yes', 'http-server', ROOT, '-p', String(PORT), '-a', '127.0.0.1', '-c-1', '-s'], { stdio: 'ignore', detached: process.platform !== 'win32' });
+  proc.stop = () => {
+    try {
+      if (process.platform !== 'win32') process.kill(-proc.pid, 'SIGTERM');
+      else proc.kill();
+    } catch {
+      proc.kill();
+    }
+  };
   for (let i = 0; i < 100; i++) {
     try {
       const r = await fetch(`${BASE}/package.json`);
@@ -64,7 +73,7 @@ async function startServer() {
     }
     await sleep(150);
   }
-  proc.kill();
+  proc.stop();
   throw new Error(`http-server did not start on ${PORT}`);
 }
 
@@ -659,7 +668,7 @@ try {
   }
 } finally {
   await browser.close();
-  server.kill();
+  server.stop();
 }
 
 if (pending.size) console.log(`\n  note: not written yet (404, not counted as failures): ${[...pending].join(', ')}`);

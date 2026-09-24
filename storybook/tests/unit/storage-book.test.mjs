@@ -63,3 +63,42 @@ test('validateBook reports the problems a book author is likely to make', () => 
   assert.match(errors, /n should be 1/);
   assert.deepEqual(validateBook(null), ['Book is not an object']);
 });
+
+test('siblings reading together', async () => {
+  const { readingChildren, setTogether } = await import('../../js/core/storage.js');
+  let s = loadState();
+  s = { ...s, profiles: [], together: [] };
+  s = upsertProfile(s, { id: 'a', display: 'Amara', key: 'amara', pronunciation: { say: 'Amara' } });
+  s = upsertProfile(s, { id: 'z', display: 'Zak', key: 'zak', pronunciation: { say: 'Zak' } });
+  assert.deepEqual(readingChildren(s).map((p) => p.id), ['z']);
+  s = setTogether(s, ['a', 'z', 'z', 'ghost']);
+  assert.deepEqual(readingChildren(s).map((p) => p.id), ['a', 'z']);
+  s = setTogether(s, ['a']);
+  assert.deepEqual(s.together, []);
+  s = setTogether(s, ['a', 'z']);
+  s = removeProfile(s, 'z');
+  assert.deepEqual(s.together, ['a']);
+  assert.deepEqual(readingChildren(s).map((p) => p.id), ['a']);
+});
+
+test('recorded readings (grandparent mode)', async () => {
+  const { upsertReading, removeReading, readingsFor, activeReadingFor } = await import('../../js/core/storage.js');
+  let s = { ...loadState(), readings: [], activeReading: {} };
+  s = upsertReading(s, { id: 'r1', bookId: 'b', readerName: 'Grandma', parts: { 1: { main: 'x1', after: null }, 2: { main: 'x2', after: 'y2' } } });
+  assert.equal(activeReadingFor(s, 'b').readerName, 'Grandma');
+  s = upsertReading(s, { id: 'r2', bookId: 'b', readerName: 'Grandpa', parts: {} }, { activate: false });
+  assert.equal(activeReadingFor(s, 'b').id, 'r1');
+  assert.equal(readingsFor(s, 'b').length, 2);
+  const out = removeReading(s, 'r1');
+  assert.deepEqual(out.blobIds.sort(), ['x1', 'x2', 'y2']);
+  assert.equal(activeReadingFor(out.state, 'b'), null);
+  saveState(out.state);
+  assert.equal(loadState().readings.length, 1);
+});
+
+test('prefs survive without localStorage', async () => {
+  const { prefs } = await import('../../js/core/storage.js');
+  assert.equal(prefs.get('nope', 7), 7);
+  prefs.set('align', { x: 1 });
+  assert.deepEqual(prefs.get('align'), { x: 1 });
+});

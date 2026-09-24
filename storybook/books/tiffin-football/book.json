@@ -45,7 +45,7 @@
       "text": [
         "It's football day!",
         "Tiffin has boots. Tiffin has a ball.",
-        "Where is {name's} shirt?"
+        "Where {is|are} {name's} {shirt|shirts}?"
       ],
       "prompt": "Lift the flap on the kit bag!",
       "after": [
