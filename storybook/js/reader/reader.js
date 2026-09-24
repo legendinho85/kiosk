@@ -1169,7 +1169,9 @@ export async function mountReader(root, opts) {
       } catch {
         /* ignore */
       }
+      releaseWakeLock(); // paused for a while? the phone may dim as usual
     } else {
+      lockScreen();
       for (const wake of [...resumeWaiters]) wake();
       const state = cur;
       if (state?.waiting) rearmIdle();
@@ -1502,7 +1504,7 @@ export async function mountReader(root, opts) {
     const t = ev.target;
     if (t?.closest?.('[data-testid="control"], input, textarea, select, [contenteditable="true"]')) return;
     // A grown-up dialog on top (e.g. the parent gate, held with Space) keeps its keys.
-    if (document.querySelector('[aria-modal="true"]:not([hidden])') && !el.contains(t)) return;
+    if (document.querySelector('dialog[open], [aria-modal="true"]:not([hidden])') && !el.contains(t)) return;
     if (ev.key === 'ArrowRight' || ev.key === 'PageDown') {
       ev.preventDefault();
       go(cur.n + 1);
@@ -1522,10 +1524,10 @@ export async function mountReader(root, opts) {
   // ---- Keep the screen awake while reading ---------------------------------------
   async function lockScreen() {
     try {
-      if (destroyed || el.classList.contains('is-lights-out') || document.visibilityState !== 'visible' || !navigator.wakeLock?.request) return;
+      if (destroyed || paused || el.classList.contains('is-lights-out') || document.visibilityState !== 'visible' || !navigator.wakeLock?.request) return;
       if (wakeLock && !wakeLock.released) return;
       wakeLock = await navigator.wakeLock.request('screen');
-      if (destroyed || el.classList.contains('is-lights-out')) releaseWakeLock();
+      if (destroyed || paused || el.classList.contains('is-lights-out')) releaseWakeLock();
     } catch {
       wakeLock = null; // not allowed (battery saver, iframe, no gesture): fine
     }

@@ -968,8 +968,10 @@ try {
       }
     });
     await step('real book: tricky names fit every name spot (shrink, wrap, overflow banner)', async () => {
-      for (const name of ['Maximilian', 'Anna-Sophia', 'Xiao Ming', '小明', 'Bo']) {
-        const { page, context, errors } = await openHarness(browser, `test=1&book=tiffin-football&merge=1&name=${encodeURIComponent(name)}&page=${ready[0].n}`, { viewport: { width: 1024, height: 768 } });
+      // The last "name" is three children reading together ("AMARA & ZAK & LI" in the art).
+      for (const name of ['Maximilian', 'Anna-Sophia', 'Xiao Ming', '小明', 'Bo', 'sibs:Amara,Zak,Li']) {
+        const who = name.startsWith('sibs:') ? `sibs=${encodeURIComponent(name.slice(5))}` : `name=${encodeURIComponent(name)}`;
+        const { page, context, errors } = await openHarness(browser, `test=1&book=tiffin-football&merge=1&${who}&page=${ready[0].n}`, { viewport: { width: 1024, height: 768 } });
         for (const p of ready) {
           if (p.n !== ready[0].n) await page.evaluate((n) => window.__reader.goTo(n), p.n);
           const st = await page.waitForFunction(
@@ -993,6 +995,11 @@ try {
               .filter((x) => x.max && x.w > x.max * 1.04),
           );
           eq(over, [], `${name}: name spots on page ${p.n} fit`);
+          if (name.startsWith('sibs:')) {
+            const art = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] text.sb-name')].filter((t) => !t.closest('[display=none]') && t.textContent).map((t) => t.textContent.replace(/\s+/g, ' ')));
+            for (const t of art) assert(/AMARA ?& ?ZAK ?& ?LI|Amara ?& ?Zak ?& ?Li/.test(t), `siblings: page ${p.n} art shows "${t}"`);
+            eq(await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] .sb-letter')].map((t) => t.textContent).join('')), '', `siblings: page ${p.n} bunting uses the banner`);
+          }
           if (name !== 'Bo') await shot(page, `real-names-${encodeURIComponent(name)}-p${p.n}`);
         }
         noErrors(errors.filter((e) => !/status of 404/.test(e)), `real book names (${name})`);
