@@ -14,7 +14,7 @@
 import { h, icon, button, linkButton, setBusy, clearToasts } from '../ui.js';
 import { screen, privacyLine } from '../chrome.js';
 import { normaliseName, nameKey, NAME_ERRORS, NAME_MAX_LENGTH, tokenizeLine, person as makePerson } from '../../core/personalise.js';
-import { activeProfile, newId, upsertProfile, upsertReading } from '../../core/storage.js';
+import { activeProfile, newId, upsertProfile, upsertReading, readingLabel } from '../../core/storage.js';
 import { recordingSteps, readingCoverage, clock, formatDuration, storyTitle } from '../../family/family.js';
 import { partBlobId, PACK_LIMITS } from '../../family/pack.js';
 import { giftDraft } from '../../family/drafts.js';
@@ -27,6 +27,18 @@ export function sizeLabel(audioBytes) {
   if (!mb) return '';
   return mb < 1 ? ' (under 1 MB)' : ` (about ${Math.round(mb)} MB)`;
 }
+
+/**
+ * The language a reading is in, when it isn't English ("Urdu"), else ''.
+ * @param {{language?: string}|null} reading
+ */
+export function otherLanguage(reading) {
+  const lang = String(reading?.language ?? '').replace(/\s+/g, ' ').trim();
+  return lang && !/^(english|en(-\w+)?)$/i.test(lang) ? lang : '';
+}
+
+/** The invitation on the setup screen: grandparents are welcome to read in their own language. */
+export const LANGUAGE_INVITE = 'Speak another language at home? You’re very welcome to read in yours — Urdu, Polish, Cymraeg, any language. Hearing a story in a grandparent’s own language is a lovely gift.';
 
 /** Longest single part (a page's words), in ms. */
 export const READING_MAX_MS = 60000;
@@ -145,6 +157,18 @@ export function render(root, ctx) {
       h('p', { class: 'eyebrow' }, giftMode ? 'Part of your gift' : 'Grandparents, aunties, everyone'),
       h('h1', {}, 'Record the story in your voice'),
       h('p', { class: 'lead' }, `Read “${storyTitle(book, childName || '')}” aloud, page by page. When the pages turn, it’s your voice they’ll hear.`),
+      h('div', { class: 'record-lang-invite', 'data-testid': 'record-lang-invite' },
+        icon('heart', { size: 18 }),
+        h('p', {}, LANGUAGE_INVITE, ' ',
+          h('button', {
+            type: 'button',
+            class: 'inline-link',
+            'data-testid': 'record-lang-open',
+            onClick: () => {
+              lang.open = true;
+              langInput.focus();
+            },
+          }, 'Choose your language'))),
     );
     const how = h(
       'section',
@@ -267,7 +291,10 @@ export function render(root, ctx) {
     const tpLines = h('div', { class: 'tp-lines', 'data-testid': 'teleprompter', lang: book?.lang ?? 'en-GB' });
     const tpCue = h('p', { class: 'tp-cue' });
     const tpScene = h('div', { class: 'tp-scene', 'aria-hidden': 'true' });
-    const tp = h('section', { class: 'card teleprompter', 'aria-live': 'polite' }, h('div', { class: 'tp-head' }, tpTitle, tpScene), tpLines, tpCue);
+    // Reading in another language: no English words to keep to.
+    const lang = otherLanguage(reading);
+    const tpLang = lang ? h('p', { class: 'tp-lang', 'data-testid': 'tp-lang' }, icon('heart', { size: 16 }), h('span', {}, `Reading in ${lang}: read these words in ${lang}, or tell the page in your own words.`)) : null;
+    const tp = h('section', { class: 'card teleprompter', 'aria-live': 'polite' }, h('div', { class: 'tp-head' }, tpTitle, tpScene), tpLang, tpLines, tpCue);
 
     const status = h('p', { class: 'rec-status', 'aria-live': 'polite', 'data-testid': 'rec-status' });
     const meterBars = Array.from({ length: 9 }, () => h('span', { class: 'rec-bar' }));
@@ -511,6 +538,7 @@ export function render(root, ctx) {
         h('div', { class: 'done-art', 'aria-hidden': 'true' }, icon('heart', { size: 44 })),
         h('p', { class: 'eyebrow' }, 'All saved'),
         h('h1', {}, `Thank you, ${who}!`),
+        h('p', { class: 'ready-pill record-done-label', 'data-testid': 'record-done-label' }, icon('heart', { size: 16 }), readingLabel(reading)),
         h('p', { class: 'lead' }, `Your reading of “${title}” is ready. `, cov.complete ? 'Every page is in your voice.' : `${cov.done} of ${cov.total} parts are in your voice — the computer voice reads the rest.`),
         h('div', { class: 'record-done-actions' }, playNow, send),
         linkHost,

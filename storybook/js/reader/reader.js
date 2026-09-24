@@ -14,11 +14,13 @@
 //   - a grown-up's recorded reading ("Read by Grandma Rose") plays instead of
 //     the computer voice wherever a page part was recorded;
 //   - pause/play (button, Space or K): speech can't be resumed mid-sentence
-//     reliably, so carrying on re-reads the current sentence;
+//     reliably, so carrying on re-reads the current sentence; a recording
+//     carries on from just before where it stopped;
 //   - name spotting: tap the name in the picture and hear "That says Ava!";
 //   - bedtime: a darker, quieter page that carries on by itself (the moving
 //     part shows itself, pages turn after a soft chime, the end fades to dark);
-//   - siblings: the pictures say "AMARA & ZAK" and name clips aren't used.
+//   - siblings: the pictures say "AMARA & ZAK" and name clips aren't used;
+//   - the end page can offer the first-letter game ("Find Ava's letter").
 
 import { bookUrl } from '../core/book.js';
 import { fillTemplate, fillSpoken, person as makePerson } from '../core/personalise.js';
@@ -28,7 +30,7 @@ import { loadScene, prefetchScene, parseSvg, animationWrapper, needsAnimationWra
 import { createDriver, pick, applyMatrix } from './drive.js';
 import { createControl } from './controls.js';
 import { fillNameSlots, isShown, nameForForm } from './name-fit.js';
-import { clipTimeline, stretchTimeline, resumePlan, testScale } from './timeline.js';
+import { clipTimeline, stretchTimeline, stepAt, resumePlan, testScale } from './timeline.js';
 import { clipDurationMs } from './clip.js';
 
 const IDLE_REPROMPT_MS = 8000; // tests may shorten it with SB_TEST.idleMs
@@ -37,6 +39,8 @@ const SFX_GAP_MS = 250;
 const AUTO_TURN_MS = 1600;
 const PART_TIMEOUT_MS = 5000; // a recorded part that takes longer to fetch is skipped (computer voice instead)
 const CLIP_LATENCY_MS = 60; // playback starts a moment after we ask for it
+const CLIP_START_WAIT_MS = 1500; // a player that never says when it started: guess
+const RESUME_BACKUP_MS = 800; // a paused recording carries on from a little before where it stopped
 const SPOT_LINE = 'That says {name}!';
 // Bedtime: slower, quieter, and the story carries on by itself.
 const BEDTIME = Object.freeze({
@@ -58,6 +62,7 @@ const ICONS = {
   moon: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M42 8a24 24 0 1 0 14 38A20 20 0 0 1 42 8z" fill="#FFE9A8"/><circle cx="14" cy="12" r="2" fill="#FFE9A8"/><circle cx="54" cy="16" r="1.6" fill="#FFE9A8"/><circle cx="8" cy="40" r="1.4" fill="#FFE9A8"/></svg>',
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
   pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.6" fill="currentColor"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.6" fill="currentColor"/></svg>',
+  letter: '<svg viewBox="0 0 36 36" aria-hidden="true"><rect x="2.5" y="2.5" width="31" height="31" rx="9" fill="#fff" stroke="currentColor" stroke-width="2.6"/><path d="M10.5 27 18 8.5 25.5 27M13.3 20.5h9.4" fill="none" stroke="#E8505B" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10.5" cy="27" r="2.6" fill="#2E9E48"/></svg>',
   heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.2s-7.6-4.6-7.6-10.1A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.6 2.7c0 5.5-7.6 10.1-7.6 10.1z" fill="currentColor"/></svg>',
 };
 
@@ -198,11 +203,13 @@ export function createSilentNarrator() {
     listVoices: () => [],
     unlock() {},
     play: run,
-    async speakText(text, { signal } = {}) {
+    async speakText(text, { signal, rateScale = 1 } = {}) {
       const ctl = new AbortController();
       current?.abort();
       current = ctl;
-      await sleep(estimateUnitMs(String(text)) * scale(), signal ?? ctl.signal);
+      const stop = signal ? childSignal(signal) : ctl;
+      if (signal) ctl.signal.addEventListener('abort', () => stop.abort(), { once: true });
+      await sleep(estimateUnitMs(String(text), rateScale) * scale(), stop.signal);
       if (current === ctl) current = null;
     },
     stop() {
@@ -250,6 +257,7 @@ function fallbackScene(page, message) {
  *   requireTap?: boolean,
  *   reading?: {readerName: string, language?: string, label?: string, getPart(n: number, part: 'main'|'after'): Promise<Blob|null>} | null,
  *   bedtime?: boolean,
+ *   onLetters?: () => (void|Promise<unknown>),
  * }} opts  requireTap: show "Tap to start" first (default: only when the page has had no user gesture yet,
  *   since browsers block speech and sound until then).
  *   person: `togetherPerson()` for siblings (count > 1): pictures use `art`, and recorded name clips and
@@ -259,6 +267,10 @@ function fallbackScene(page, message) {
  *   A reading in another `language` plays without word-by-word highlighting.
  *   bedtime: night styling, softer sounds, slower voice; the mechanism shows itself after a few seconds and
  *   pages turn by themselves after a soft chime; the end page fades to dark.
+ *   onLetters: the end page offers "Find Ava's letter" (data-testid="letter-game") beside Read again and
+ *   Goodnight when this is given and js/activities/letter-trace.js says the device can draw the child's first
+ *   letter; a tap calls it (the reader stops talking first). It is never opened automatically, even at
+ *   bedtime. If it returns a promise (a game shown over the reader), the end page carries on when it settles.
  * @returns {Promise<{destroy(): void, goTo(n: number): void, replay(): void, pause(): void, resume(): void,
  *   readonly paused: boolean, readonly page: number}>}
  */
@@ -276,6 +288,7 @@ export async function mountReader(root, opts) {
     onMagic,
     reading = null,
     bedtime = false,
+    onLetters = null,
   } = opts ?? {};
   const baseUrl = opts?.baseUrl ?? bookUrl(bookId);
   const pages = Array.isArray(book?.pages) ? book.pages : [];
@@ -293,6 +306,8 @@ export async function mountReader(root, opts) {
   const mq = reducedMotionQuery();
   const reduced = () => Boolean(mq?.matches);
   const setting = (k, dflt) => (settings && k in settings ? settings[k] : dflt);
+  /** One-off words ("That says Ava!", a tapped word) are a little slower at bedtime too. */
+  const voiceRate = () => (isBedtime ? BEDTIME.rate : 1);
 
   const life = new AbortController(); // the whole reader
   let pageCtl = null; // the current page
@@ -333,7 +348,9 @@ export async function mountReader(root, opts) {
   const textEl = h('div', { class: 'sb-r-text', 'data-testid': 'page-text' });
   const againBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-again', 'data-testid': 'read-again' }, h('span', { class: 'sb-r-pill-icon', html: ICONS.replay }), 'Read again');
   const nightBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-goodnight', 'data-testid': 'goodnight' }, h('span', { class: 'sb-r-pill-icon', html: ICONS.moon }), 'Goodnight');
-  const endBar = h('div', { class: 'sb-r-endbar', hidden: true }, againBtn, nightBtn);
+  // "Find Ava's letter": the first-letter game, offered at the end when the app can open it.
+  const lettersBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-letters', 'data-testid': 'letter-game', hidden: true }, h('span', { class: 'sb-r-pill-icon', html: ICONS.letter }), fillTemplate("Find {name's} {letter|letters}", person));
+  const endBar = h('div', { class: 'sb-r-endbar', hidden: true }, againBtn, nightBtn, lettersBtn);
   const band = h('div', { class: 'sb-r-band' }, h('div', { class: 'sb-r-band-inner' }, badgeBand, textEl, endBar));
   const hearBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-hear', 'data-testid': 'tap-to-hear', hidden: true }, h('span', { class: 'sb-r-pill-icon', html: ICONS.play }), 'Tap to hear the story');
   const night = h('div', { class: 'sb-r-night', hidden: true, 'aria-live': 'polite' });
@@ -354,6 +371,24 @@ export async function mountReader(root, opts) {
   );
   if (reduced()) el.classList.add('is-reduced-motion');
   root.append(el);
+
+  // The letter game is loaded only to ask whether this device can draw the
+  // child's first letter (a name in a script with no font: no game offered).
+  if (typeof onLetters === 'function') {
+    const lang = book?.lang ?? '';
+    import('../activities/letter-trace.js')
+      .then((m) => {
+        if (typeof m.letterTraceAvailable !== 'function' || !m.letterTraceAvailable(person, { lang })) return false;
+        // Siblings who share a first letter ("Amara & Ava") have one letter to find.
+        const letters = m.initialsFor?.(person, { lang })?.length ?? person.count ?? 1;
+        lettersBtn.lastChild.textContent = fillTemplate("Find {name's} {letter|letters}", { ...person, count: letters > 1 ? letters : 1 });
+        return true;
+      })
+      .catch(() => false)
+      .then((ok) => {
+        if (!destroyed) lettersBtn.hidden = !ok;
+      });
+  }
 
   // ---- Sound -------------------------------------------------------------------
   const play = (name, { volume } = {}) => {
@@ -547,48 +582,105 @@ export async function mountReader(root, opts) {
     }
   }
 
+  /** Mark a word as already read (it stays softly marked, as after the voice reads it). */
+  function markRead(line, u) {
+    if (!clipHighlight || setting('highlight', true) === false) return;
+    textEl.querySelector(`[data-unit="${line}:${u}"]`)?.classList.add('is-read');
+  }
+
+  /**
+   * Where a paused recording should carry on: a little before where it
+   * stopped, at the start of a word, and never back across into the previous
+   * part of the page (the prompt doesn't turn back into the page text).
+   */
+  function resumeOffset(steps, pos) {
+    if (!(pos > 0) || !steps.length) return 0;
+    const here = stepAt(steps, pos);
+    let back = stepAt(steps, pos - RESUME_BACKUP_MS);
+    if (here >= 0 && back >= 0 && steps[back].part !== steps[here].part) back = steps.findIndex((x) => x.part === steps[here].part);
+    return back >= 0 ? Math.max(0, steps[back].at) : 0;
+  }
+
   /**
    * Play one recorded part, lighting up the words on the estimated timeline
    * stretched to the clip's length. `blocks` are the parts of the page the
    * clip covers, in order ([text, prompt] or [after]); each block's words are
    * shown as the reading reaches it, and onPart(part, cut) runs then too
    * (cut() ends the clip there).
+   * The timeline starts when the sound really starts (playBlob's onStart), not
+   * when we ask for it, so decoding time doesn't put the words behind.
+   * When the clip ends, every word of the part on show is marked as read (a
+   * clip shorter than the estimate still reaches the end of the words).
+   * A reading in another language lights up the line being read, not words.
    * Resolves 'done' | 'stopped' | 'failed' (couldn't play: use the voice).
-   * A pause stops the clip; play starts the part again from its beginning.
+   * A pause stops the clip; play carries on from just before where it stopped.
    */
   async function playClip(clip, blocks, signal, { onPart } = {}) {
     const playBlob = await loadPlayer();
     if (!playBlob) return 'failed';
-    const tl = stretchTimeline(clipTimeline(blocks, { rate: 1 }), clip.durationMs);
+    const { steps } = stretchTimeline(clipTimeline(blocks, { rate: 1 }), clip.durationMs);
+    const firstOf = (p) => steps.findIndex((x) => x.part === p);
+    let offsetMs = 0; // where in the clip this go starts (after a pause, part way in)
     for (;;) {
       await whilePaused(signal);
       if (signal.aborted) return 'stopped';
       const ctl = childSignal(signal);
       talk = ctl;
       let part = null;
+      let lastFired = -1;
+      let t0 = null; // performance.now() at the clip's 0 ms
       const cut = () => ctl.abort();
       const timers = [];
-      const t0 = performance.now() + CLIP_LATENCY_MS;
-      for (const step of tl.steps) {
-        const fire = () => {
+      const clearTimers = () => {
+        timers.forEach(clearTimeout);
+        timers.length = 0;
+      };
+      if (!clipHighlight) textEl.dataset.wholeLine = '1';
+      const fire = (i) => {
+        const step = steps[i];
+        if (!step || ctl.signal.aborted || i <= lastFired) return;
+        const skipped = lastFired;
+        lastFired = i;
+        if (step.part !== part) {
+          part = step.part;
+          const block = blocks.find((b) => b.part === part);
+          if (block && textEl.dataset.part !== part) showPart(part, block.lines);
+          onPart?.(part, cut);
           if (ctl.signal.aborted) return;
-          if (step.part !== part) {
-            part = step.part;
-            // After a pause the part starts again, so the words may need showing again too.
-            const block = blocks.find((b) => b.part === part);
-            if (block && textEl.dataset.part !== part) showPart(part, block.lines);
-            onPart?.(part, cut);
-            if (ctl.signal.aborted) return;
-          }
-          if (clipHighlight) highlight(step.line, step.u);
-          else clearHighlight();
-        };
-        timers.push(setTimeout(fire, Math.max(0, t0 + step.at - performance.now())));
-      }
+        }
+        // Words we jumped over (a resumed clip, a late timer) were said: mark them.
+        for (let j = skipped + 1; j < i; j++) if (steps[j].part === part) markRead(steps[j].line, steps[j].u);
+        if (clipHighlight) highlight(step.line, step.u);
+        else activateLine(textEl.querySelector(`[data-unit="${step.line}:${step.u}"]`));
+      };
+      // (Re)plan the word timers from the moment the clip's 0 ms is (or would have been) heard.
+      const plan = (zeroAt, startedAtMs) => {
+        if (ctl.signal.aborted) return;
+        t0 = zeroAt;
+        clearTimers();
+        const now = Math.max(performance.now() - t0, startedAtMs);
+        const at = stepAt(steps, now);
+        if (at >= 0) fire(at);
+        for (let i = Math.max(at, lastFired) + 1; i < steps.length; i++) {
+          timers.push(setTimeout(() => fire(i), Math.max(0, t0 + steps[i].at - performance.now())));
+        }
+      };
+      const askedAt = performance.now();
+      let started = false;
+      const guess = setTimeout(() => !started && plan(askedAt + CLIP_LATENCY_MS - offsetMs, offsetMs), CLIP_START_WAIT_MS);
       let result = 'done';
       narrating++;
       try {
-        await playBlob(clip.blob, { signal: ctl.signal });
+        await playBlob(clip.blob, {
+          signal: ctl.signal,
+          offsetMs,
+          onStart: (info) => {
+            started = true;
+            clearTimeout(guess);
+            const from = Math.max(0, Number(info?.offsetMs) || 0);
+            plan(performance.now() + Math.max(0, Number(info?.latencyMs) || 0) - from, from);
+          },
+        });
       } catch (err) {
         if (!ctl.signal.aborted) {
           console.warn('[reader] could not play the recorded reading; using the voice', err?.message ?? err);
@@ -596,19 +688,35 @@ export async function mountReader(root, opts) {
         }
       } finally {
         narrating--;
-        timers.forEach(clearTimeout);
+        clearTimeout(guess);
+        clearTimers();
         clearHighlight();
+        delete textEl.dataset.wholeLine;
         if (talk === ctl) talk = null;
       }
       if (signal.aborted) return 'stopped';
-      if (ctl.signal.aborted && paused) continue;
+      if (ctl.signal.aborted && paused) {
+        // Carry on from just before where it stopped (or where it would have been).
+        const pos = t0 != null ? performance.now() - t0 : offsetMs;
+        offsetMs = resumeOffset(steps, Math.min(pos, clip.durationMs ?? Infinity));
+        continue;
+      }
       if (result === 'done') {
-        // A clip shorter than its estimate still moves the page on to every block.
+        // The clip has ended: every word of the part on show was said, even if
+        // the estimate hadn't reached them all; and a clip shorter than its
+        // estimate still moves the page on to every block it covers.
+        const markRest = (p) => {
+          if (textEl.dataset.part !== p) return;
+          for (const x of steps) if (x.part === p) markRead(x.line, x.u);
+        };
+        if (part != null) markRest(part);
         for (const b of blocks) {
-          if (b.part === part || !tl.steps.some((x) => x.part === b.part)) continue;
-          if (tl.steps.findIndex((x) => x.part === b.part) > tl.steps.findIndex((x) => x.part === part)) {
+          const i = firstOf(b.part);
+          if (i < 0 || b.part === part) continue;
+          if (part == null || i > firstOf(part)) {
             part = b.part;
             onPart?.(part, () => {});
+            markRest(part);
           }
         }
       }
@@ -626,9 +734,9 @@ export async function mountReader(root, opts) {
     if (narrating || narrator.speaking) return; // don't talk over the story
     try {
       if (unit.isName && recording.useRecording && recording.recordingId) {
-        await narrator.play(planLines(['{name}'], person, recording), { signal: life.signal });
+        await narrator.play(planLines(['{name}'], person, recording), { signal: life.signal, rateScale: voiceRate() });
       } else {
-        await narrator.speakText(unit.say.replace(/[^\p{L}\p{N}' -]/gu, ' ').trim() || unit.say, { signal: life.signal });
+        await narrator.speakText(unit.say.replace(/[^\p{L}\p{N}' -]/gu, ' ').trim() || unit.say, { signal: life.signal, rateScale: voiceRate() });
       }
     } catch {
       /* a word that can't be spoken is not an error worth showing */
@@ -1315,9 +1423,9 @@ export async function mountReader(root, opts) {
     try {
       if (recording.useRecording && recording.recordingId) {
         // The grown-up's own recording of the name, inside the line.
-        await narrator.play(planLines([SPOT_LINE], person, recording), { signal: ctl.signal, rateScale: isBedtime ? BEDTIME.rate : 1 });
+        await narrator.play(planLines([SPOT_LINE], person, recording), { signal: ctl.signal, rateScale: voiceRate() });
       } else {
-        await narrator.speakText(fillSpoken(SPOT_LINE, person), { signal: ctl.signal });
+        await narrator.speakText(fillSpoken(SPOT_LINE, person), { signal: ctl.signal, rateScale: voiceRate() });
       }
     } catch {
       /* a name that can't be said still sparkled */
@@ -1383,6 +1491,34 @@ export async function mountReader(root, opts) {
     lockScreen();
   }
 
+  // ---- The letter game ----------------------------------------------------------
+  /** Hand over to the app's first-letter game (never opened by itself, even at bedtime). */
+  function openLetters() {
+    if (destroyed || typeof onLetters !== 'function') return;
+    const state = cur;
+    disarmIdle();
+    disarmTurn(); // no lights-out behind the game
+    spotCtl?.abort();
+    try {
+      narrator.stop?.();
+    } catch {
+      /* ignore */
+    }
+    let back;
+    try {
+      back = onLetters();
+    } catch (err) {
+      console.warn('[reader] onLetters failed', err);
+    }
+    // An app that shows the game over the reader and resolves when it closes:
+    // the end page carries on as before (at bedtime, the lights still go down).
+    Promise.resolve(back)
+      .catch(() => {})
+      .then(() => {
+        if (!destroyed && back && cur === state && state?.finished) armTurn(state);
+      });
+  }
+
   // ---- Input ---------------------------------------------------------------------
   const on = (target, type, fn, o) => target.addEventListener(type, fn, { ...o, signal: life.signal });
 
@@ -1401,6 +1537,7 @@ export async function mountReader(root, opts) {
   if (magicBtn) on(magicBtn, 'click', () => onMagic?.(cur?.n ?? startPage));
   on(againBtn, 'click', () => openPage(1, { dir: -1 }));
   on(nightBtn, 'click', goodnight);
+  on(lettersBtn, 'click', openLetters);
   on(hearBtn, 'click', () => {
     unlockAudio();
     if (cur) openPage(cur.n, { dir: 0 });

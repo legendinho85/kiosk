@@ -5,8 +5,11 @@
 //
 // Family features (docs/architecture.md §11): siblings reading together are
 // one "person" ("Amara and Zak"; "Amara & Zak" in the pictures), a grown-up's
-// recorded reading plays instead of the computer voice, and bedtime mode
-// comes from settings.
+// recorded reading plays instead of the computer voice (with its label, "Read
+// by Nana in Urdu", and language: no word-by-word highlighting for a reading
+// in another language), and bedtime mode comes from settings. The end page
+// offers "Find your first letter" (#/b/:book/letters) when
+// settings.letterActivity is on.
 
 import { h, clearToasts } from '../ui.js';
 import { openParentGate, gatePassed } from '../parent-gate.js';
@@ -19,6 +22,11 @@ export function pageParam(value, pageCount) {
   const n = Number.parseInt(String(value ?? '1'), 10);
   if (!Number.isFinite(n)) return 1;
   return Math.min(Math.max(1, n), Math.max(1, pageCount || 1));
+}
+
+/** Is the "Find your first letter" game offered after the story? (settings.letterActivity, on by default.) */
+export function lettersOffered(settings) {
+  return settings?.letterActivity === true;
 }
 
 /** Replace the current hash without a navigation (and without the router noticing). */
@@ -74,6 +82,8 @@ export function render(root, ctx) {
         if (!gone && location.hash.startsWith(`#/b/${bookId}/read`)) replaceHash(readHash(n));
       },
       onExit: () => ctx.navigate(`#/b/${bookId}`),
+      // "Find your first letter" after the last page (docs §12), when the grown-ups want it offered.
+      onLetters: lettersOffered(ctx.state.settings) ? () => !gone && ctx.navigate(`#/b/${bookId}/letters`) : undefined,
       // The camera is a grown-up decision: the child can't open it alone.
       onMagic: async (n) => {
         const ok = gatePassed() || (await openParentGate({ title: 'Grown-ups: open the camera?', lead: 'Press and hold for 3 seconds to use the magic window. We look at the page. Nothing is recorded.' }));

@@ -217,7 +217,7 @@ export function render(root, ctx) {
     const cov = readingCoverage(reading, steps);
     const toggle = h('input', { type: 'checkbox', role: 'switch', id: 'gift-include-reading', class: 'switch-input', 'data-testid': 'gift-include-reading', checked: draft.includeReading, onChange: (e) => (draft.includeReading = e.target.checked) });
     readingHost.replaceChildren(
-      h('label', { class: 'switch-row', for: 'gift-include-reading' }, toggle, h('span', { class: 'switch', 'aria-hidden': 'true' }), h('span', { class: 'switch-text' }, `Include your reading (${cov.complete ? 'every page' : `${cov.done} of ${cov.total} parts`})`)),
+      h('label', { class: 'switch-row', for: 'gift-include-reading' }, toggle, h('span', { class: 'switch', 'aria-hidden': 'true' }), h('span', { class: 'switch-text' }, `Include your reading${reading.language && !/^english$/i.test(reading.language) ? ` in ${reading.language}` : ''} (${cov.complete ? 'every page' : `${cov.done} of ${cov.total} parts`})`)),
       linkButton({ text: 'Record more of it', href: `#/b/${bookId}/record?for=gift&reading=${encodeURIComponent(reading.id)}`, icon: 'mic', variant: 'link', size: 'sm', testid: 'gift-reading-more' }),
     );
   }

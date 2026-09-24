@@ -96,6 +96,10 @@ export const ICONS = Object.freeze({
   note: `<path d="M9.5 17.5V5.5l10-2v12" ${S}/><circle cx="7" cy="17.5" r="2.6" fill="currentColor"/><circle cx="17" cy="15.5" r="2.6" fill="currentColor"/>`,
   pause: '<rect x="6.5" y="5" width="4" height="14" rx="1.4" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.4" fill="currentColor"/>',
   skip: `<path d="M6 6.5l7 5.5-7 5.5zM17.5 6v12" ${S}/>`,
+  // Round 3
+  sticker: `<path d="M20.5 12.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v12A2.5 2.5 0 0 0 6 20.5h6.5z" ${S}/><path d="M12.5 20.5v-5.5a2.5 2.5 0 0 1 2.5-2.5h5.5" ${S}/><path d="M8.5 9.5h.1M13 9.5h.1" ${S} stroke-width="2.8"/><path d="M8 13.2c.9 1.1 2.2 1.5 3.4 1.2" ${S} stroke-width="1.9"/>`,
+  eye: `<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" ${S}/><circle cx="12" cy="12" r="3" ${S}/>`,
+  letter: `<path d="M5 19.5 11 4.5h2l6 15M7.4 13.8h9.2" ${S} stroke-width="2.4"/>`,
 });
 
 /**
@@ -171,10 +175,10 @@ export function button({ text = '', label = '', icon: ic = '', iconAfter = '', v
 }
 
 /** An <a> styled as a button, for real navigation (keeps middle-click / long-press). */
-export function linkButton({ text, href, icon: ic = '', iconAfter = '', variant = 'secondary', size = 'md', testid, class: cls = '' }) {
+export function linkButton({ text, href, label = '', icon: ic = '', iconAfter = '', variant = 'secondary', size = 'md', testid, class: cls = '' }) {
   return h(
     'a',
-    { href, class: ['btn', `btn-${variant}`, `btn-${size}`, cls], 'data-testid': testid },
+    { href, class: ['btn', `btn-${variant}`, `btn-${size}`, cls], 'data-testid': testid, 'aria-label': label || null },
     ic ? icon(ic, { size: 22 }) : null,
     h('span', { class: 'btn-text' }, text),
     iconAfter ? icon(iconAfter, { size: 22 }) : null,

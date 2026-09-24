@@ -1,5 +1,7 @@
 // #/settings — for grown-ups only (behind the press-and-hold gate).
-// Children, voice, reading speed, story options, privacy, demo links.
+// Children, voice, reading speed, story options (incl. the letter game),
+// easier reading (easy-read text, higher contrast), family recordings,
+// privacy, print (name stickers, test pages) and demo links.
 
 import { h, icon, button, linkButton, confirmDialog, toast, respellNode, setBusy } from '../ui.js';
 import { screen } from '../chrome.js';
@@ -27,7 +29,20 @@ export const TOGGLES = Object.freeze([
   { key: 'readPrompts', title: 'Read the “your turn” prompts', text: 'Like “Lift the flap on the kit bag!”' },
   { key: 'autoTurn', title: 'Turn pages automatically', text: 'Moves on by itself after each page. Leave off to turn the page together.' },
   { key: 'bedtime', title: 'Bedtime mode', text: 'A dim, calm screen and softer sounds; the story carries on by itself, page after page.' },
+  { key: 'letterActivity', title: 'Letter game', text: 'Offer the ‘Find your first letter’ game after the story.' },
 ]);
+
+/** Reading comfort: applied to every screen as data-easy-read / data-contrast on <html> (docs §12). */
+export const ACCESS_TOGGLES = Object.freeze([
+  { key: 'easyRead', title: 'Easy-read text', text: 'Bigger letters and more space between them — can help some children and grown-ups with dyslexia.' },
+  { key: 'highContrast', title: 'Higher contrast', text: 'Darker words, plain backgrounds and stronger outlines, on every screen and in the story.' },
+]);
+
+/** Is a switch on? Settings saved before a switch existed fall back to its default. */
+export function settingOn(settings, key) {
+  const v = settings?.[key];
+  return typeof v === 'boolean' ? v : DEFAULT_SETTINGS[key] === true;
+}
 
 /** The words next to the online-voices switch (privacy: be plain about what is sent where). */
 export const ONLINE_VOICES_TEXT =
@@ -191,11 +206,14 @@ export function render(root, ctx) {
   renderSpeed();
 
   // ---- Toggles ---------------------------------------------------------------------------------
-  const toggles = h('div', { class: 'toggle-list' }, TOGGLES.map((t) => {
-    const id = `setting-${t.key}`;
-    const input = h('input', { type: 'checkbox', role: 'switch', id, class: 'switch-input', 'data-testid': id, checked: settings()[t.key] !== false, onChange: (e) => setSetting({ [t.key]: e.target.checked }) });
-    return h('label', { class: 'toggle', for: id }, h('span', { class: 'toggle-text' }, h('strong', {}, t.title), h('span', {}, t.text)), input, h('span', { class: 'switch', 'aria-hidden': 'true' }));
-  }));
+  const toggleList = (list) =>
+    h('div', { class: 'toggle-list' }, list.map((t) => {
+      const id = `setting-${t.key}`;
+      const input = h('input', { type: 'checkbox', role: 'switch', id, class: 'switch-input', 'data-testid': id, checked: settingOn(settings(), t.key), onChange: (e) => setSetting({ [t.key]: e.target.checked }) });
+      return h('label', { class: 'toggle', for: id }, h('span', { class: 'toggle-text' }, h('strong', {}, t.title), h('span', {}, t.text)), input, h('span', { class: 'switch', 'aria-hidden': 'true' }));
+    }));
+  const toggles = toggleList(TOGGLES);
+  const accessToggles = toggleList(ACCESS_TOGGLES);
 
   // ---- Family recordings ---------------------------------------------------------------------------
   const readingList = h('ul', { class: 'settings-readings', role: 'list', 'data-testid': 'settings-readings' });
@@ -346,6 +364,7 @@ export function render(root, ctx) {
           linkButton({ text: 'Open a family recording', href: '#/open', icon: 'file', variant: 'secondary', size: 'sm', testid: 'settings-open-pack' }),
           linkButton({ text: 'Set up a gift', href: `#/b/${bookId}/gift`, icon: 'gift', variant: 'secondary', size: 'sm', testid: 'settings-gift' }))),
       section('story-title', 'In the story', 'book', toggles),
+      section('access-title', 'Easier to read', 'eye', accessToggles),
       section('privacy-title', 'Privacy', 'shield',
         h('ul', { class: 'privacy-list' },
           h('li', {}, 'No account, no sign-up, no adverts, no tracking.'),
@@ -355,9 +374,10 @@ export function render(root, ctx) {
           h('li', {}, 'Online voices are off unless you switch them on (under “Reading voice”).'),
           h('li', {}, 'Family recordings and gifts travel only in the files you choose to send. Nothing is uploaded.')),
         forget),
-      section('demo-title', 'For demos', 'qr',
-        h('p', { class: 'field-hint' }, 'Show the book’s QR code on a laptop and scan it with a phone, or print test pages to try the magic window.'),
+      section('demo-title', 'Print and demos', 'print',
+        h('p', { class: 'field-hint' }, 'Print name stickers for the real book — a screen-free way to put the name in the pictures. Or show the book’s QR code on a laptop and scan it with a phone, or print test pages to try the magic window.'),
         h('div', { class: 'demo-links' },
+          linkButton({ text: 'Name stickers', href: `#/stickers/${bookId}?from=settings`, icon: 'sticker', variant: 'secondary', size: 'sm', testid: 'link-stickers' }),
           linkButton({ text: 'QR code', href: `#/qr/${bookId}`, icon: 'qr', variant: 'secondary', size: 'sm', testid: 'link-qr' }),
           linkButton({ text: 'Printable test pages', href: `#/print/${bookId}`, icon: 'print', variant: 'secondary', size: 'sm', testid: 'link-print' }),
           linkButton({ text: 'All books', href: '#/', icon: 'book', variant: 'secondary', size: 'sm' })))),

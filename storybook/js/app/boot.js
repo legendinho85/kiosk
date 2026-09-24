@@ -73,6 +73,54 @@ export function shouldRegisterSw(loc, { inIframe, hasServiceWorker }) {
   return p.get('sw') === '1' && (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1');
 }
 
+/**
+ * The attributes on <html> that carry the reading-comfort settings
+ * (docs/architecture.md §12), for every stylesheet to key off:
+ * `data-easy-read="true"` (dyslexia-friendly text) and `data-contrast="high"`.
+ * A null value means "remove the attribute".
+ * @param {{easyRead?: boolean, highContrast?: boolean}|null|undefined} settings
+ * @returns {{'data-easy-read': string|null, 'data-contrast': string|null}}
+ */
+export function docSettingAttrs(settings) {
+  return {
+    'data-easy-read': settings?.easyRead === true ? 'true' : null,
+    'data-contrast': settings?.highContrast === true ? 'high' : null,
+  };
+}
+
+/**
+ * Put the reading-comfort settings on an element (the <html> element).
+ * Never throws.
+ * @param {{setAttribute: Function, removeAttribute: Function}|null} el
+ * @param {object} settings
+ */
+export function applyDocSettings(el, settings) {
+  if (!el) return;
+  for (const [name, value] of Object.entries(docSettingAttrs(settings))) {
+    try {
+      if (value == null) el.removeAttribute(name);
+      else el.setAttribute(name, value);
+    } catch {
+      /* not worth failing over */
+    }
+  }
+}
+
+/**
+ * The browser tab's title for a book ("Beep beep! — a Tiffin & Me story"),
+ * without the child's name (tabs and history are seen by anyone). Falls back
+ * to the app's name for screens that aren't about one book.
+ * @param {{title?: string}|null} book
+ */
+export function pageTitle(book) {
+  const t = String(book?.title ?? '')
+    .replace(/,?\s*\{[^}]*\}/g, '')
+    .replace(/\s+([!?.])/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return t ? `${t} — a Tiffin & Me story` : 'Tiffin & Me read-along';
+}
+
 /** Are we inside a frame? (Cross-origin parents throw on access: that counts as yes.) */
 export function isInIframe(win = globalThis) {
   try {

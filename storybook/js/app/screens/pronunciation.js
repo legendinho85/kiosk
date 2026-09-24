@@ -17,16 +17,17 @@ import { planLines } from '../../narrator/plan.js';
 const norm = (s) => String(s ?? '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-GB');
 
 /**
- * Lines from the book to try the name in: the title line and the goodnight
- * line when they exist (short, and the name is the star), else the first
- * lines that use the plain name.
+ * Lines from the current book to try the name in: the title line and the
+ * goodnight line when they exist (short, and the name is the star), else the
+ * first lines that use the plain name ("Goal, Ava!" in Book 1, "Beep beep,
+ * Ava!" in Book 2).
  * @param {object|null} book
  * @param {number} [max]
  * @returns {string[]}
  */
 export function storyLines(book, max = 2) {
   const lines = (book?.pages ?? []).flatMap((p) => [...(p.text ?? []), ...(p.after ?? [])]).filter((l) => /\{name\}/.test(l));
-  if (!lines.length) return ['Goal, {name}!'];
+  if (!lines.length) return [/\{name\}/.test(book?.title ?? '') ? book.title : 'Hello, {name}!'];
   const picked = [lines[0]];
   const last = lines[lines.length - 1];
   if (max > 1 && last !== lines[0]) picked.push(last);

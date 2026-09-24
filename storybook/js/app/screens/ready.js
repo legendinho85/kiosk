@@ -7,7 +7,7 @@
 // grown-up's recorded reading), bedtime mode, a gift message from whoever
 // gave the book, saving a recorded reading as audio for a Yoto card or a
 // Creative-Tonie, and asking about online voices when that's the only kind
-// this browser has.
+// this browser has. Round 3 (§12): name stickers for the printed book.
 
 import { h, icon, button, linkButton, respellNode, toast, setBusy } from '../ui.js';
 import { screen, privacyLine, envBanner, voiceConsentCard } from '../chrome.js';
@@ -373,6 +373,14 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
       linkButton({ text: 'Record a reading', href: `#/b/${bookId}/record`, icon: 'mic', variant: 'link', size: 'sm' }));
   }
 
+  // ---- Name stickers for the printed book (docs §12) ------------------------------------------------
+  const stickersCard = h('section', { class: 'card give-card stickers-card', 'aria-labelledby': 'stickers-title' },
+    h('span', { class: 'give-art is-stickers', 'aria-hidden': 'true' }, icon('sticker', { size: 26 })),
+    h('div', {},
+      h('h2', { id: 'stickers-title' }, 'Name stickers'),
+      h('p', {}, `Print ${who.display}’s ${(who.count ?? 1) > 1 ? 'names' : 'name'} to stick on the stars in the real book — a screen-free way to see ${(who.count ?? 1) > 1 ? 'them' : 'it'} in the pictures.`),
+      linkButton({ text: 'Print name stickers', href: `#/stickers/${bookId}`, icon: 'print', variant: 'link', size: 'sm', testid: 'go-stickers' })));
+
   // ---- Giving a book ------------------------------------------------------------------------------
   const giveCard = h('section', { class: 'card give-card', 'aria-labelledby': 'give-title' },
     h('span', { class: 'give-art', 'aria-hidden': 'true' }, icon('gift', { size: 26 })),
@@ -406,7 +414,7 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
     body: [
       envBanner({ signal }),
       hero,
-      h('div', { class: 'ready-side' }, giftCard, consent, childCard, storyCard, audioCard, giveCard, tips, privacyLine('Everything stays on this phone. No account, no tracking.')),
+      h('div', { class: 'ready-side' }, giftCard, consent, childCard, storyCard, audioCard, stickersCard, giveCard, tips, privacyLine('Everything stays on this phone. No account, no tracking.')),
     ],
   });
   el.classList.toggle('is-bedtime', bedtime);

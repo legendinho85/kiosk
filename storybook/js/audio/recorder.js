@@ -468,7 +468,23 @@ function abortable(signal, onAbort) {
   return () => signal.removeEventListener('abort', onAbort);
 }
 
-async function playWithWebAudio(blob, signal, volume) {
+const clampOffset = (ms, durationMs) => {
+  const v = Number(ms);
+  if (!(v > 0)) return 0;
+  // Never seek to (or past) the very end: there would be nothing left to hear.
+  return Number.isFinite(durationMs) && durationMs > 0 ? Math.min(v, Math.max(0, durationMs - 50)) : v;
+};
+
+/** Call a caller's hook without letting it break playback. */
+function safeCall(fn, arg) {
+  try {
+    fn?.(arg);
+  } catch {
+    /* a highlight callback must never stop the sound */
+  }
+}
+
+async function playWithWebAudio(blob, signal, volume, offsetMs, onStart) {
   const ctx = getAudioContext();
   if (!ctx) throw new Error('No Web Audio');
   if (ctx.state !== 'running') {
@@ -481,6 +497,8 @@ async function playWithWebAudio(blob, signal, volume) {
     decodedCache.set(blob, buffer);
   }
   if (signal?.aborted) return;
+  const durationMs = buffer.duration * 1000;
+  const offset = clampOffset(offsetMs, durationMs);
   await new Promise((resolve) => {
     const src = ctx.createBufferSource();
     const gain = ctx.createGain();
@@ -504,12 +522,15 @@ async function playWithWebAudio(blob, signal, volume) {
     const off = abortable(signal, finish);
     src.onended = finish;
     // Belt and braces: a suspended context would never fire 'ended'.
-    const watchdog = setTimeout(finish, buffer.duration * 1000 + 1000);
-    src.start();
+    const watchdog = setTimeout(finish, durationMs - offset + 1000);
+    src.start(0, offset / 1000);
+    // What we hear lags the start call by the output latency (Bluetooth can be 100+ ms).
+    const latencyMs = Math.max(0, Math.min(500, ((Number(ctx.outputLatency) || 0) + (Number(ctx.baseLatency) || 0)) * 1000));
+    safeCall(onStart, { offsetMs: offset, durationMs, latencyMs, how: 'webaudio' });
   });
 }
 
-function playWithElement(blob, signal, volume) {
+function playWithElement(blob, signal, volume, offsetMs, onStart) {
   return new Promise((resolve, reject) => {
     const Audio = globalThis.Audio;
     if (typeof Audio !== 'function') return reject(new Error('No audio element'));
@@ -521,13 +542,14 @@ function playWithElement(blob, signal, volume) {
     }
     const audio = new Audio();
     let settled = false;
+    let started = false;
     let watchdog = setTimeout(() => done(), 12000);
     const done = (err) => {
       if (settled) return;
       settled = true;
       clearTimeout(watchdog);
       off();
-      audio.onended = audio.onerror = audio.onloadedmetadata = null;
+      audio.onended = audio.onerror = audio.onloadedmetadata = audio.onplaying = null;
       try {
         audio.pause();
         audio.removeAttribute('src');
@@ -540,13 +562,29 @@ function playWithElement(blob, signal, volume) {
       else resolve();
     };
     const off = abortable(signal, () => done());
+    const known = () => Number.isFinite(audio.duration) && audio.duration > 0;
     audio.onended = () => done();
     audio.onerror = () => done(new Error('Could not play the recording'));
     audio.onloadedmetadata = () => {
-      if (Number.isFinite(audio.duration)) {
-        clearTimeout(watchdog);
-        watchdog = setTimeout(() => done(), audio.duration * 1000 + 1500);
+      const durationMs = known() ? audio.duration * 1000 : NaN;
+      const offset = clampOffset(offsetMs, durationMs);
+      if (offset > 0) {
+        try {
+          audio.currentTime = offset / 1000;
+        } catch {
+          /* can't seek: it plays from the start and onStart says so */
+        }
       }
+      if (known()) {
+        clearTimeout(watchdog);
+        watchdog = setTimeout(() => done(), audio.duration * 1000 - offset + 1500);
+      }
+    };
+    // 'playing' fires when sound actually starts (after any seek).
+    audio.onplaying = () => {
+      if (started) return;
+      started = true;
+      safeCall(onStart, { offsetMs: Math.max(0, (Number(audio.currentTime) || 0) * 1000), durationMs: known() ? audio.duration * 1000 : null, latencyMs: 0, how: 'element' });
     };
     audio.setAttribute('playsinline', '');
     audio.preload = 'auto';
@@ -567,17 +605,21 @@ function playWithElement(blob, signal, volume) {
  * Uses the shared, gesture-unlocked AudioContext first (so it plays on iOS
  * mid-story without another tap), then an <audio> element.
  * @param {Blob} blob
- * @param {{signal?: AbortSignal, volume?: number}} [opts]
+ * @param {{signal?: AbortSignal, volume?: number, offsetMs?: number,
+ *   onStart?: (info: {offsetMs: number, durationMs: number|null, latencyMs: number, how: 'webaudio'|'element'}) => void}} [opts]
+ *   offsetMs: start this far into the clip (a paused reading carrying on); it is clamped to the clip.
+ *   onStart: called once, the moment the sound really starts (after decoding and seeking), with where in
+ *   the clip it started — so read-along highlighting can follow the real start rather than a guess.
  * @returns {Promise<void>}
  */
-export async function playBlob(blob, { signal, volume = 1 } = {}) {
+export async function playBlob(blob, { signal, volume = 1, offsetMs = 0, onStart } = {}) {
   if (!blob || !blob.size) throw new Error('Nothing to play');
   if (signal?.aborted) return;
   try {
-    await playWithWebAudio(blob, signal, volume);
+    await playWithWebAudio(blob, signal, volume, offsetMs, onStart);
     return;
   } catch {
     if (signal?.aborted) return;
   }
-  await playWithElement(blob, signal, volume);
+  await playWithElement(blob, signal, volume, offsetMs, onStart);
 }

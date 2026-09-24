@@ -53,7 +53,10 @@ export function render(root, ctx) {
     h('p', { class: 'eyebrow' }, 'For demos'),
     h('h1', {}, `Scan to read “${fillTemplate(book.title, 'you')}”`),
     h('p', { class: 'lead' }, 'This is the code on the back of the printed book. Point a phone’s camera at it to open the read-along.'),
-    h('div', { class: 'card qr-card' }, codeBox, urlText, h('div', { class: 'qr-actions' }, copyBtn, linkButton({ text: 'Printable test pages', href: `#/print/${bookId}`, icon: 'print', variant: 'secondary', size: 'md', testid: 'qr-print' }))),
+    h('div', { class: 'card qr-card' }, codeBox, urlText, h('div', { class: 'qr-actions' },
+      copyBtn,
+      linkButton({ text: 'Printable test pages', href: `#/print/${bookId}`, icon: 'print', variant: 'secondary', size: 'md', testid: 'qr-print' }),
+      linkButton({ text: 'Name stickers', href: `#/stickers/${bookId}?from=qr`, icon: 'sticker', variant: 'secondary', size: 'md', testid: 'qr-stickers' }))),
     h('p', { class: 'field-hint qr-hint' }, icon('info', { size: 16 }), h('span', {}, 'The phone needs to reach this computer: use a shared Wi-Fi address or a public (https) link. The camera and microphone need https.')),
   );
   root.append(screen(ctx, { name: 'qr', back: { href: `#/b/${bookId}`, label: 'Back to the book', text: 'Back' }, body }).el);

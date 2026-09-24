@@ -2,7 +2,7 @@
 // See docs/architecture.md §8. Everything here fails soft: blocked storage,
 // no speech voices, no service worker, a module that won't load.
 
-import { testHookFromSearch, entryRedirect, shouldRegisterSw, isInIframe, APP_VERSION } from './app/boot.js';
+import { testHookFromSearch, entryRedirect, shouldRegisterSw, isInIframe, applyDocSettings, pageTitle, APP_VERSION } from './app/boot.js';
 import { startRouter } from './app/router.js';
 import { toast } from './app/ui.js';
 import { bookErrorScreen, messageScreen } from './app/chrome.js';
@@ -23,6 +23,8 @@ import * as print from './app/screens/print.js';
 import * as record from './app/screens/record.js';
 import * as gift from './app/screens/gift.js';
 import * as openPack from './app/screens/open.js';
+import * as letters from './app/screens/letters.js';
+import * as stickers from './app/screens/stickers.js';
 
 // ---- 1. Test hook (before anything reads it) ----------------------------------------
 const hook = testHookFromSearch(location.search);
@@ -40,6 +42,16 @@ try {
 let state = loadState();
 const getSettings = () => state.settings;
 
+// Reading comfort (easy-read text, higher contrast) is carried on <html> so
+// every stylesheet (app, reader, activities) can follow it.
+let appliedSettings = null;
+function applySettings() {
+  if (state.settings === appliedSettings) return;
+  appliedSettings = state.settings;
+  applyDocSettings(document.documentElement, state.settings);
+}
+applySettings();
+
 /**
  * Replace the app state (a new state or an updater function) and save it.
  * `persist: false` keeps it in memory only (e.g. straight after "forget everything").
@@ -47,6 +59,7 @@ const getSettings = () => state.settings;
 function setState(next, { persist = true } = {}) {
   state = typeof next === 'function' ? next(state) : next;
   if (persist) saveState(state);
+  applySettings();
   return state;
 }
 
@@ -107,12 +120,19 @@ const routes = [
   { path: '/settings', name: 'settings', render: settings.render, prepare: withServices },
   { path: '/qr/:book', name: 'qr', ...withBook(qr) },
   { path: '/print/:book', name: 'print', ...withBook(print) },
+  { path: '/stickers/:book', name: 'stickers', ...withBook(stickers) },
+  { path: '/b/:book/letters', name: 'letters', ...withBook(letters, withServices) },
 ];
 
 let router = null;
 const root = document.getElementById('app');
 
 function makeContext(match, extras) {
+  try {
+    document.title = pageTitle(extras.book ?? null);
+  } catch {
+    /* ignore */
+  }
   return {
     get state() {
       return state;
