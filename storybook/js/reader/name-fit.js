@@ -9,6 +9,13 @@
 // unit-tested; the DOM layer measures real text when it can and estimates
 // when it can't.
 //
+// Siblings reading together ("Amara & Zak & Oluwaseun") must stay readable
+// too, so they are never squashed: all the names on one line while that stays
+// at least SIBLING_MIN_SCALE of the drawn size, else (in a `data-wrap` slot)
+// stacked on two lines split at an "&", else their first letters ("A & Z & O").
+// A group marked `data-siblings="copies"` (a shirt, a hat) is drawn once per
+// child, fanned out, each copy with one child's name.
+//
 // This module makes no sound. writeIn() returns a promise and reports each
 // letter, so the reader decides when to ding.
 
@@ -16,6 +23,7 @@ import { upper, possessive } from '../core/personalise.js';
 import { animationWrapper } from './scene.js';
 
 export const MIN_SCALE = 0.45; // smallest a name may shrink, as a fraction of the drawn size
+export const SIBLING_MIN_SCALE = 0.55; // siblings' names smaller than this switch to a shorter form
 // Browsers hint (round) glyph widths for the size text is drawn at on screen, so the same name can
 // measure ~5% wider or narrower as the picture is resized. Unhinted ("geometric precision") text
 // scales exactly, so it is measured and drawn that way.
@@ -48,6 +56,54 @@ export function nameForForm(person, form) {
   if (form === 'upper') return upper(display);
   if (form === 'poss') return possessive(display);
   return display;
+}
+
+/**
+ * The children's names when several read together (from the art form
+ * "Amara & Zak"; a single name never contains "&"), else null.
+ */
+export function siblingNames(person) {
+  const names = artName(person)
+    .split(/\s+&\s+/)
+    .map((n) => n.trim())
+    .filter(Boolean);
+  return names.length > 1 ? names : null;
+}
+
+/** Apply a slot's data-form to (a line of) sibling names; "poss" marks only the end. */
+function formLines(lines, form) {
+  if (form === 'upper') return lines.map(upper);
+  if (form === 'poss') return lines.map((l, i) => (i === lines.length - 1 ? possessive(l) : l));
+  return lines;
+}
+
+/**
+ * Lay out several children's names in one spot, always readable and never
+ * squashed: one line ("Amara & Zak") while it stays at least `minScale` of the
+ * drawn size; otherwise, where the slot may wrap, two lines split at an "&"
+ * ("Amara & Zak" / "& Oluwaseun"); otherwise first letters ("A & Z & O").
+ * @param {{names: string[], form?: string, fontSize: number, maxWidth: number, wrap?: boolean,
+ *   measure?: (text: string, fontSize: number) => number, minScale?: number}} spec
+ * @returns {{lines: string[], fontSize: number, letterSpacing: number, squeeze: boolean, style: 'full'|'stacked'|'initials'}}
+ */
+export function layoutSiblings({ names, form = 'plain', fontSize, maxWidth, wrap = false, measure = estimateTextWidth, minScale = SIBLING_MIN_SCALE }) {
+  const readable = (l) => !l.letterSpacing && !l.squeeze && l.fontSize >= fontSize * minScale - 1e-6;
+  const [full] = formLines([names.join(' & ')], form);
+  const one = layoutName({ text: full, fontSize, maxWidth, wrap: false, measure });
+  if (readable(one) || !(maxWidth > 0)) return { ...one, style: 'full' };
+  if (wrap) {
+    let best = null;
+    for (let i = 1; i < names.length; i++) {
+      const lines = formLines([names.slice(0, i).join(' & '), `& ${names.slice(i).join(' & ')}`], form);
+      const fits = lines.map((t) => fitText(measure(t, fontSize), fontSize, maxWidth, { chars: graphemes(t).length }));
+      if (fits.some((f) => f.letterSpacing || f.squeeze)) continue;
+      const size = settleSize(lines, Math.min(...fits.map((f) => f.fontSize), fontSize * TWO_LINE_MAX), maxWidth, measure, fontSize * MIN_SCALE);
+      if (size >= fontSize * minScale - 1e-6 && (!best || size > best.fontSize)) best = { lines, fontSize: size, letterSpacing: 0, squeeze: false, style: 'stacked' };
+    }
+    if (best) return best;
+  }
+  const [initials] = formLines([names.map((n) => upper(graphemes(n)[0] ?? '')).join(' & ')], form);
+  return { ...layoutName({ text: initials, fontSize, maxWidth, wrap: false, measure }), style: 'initials' };
 }
 
 const SEPARATOR = /^[\s\-'’.]$/u;
@@ -300,7 +356,9 @@ function renderSlot(item, measure) {
   el.setAttribute('text-rendering', GEOMETRIC);
   const maxWidth = parseFloat(el.dataset.maxWidth ?? el.getAttribute('data-max-width') ?? '');
   const wrap = el.dataset.wrap === '2';
-  const layout = layoutName({ text: item.text, fontSize: orig.fontSize, maxWidth, wrap, measure });
+  const layout = item.sibs
+    ? layoutSiblings({ names: item.sibs, form: item.form, fontSize: orig.fontSize, maxWidth, wrap, measure })
+    : layoutName({ text: item.text, fontSize: orig.fontSize, maxWidth, wrap, measure });
   item.layout = layout;
   el.setAttribute('font-size', round(layout.fontSize));
   if (layout.letterSpacing) el.setAttribute('letter-spacing', round(layout.letterSpacing));
@@ -338,6 +396,8 @@ function renderSlot(item, measure) {
   // Whole-name scripts can't reveal letter by letter: veil and fade instead.
   el.classList.toggle('is-veiled', Boolean(item.pending && !item.letterwise));
   el.setAttribute('aria-label', item.text);
+  if (layout.style) el.dataset.siblingsAs = layout.style;
+  else delete el.dataset.siblingsAs;
 }
 
 function renderLetters(group, svgRoot, display, animate, several = false) {
@@ -384,6 +444,60 @@ const sleep = (ms, signal) =>
   });
 
 /**
+ * Siblings: draw each `[data-siblings="copies"]` group once per child, fanned
+ * out round where the artist drew it (`data-sibling-step`: the gap between
+ * copies in the group's own units, default 150; `data-sibling-turn`: degrees
+ * between them, default 7; `data-sibling-scale`: default 0.9 for two, 0.8 for
+ * three). Each copy's name slots get `data-sibling="i"` (that child's name).
+ * Copies' ids get a "-s2"/"-s3" suffix. Re-running with one child removes them.
+ * @param {SVGSVGElement} svgRoot
+ * @param {string[]|null} names
+ */
+export function expandSiblingCopies(svgRoot, names) {
+  for (const el of svgRoot.querySelectorAll('[data-siblings="copies"]')) {
+    if (el.closest('[data-sibling-copy]')) continue; // a copy of a copy
+    // Undo an earlier fan (a different set of children).
+    const fan = el.parentNode?.getAttribute?.('data-sibling-fan') === '0' ? el.parentNode : null;
+    if (fan) {
+      for (const g of [...fan.parentNode.querySelectorAll(':scope > [data-sibling-fan]')]) if (g !== fan) g.remove();
+      fan.removeAttribute('transform');
+      fan.replaceWith(el);
+    }
+    for (const t of el.querySelectorAll('text.sb-name')) delete t.dataset.sibling;
+    const n = names?.length ?? 0;
+    if (n < 2) continue;
+    const step = Number(el.dataset.siblingStep) || 150;
+    const turn = Number(el.dataset.siblingTurn ?? 7);
+    const scale = Number(el.dataset.siblingScale) || (n === 2 ? 0.9 : 0.8);
+    // The copies pivot on the group's own origin, where the artist placed it.
+    let ox = 0;
+    let oy = 0;
+    try {
+      const m = el.transform?.baseVal?.consolidate?.()?.matrix;
+      if (m) [ox, oy] = [m.e, m.f];
+    } catch {
+      /* no transform: the parent's origin */
+    }
+    const parent = el.parentNode;
+    const next = el.nextSibling;
+    for (let i = 0; i < n; i++) {
+      const copy = i === 0 ? el : el.cloneNode(true);
+      if (i > 0) {
+        copy.setAttribute('data-sibling-copy', String(i));
+        for (const node of [copy, ...copy.querySelectorAll('[id]')]) if (node.id) node.id = `${node.id}-s${i + 1}`;
+      }
+      for (const t of copy.querySelectorAll('text.sb-name')) t.dataset.sibling = String(i);
+      const k = i - (n - 1) / 2;
+      const g = document.createElementNS(SVG_NS, 'g');
+      g.setAttribute('data-sibling-fan', String(i));
+      g.setAttribute('transform', `translate(${round(ox + k * step)} ${round(oy)}) rotate(${round(k * turn)}) scale(${round(scale)}) translate(${round(-ox)} ${round(-oy)})`);
+      g.appendChild(copy);
+      parent.insertBefore(g, next);
+    }
+  }
+}
+
+/**
  * Fill every name slot and bunting string in a scene.
  * With `animate`, slots marked `data-anim="write"` start blank and write
  * themselves in when writeIn() is called; everything else shows at once.
@@ -400,7 +514,9 @@ const sleep = (ms, signal) =>
  */
 export function fillNameSlots(svgRoot, person, { animate = false } = {}) {
   const display = artName(person);
-  const several = typeof person === 'object' && (person?.count ?? 1) > 1;
+  const sibs = siblingNames(person);
+  const several = Boolean(sibs) || (typeof person === 'object' && (person?.count ?? 1) > 1);
+  expandSiblingCopies(svgRoot, sibs);
   // Letter-by-letter write-in suits alphabetic scripts ("Amara & Zak" too).
   const letterwise = slotLetters(display.replace(/[&+,]/g, ' ')) !== null;
   const items = [];
@@ -413,11 +529,15 @@ export function fillNameSlots(svgRoot, person, { animate = false } = {}) {
 
   for (const el of svgRoot.querySelectorAll('text.sb-name')) {
     const form = el.dataset.form ?? 'plain';
+    // A slot on one child's copy of a shirt or hat has just that child's name.
+    const own = sibs && el.dataset.sibling != null ? sibs[Number(el.dataset.sibling)] : null;
     items.push({
       el,
       kind: 'name',
       orig: remember(el),
-      text: nameForForm(display, form),
+      form,
+      text: nameForForm(own ?? display, form),
+      sibs: own ? null : sibs,
       letterwise,
       pending: Boolean(animate && el.dataset.anim === 'write'),
     });

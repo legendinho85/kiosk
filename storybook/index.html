@@ -37,8 +37,9 @@
   <link rel="preload" href="fonts/fredoka-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/reader.css">
-  <link rel="stylesheet" href="css/ar.css">
+  <!-- Only the reader and the magic window use these: they load without holding up the first paint (js/main.js switches them on). -->
+  <link rel="stylesheet" href="css/reader.css" media="print" data-deferred-style>
+  <link rel="stylesheet" href="css/ar.css" media="print" data-deferred-style>
   <link rel="modulepreload" href="js/main.js">
   <script type="module" src="js/main.js"></script>
 </head>

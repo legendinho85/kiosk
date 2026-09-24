@@ -142,6 +142,8 @@ async function drag(page, from, to, steps = 14) {
   await page.mouse.up();
 }
 const control = (page) => page.locator('[data-testid=scene] [data-testid=control]');
+// A page-turn tap this soon after the last turn is ignored (js/reader/reader.js TURN_GUARD_MS = 450).
+const TURN_SETTLE = 520;
 const attr = (page, sel, name) => page.locator(`[data-testid=scene] ${sel}`).getAttribute(name);
 const shown = (page, sel) =>
   page.evaluate((sel) => {
@@ -317,6 +319,7 @@ try {
     eq(await shown(page, '#p4-thud-you'), true, 'midway ran during show-me');
     await page.getByTestId('prev-page').click();
     await waitState(page, 3, 'waiting');
+    await page.waitForTimeout(TURN_SETTLE);
     await page.getByTestId('prev-page').click();
     await waitState(page, 2, 'waiting');
     const f = await toScreen(page, 1200, 700);
@@ -346,10 +349,14 @@ try {
     const box = await page.getByTestId('scene').boundingBox();
     await drag(page, [box.x + box.width * 0.85, box.y + box.height * 0.3], [box.x + box.width * 0.15, box.y + box.height * 0.32], 8);
     await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '2');
+    // Each turn settles before the next (a second tap straight away is ignored: see the double-tap step).
+    await page.waitForTimeout(TURN_SETTLE);
     await page.keyboard.press('ArrowRight');
     await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '3');
+    await page.waitForTimeout(TURN_SETTLE);
     await page.keyboard.press('ArrowLeft');
     await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '2');
+    await page.waitForTimeout(TURN_SETTLE);
     await page.getByTestId('prev-page').click();
     await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '1');
     // Old pages are gone once their exit animation ends.
@@ -365,6 +372,39 @@ try {
     await drag(page, a, b, 6);
     eq(await reader(page).getAttribute('data-page'), '4', 'control drag is not a swipe');
     noErrors(errors, 'navigation');
+    await context.close();
+  });
+
+  await step('a double tap on Next (or a key held down) turns one page, not two', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&name=Ava');
+    await waitState(page, 1, 'done');
+    const at = () => reader(page).getAttribute('data-page');
+    // Five quick taps, 40 ms apart: the screen follows one turn of the real book.
+    const nextBox = await page.getByTestId('next-page').boundingBox();
+    for (let i = 0; i < 5; i++) {
+      await page.mouse.click(nextBox.x + nextBox.width / 2, nextBox.y + nextBox.height / 2);
+      await page.waitForTimeout(40);
+    }
+    await page.waitForTimeout(200);
+    eq(await at(), '2', 'five quick taps turn one page');
+    // Once the turn has settled, the next tap turns again.
+    await page.waitForTimeout(TURN_SETTLE);
+    await page.mouse.click(nextBox.x + nextBox.width / 2, nextBox.y + nextBox.height / 2);
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '3');
+    // Arrow keys and Prev too: a quick double press goes back one page.
+    await page.waitForTimeout(TURN_SETTLE);
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowLeft');
+    await page.waitForTimeout(300);
+    eq(await at(), '2', 'a double arrow press turns one page');
+    await page.waitForTimeout(TURN_SETTLE);
+    await page.getByTestId('prev-page').dblclick();
+    await page.waitForTimeout(300);
+    eq(await at(), '1', 'a double tap on Prev turns one page');
+    // The app (goTo) is never held back.
+    await page.evaluate(() => window.__reader.goTo(5));
+    eq(await at(), '5', 'goTo turns at once');
+    noErrors(errors, 'double tap');
     await context.close();
   });
 

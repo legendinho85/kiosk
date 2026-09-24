@@ -8,12 +8,32 @@
 // could run code, style the whole page or reach the network is stripped.
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+const XLINK_NS = 'http://www.w3.org/1999/xlink';
+const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 
-// Elements that can run code, pull in other documents, or (for <style>) leak
-// rules onto the whole app once inlined.
-const DROP = new Set(['script', 'style', 'foreignobject', 'iframe', 'object', 'embed', 'audio', 'video', 'link', 'meta', 'handler', 'listener']);
-const ANIMATION = new Set(['set', 'animate', 'animatetransform', 'animatemotion', 'animatecolor']);
+// Only plain SVG drawing elements survive (compared case-insensitively).
+// Anything else goes: elements from other namespaces (an <html:img> fetches
+// its src when inserted), and SVG elements that can run code, pull in other
+// documents or fonts, or (for <style>) leak rules onto the whole app.
+const ALLOWED = new Set(
+  [
+    'svg', 'g', 'defs', 'symbol', 'use', 'switch', 'view',
+    'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'image',
+    'text', 'tspan', 'textpath', 'title', 'desc',
+    'lineargradient', 'radialgradient', 'stop', 'pattern', 'clippath', 'mask', 'marker',
+    'filter', 'feblend', 'fecolormatrix', 'fecomponenttransfer', 'fecomposite', 'feconvolvematrix',
+    'fediffuselighting', 'fedisplacementmap', 'fedistantlight', 'fedropshadow', 'feflood', 'fefunca',
+    'fefuncb', 'fefuncg', 'fefuncr', 'fegaussianblur', 'feimage', 'femerge', 'femergenode',
+    'femorphology', 'feoffset', 'fepointlight', 'fespecularlighting', 'fespotlight', 'fetile', 'feturbulence',
+    'set', 'animate', 'animatetransform', 'animatemotion', 'mpath',
+    'a', // unwrapped into a <g>: no links out of a children's book
+  ],
+);
+const ANIMATION = new Set(['set', 'animate', 'animatetransform', 'animatemotion']);
+// Presentation attributes that can point at a resource with url(...).
 const URL_ATTRS = new Set(['fill', 'stroke', 'filter', 'clip-path', 'mask', 'marker-start', 'marker-mid', 'marker-end', 'cursor']);
+// Attributes that load things in HTML (and have no business on SVG art).
+const LOADING_ATTRS = new Set(['src', 'srcset', 'poster', 'data', 'action', 'formaction', 'background', 'codebase', 'archive', 'ping', 'lowsrc', 'dynsrc', 'manifest', 'xml:base']);
 
 /** Idle/celebration classes from css/reader.css; they animate `transform`. */
 export const ANIMATION_CLASSES = Object.freeze(['sb-bob', 'sb-sway', 'sb-wiggle', 'sb-pulse', 'sb-twinkle', 'sb-float', 'sb-spin-slow', 'sb-cheer', 'sb-hint', 'sb-bulge', 'sb-blink']);
@@ -35,7 +55,30 @@ export function resolveIn(baseUrl, path) {
 const isLocalRef = (v) => /^\s*#/.test(v ?? '');
 // Embedded bitmaps are allowed on <image> (they can't run code); nothing else.
 const isInlineBitmap = (el, v) => el.localName === 'image' && /^\s*data:image\/(png|jpe?g|webp|gif);/i.test(v ?? '');
-const hasExternalUrl = (v) => /url\(\s*(['"]?)(?!#)/i.test(v ?? '');
+
+/** Undo CSS escapes ("u\\72 l(" is "url("), so a disguised url() can't slip past. */
+export function cssUnescape(v) {
+  return String(v ?? '').replace(/\\(?:([0-9a-f]{1,6})\s?|(.))/gi, (_, hex, ch) => {
+    if (hex) {
+      const cp = parseInt(hex, 16);
+      return cp > 0 && cp <= 0x10ffff ? String.fromCodePoint(cp) : '\ufffd';
+    }
+    return ch;
+  });
+}
+
+/**
+ * Could this CSS value fetch something from outside the scene? Any url() that
+ * isn't a local "#id", and image-set()/image()/cross-fade()/element(), even
+ * when disguised with CSS escapes or comments.
+ */
+export function hasExternalUrl(v) {
+  const s = cssUnescape(v).replace(/\/\*[\s\S]*?\*\//g, '');
+  if (/(?:^|[^\w-])(?:-webkit-)?(?:image-set|image|cross-fade|element|src)\s*\(/i.test(s)) return true;
+  const re = /url\(\s*(['"]?)([^'")]*)/gi;
+  for (let m = re.exec(s); m; m = re.exec(s)) if (!/^\s*#/.test(m[2])) return true;
+  return false;
+}
 
 /**
  * Remove anything unsafe from a parsed SVG tree, in place.
@@ -48,14 +91,16 @@ export function sanitiseSvg(root) {
     const el = walk.pop();
     for (const child of [...el.children]) {
       const name = child.localName.toLowerCase();
-      if (DROP.has(name)) {
+      if (child.namespaceURI !== SVG_NS || !ALLOWED.has(name)) {
         child.remove();
         continue;
       }
       if (ANIMATION.has(name)) {
-        // <set attributeName="href" to="javascript:..."> is a classic way in.
+        // <set attributeName="href" to="javascript:..."> is a classic way in;
+        // so is animating a paint to url(https://...).
         const attr = (child.getAttribute('attributeName') ?? '').toLowerCase();
-        if (/^on/.test(attr) || /(^|:)href$/.test(attr)) {
+        const values = ['to', 'from', 'by', 'values'].map((a) => child.getAttribute(a) ?? '').join(' ');
+        if (/^on/.test(attr) || /(^|:)href$/.test(attr) || attr === 'style' || LOADING_ATTRS.has(attr) || hasExternalUrl(values) || /javascript:/i.test(values)) {
           child.remove();
           continue;
         }
@@ -81,12 +126,18 @@ function cleanAttributes(el) {
   for (const attr of [...el.attributes]) {
     const name = attr.name.toLowerCase();
     const value = attr.value;
-    if (name.startsWith('on')) el.removeAttributeNode(attr);
+    const ns = attr.namespaceURI;
+    if (ns && ns !== XLINK_NS && ns !== XML_NS && ns !== 'http://www.w3.org/2000/xmlns/') el.removeAttributeNode(attr);
+    else if (name.startsWith('on')) el.removeAttributeNode(attr);
     else if (name === 'href' || name === 'xlink:href' || attr.localName === 'href') {
       if (!isLocalRef(value) && !isInlineBitmap(el, value)) el.removeAttributeNode(attr);
     } else if (name === 'style') {
-      if (hasExternalUrl(value) || /javascript:|expression\(|@import/i.test(value)) el.removeAttributeNode(attr);
-    } else if (URL_ATTRS.has(name) && hasExternalUrl(value)) {
+      // Scenes use presentation attributes only (docs/architecture.md); a style
+      // attribute is the easiest place to hide a tracking pixel.
+      el.removeAttributeNode(attr);
+    } else if (LOADING_ATTRS.has(name) || attr.localName === 'base') {
+      el.removeAttributeNode(attr);
+    } else if (URL_ATTRS.has(name) && (hasExternalUrl(value) || value.includes('\\'))) {
       el.setAttribute(attr.name, 'none');
     }
   }

@@ -4,18 +4,29 @@
 // button lands on the right page.
 //
 // Family features (docs/architecture.md §11): siblings reading together are
-// one "person" ("Amara and Zak"; "Amara & Zak" in the pictures), a grown-up's
-// recorded reading plays instead of the computer voice (with its label, "Read
-// by Nana in Urdu", and language: no word-by-word highlighting for a reading
-// in another language), and bedtime mode comes from settings. The end page
-// offers "Find your first letter" (#/b/:book/letters) when
-// settings.letterActivity is on.
+// one "person" ("Amara and Zak"; "Amara & Zak" in the pictures), the
+// grown-up's recorded reading chosen for this child plays instead of the
+// computer voice (with its label, "Read by Nana in Urdu", and language: no
+// word-by-word highlighting for a reading in another language), and bedtime
+// mode comes from settings. The end page offers "Find your first letter"
+// (#/b/:book/letters) when settings.letterActivity is on.
+//
+// The reader is the child's screen, so nothing here leads to a grown-up
+// screen without the press-and-hold gate: Home asks for the hold (the page
+// carries on if nobody holds it), the camera asks every time, and Goodnight
+// ends on a calm "Night night" card (read it again, or grown-ups hold to
+// leave) rather than on the grown-ups' ready screen. Where the child got to
+// is remembered, so the ready screen can offer "Carry on from page 5".
 
-import { h, clearToasts } from '../ui.js';
-import { openParentGate, gatePassed } from '../parent-gate.js';
+import { h, icon, button, clearToasts } from '../ui.js';
+import { openParentGate, holdButton, markGatePassed, enterChildMode, CAMERA_GATE } from '../parent-gate.js';
 import { messageScreen } from '../chrome.js';
-import { activeProfile, activeReadingFor } from '../../core/storage.js';
-import { readingPerson, readingAdapter } from '../../family/family.js';
+import { activeProfile, readingChildren, prefs } from '../../core/storage.js';
+import { fillTemplate } from '../../core/personalise.js';
+import { readingPerson, readingAdapter, childReading } from '../../family/family.js';
+import { savePlace, placeFor, placeWho } from '../place.js';
+
+export { savePlace, placeFor, placeWho };
 
 /** Clamp a page parameter to the book. */
 export function pageParam(value, pageCount) {
@@ -45,14 +56,56 @@ export function render(root, ctx) {
     ctx.navigate(`#/b/${bookId}`, { replace: true });
     return null;
   }
+  // The child has the phone now: whatever a grown-up unlocked is locked again.
+  enterChildMode();
   const startPage = pageParam(ctx.params.page, book.pages.length);
+  const person = readingPerson(ctx.state);
+  const kids = readingChildren(ctx.state);
   // Grown-up messages don't belong on the child's screen.
   clearToasts();
+  // A heading for screen readers (the reader itself is a labelled region).
+  const heading = h('h1', { class: 'sr-only', tabindex: '-1' }, fillTemplate(book.title ?? '', person));
   const host = h('div', { class: 'reader-host', 'data-testid': 'reader-host' }, h('div', { class: 'reader-loading', role: 'status' }, h('span', { class: 'spinner', 'aria-hidden': 'true' }), 'Opening the book…'));
-  root.append(host);
+  root.append(h('main', { class: 'reader-main', id: 'main', tabindex: '-1' }, heading, host));
   let reader = null;
   let gone = false;
+  let asking = false; // a gate dialog is open
+  let saidGoodnight = false;
+  let nightGate = null;
   const readHash = (n) => `#/b/${bookId}/read/${n}`;
+  const safePrefs = { get: (k, d) => { try { return prefs.get(k, d); } catch { return d; } }, set: (k, v) => { try { prefs.set(k, v); } catch { /* ignore */ } } };
+
+  // The reader's Goodnight pill fades the page to dark, then leaves: we take over there.
+  host.addEventListener('click', (e) => {
+    if (e.target?.closest?.('[data-testid=goodnight]')) saidGoodnight = true;
+  }, true);
+  const inGoodnight = () => saidGoodnight || Boolean(host.querySelector('[data-testid=reader].is-goodnight'));
+
+  /** "Night night, Ava." — a calm end: read it again, or a grown-up holds to go back to the book. */
+  function showGoodnight() {
+    try {
+      reader?.destroy();
+    } catch {
+      /* ignore */
+    }
+    reader = null;
+    nightGate = holdButton({
+      label: 'Grown-ups: press and hold for 3 seconds to go back to the book',
+      onUnlock: () => {
+        markGatePassed();
+        if (!gone) ctx.navigate(`#/b/${bookId}`);
+      },
+    });
+    const again = button({ text: 'Read it again', icon: 'book', variant: 'night', size: 'lg', testid: 'goodnight-again', class: 'goodnight-again', onClick: () => ctx.navigate(readHash(1)) });
+    host.replaceChildren(
+      h('section', { class: 'goodnight-card', 'data-testid': 'goodnight-card', 'aria-labelledby': 'goodnight-text' },
+        h('span', { class: 'goodnight-moon', 'aria-hidden': 'true' }, icon('moon', { size: 96 })),
+        h('p', { class: 'goodnight-text', id: 'goodnight-text', role: 'status' }, `Night night, ${person.display}.`),
+        again,
+        h('div', { class: 'goodnight-grownups' }, h('p', { class: 'goodnight-grownups-title' }, 'Grown-ups'), nightGate.el)),
+    );
+    savePlace(safePrefs, bookId, book.pages.length, book.pages.length, kids);
+  }
 
   (async () => {
     let mod;
@@ -69,9 +122,9 @@ export function render(root, ctx) {
       book,
       bookId,
       baseUrl: ctx.baseUrl,
-      person: readingPerson(ctx.state),
+      person,
       pronunciation: profile.pronunciation,
-      reading: readingAdapter(activeReadingFor(ctx.state, bookId), ctx.blobs),
+      reading: readingAdapter(childReading(ctx.state, bookId), ctx.blobs),
       bedtime: Boolean(ctx.state.settings?.bedtime),
       settings: ctx.state.settings,
       narrator: ctx.narrator,
@@ -79,15 +132,35 @@ export function render(root, ctx) {
       startPage,
       onPageChange: (n) => {
         // Only while we're still the screen on show.
-        if (!gone && location.hash.startsWith(`#/b/${bookId}/read`)) replaceHash(readHash(n));
+        if (gone || !location.hash.startsWith(`#/b/${bookId}/read`)) return;
+        replaceHash(readHash(n));
+        savePlace(safePrefs, bookId, n, book.pages.length, kids);
       },
-      onExit: () => ctx.navigate(`#/b/${bookId}`),
+      onExit: async () => {
+        if (gone || asking) return;
+        if (inGoodnight()) {
+          showGoodnight();
+          return;
+        }
+        // Home is a grown-up decision too: a toddler's tap mustn't land on the grown-ups' screens.
+        asking = true;
+        const ok = await openParentGate({ title: 'Grown-ups: leave the story?', lead: 'Press and hold for 3 seconds to go back to the book’s page. We’ll remember where you got to.' });
+        asking = false;
+        if (gone) return;
+        if (ok) ctx.navigate(`#/b/${bookId}`);
+        else reader?.replay?.(); // nobody held it: carry on with this page
+      },
       // "Find your first letter" after the last page (docs §12), when the grown-ups want it offered.
-      onLetters: lettersOffered(ctx.state.settings) ? () => !gone && ctx.navigate(`#/b/${bookId}/letters`) : undefined,
-      // The camera is a grown-up decision: the child can't open it alone.
+      onLetters: lettersOffered(ctx.state.settings) ? () => !gone && ctx.navigate(`#/b/${bookId}/letters`, { replace: true }) : undefined,
+      // The camera is a grown-up decision: the child can't open it alone. The
+      // hold is asked for every time here (an earlier pass doesn't count in the
+      // reader), and the magic window replaces this page in the history.
       onMagic: async (n) => {
-        const ok = gatePassed() || (await openParentGate({ title: 'Grown-ups: open the camera?', lead: 'Press and hold for 3 seconds to use the magic window. We look at the page. Nothing is recorded.' }));
-        if (ok && !gone) ctx.navigate(`#/b/${bookId}/magic/${n}`);
+        if (gone || asking) return;
+        asking = true;
+        const ok = await openParentGate(CAMERA_GATE);
+        asking = false;
+        if (ok && !gone) ctx.navigate(`#/b/${bookId}/magic/${n}`, { replace: true });
       },
     });
     if (gone) r.destroy();
@@ -99,6 +172,7 @@ export function render(root, ctx) {
 
   return () => {
     gone = true;
+    nightGate?.destroy();
     reader?.destroy();
     reader = null;
   };

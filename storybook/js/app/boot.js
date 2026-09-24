@@ -106,18 +106,40 @@ export function applyDocSettings(el, settings) {
   }
 }
 
+/** What each screen is called in the browser tab (no child's name: tabs and history are seen by anyone). */
+export const SCREEN_TITLES = Object.freeze({
+  home: 'All books',
+  name: 'Add or change a name',
+  say: 'How we say the name',
+  read: 'Reading',
+  magic: 'Magic window',
+  record: 'Record a reading',
+  gift: 'Set up a gift',
+  open: 'Open a family recording',
+  settings: 'Settings',
+  qr: 'QR code',
+  print: 'Printable pages',
+  stickers: 'Name stickers',
+  letters: 'Find your first letter',
+  'not-found': 'Page not found',
+});
+
 /**
- * The browser tab's title for a book ("Beep beep! — a Tiffin & Me story"),
- * without the child's name (tabs and history are seen by anyone). Falls back
- * to the app's name for screens that aren't about one book.
+ * The browser tab's title: the book's landing page is "Beep beep! — a Tiffin
+ * & Me story"; every other screen says what it is first ("Reading — Goal! —
+ * Tiffin & Me", "Settings — Tiffin & Me"), so screen-reader users and anyone
+ * switching tabs know where they are (WCAG 2.4.2). Never the child's name.
  * @param {{title?: string}|null} book
+ * @param {string|null} [route] the route's name (js/main.js)
  */
-export function pageTitle(book) {
+export function pageTitle(book, route = null) {
   const t = String(book?.title ?? '')
     .replace(/,?\s*\{[^}]*\}/g, '')
     .replace(/\s+([!?.])/g, '$1')
     .replace(/\s+/g, ' ')
     .trim();
+  const screen = route ? SCREEN_TITLES[route] : null;
+  if (screen) return t ? `${screen} — ${t} — Tiffin & Me` : `${screen} — Tiffin & Me`;
   return t ? `${t} — a Tiffin & Me story` : 'Tiffin & Me read-along';
 }
 

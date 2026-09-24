@@ -10,21 +10,21 @@ import { createServices, armAudioUnlock, createQuietNarrator, createQuietSfx } f
 import { loadState, saveState, blobs } from './core/storage.js';
 import { loadBook, bookUrl } from './core/book.js';
 import { loadLexicon } from './pronounce/index.js';
+import { scratch } from './app/scratch.js';
 
+// The first screen after scanning (the name box, or "Ava's story is ready")
+// and the shelf load with the app; every other screen loads when its route
+// first opens (see routes below), so a phone on a slow connection shows the
+// name box sooner.
 import * as home from './app/screens/home.js';
 import * as landing from './app/screens/landing.js';
-import * as nameScreen from './app/screens/name.js';
-import * as say from './app/screens/pronunciation.js';
-import * as read from './app/screens/read.js';
-import * as magic from './app/screens/magic.js';
-import * as settings from './app/screens/settings.js';
-import * as qr from './app/screens/qr.js';
-import * as print from './app/screens/print.js';
-import * as record from './app/screens/record.js';
-import * as gift from './app/screens/gift.js';
-import * as openPack from './app/screens/open.js';
-import * as letters from './app/screens/letters.js';
-import * as stickers from './app/screens/stickers.js';
+import { upgradePronunciations } from './app/screens/name.js';
+
+// ---- 0. Styles only the reader and the magic window use ----------------------------
+// index.html marks css/reader.css and css/ar.css media="print" so they don't
+// hold up the first paint on a slow phone; they have been downloading
+// quietly since the page began, and apply from here on.
+for (const link of document.querySelectorAll('link[data-deferred-style]')) link.media = 'all';
 
 // ---- 1. Test hook (before anything reads it) ----------------------------------------
 const hook = testHookFromSearch(location.search);
@@ -65,11 +65,26 @@ function setState(next, { persist = true } = {}) {
 
 // ---- 4. Data ---------------------------------------------------------------------------
 // The name dictionary is only needed from the pronunciation step on, so it
-// loads in the background and never holds up the first screen.
+// loads in the background and never holds up the first screen. A slow
+// connection only delays it: screens wait a short while (a render deadline,
+// lexiconSoon) and then carry on without it, and when it does arrive it is
+// used from then on — the pronunciation screen adds its suggestions, and any
+// "as written" guess saved without it (marked provisional) is replaced by
+// the dictionary's best match unless a grown-up has chosen since.
 let lexicon = null;
-const lexiconReady = Promise.race([loadLexicon(), new Promise((r) => setTimeout(() => r(null), 6000))])
+const lexiconLoaded = loadLexicon()
   .then((index) => (lexicon = index ?? null))
-  .catch(() => null);
+  .catch((err) => {
+    console.warn('[app] the names dictionary did not load', err?.message ?? err);
+    return null;
+  });
+/** The dictionary if it arrives within `ms`, else null for now (it keeps loading). */
+const lexiconSoon = (ms = 2500) => Promise.race([lexiconLoaded, new Promise((r) => setTimeout(() => r(lexicon), ms))]);
+lexiconLoaded.then((index) => {
+  if (!index) return;
+  const next = upgradePronunciations(state, index);
+  if (next !== state) setState(next, { persist: state.profiles.length > 0 });
+});
 
 const books = new Map();
 function getBook(id) {
@@ -94,34 +109,56 @@ async function prepareBook(match) {
 // that talk (pronunciation, reader, settings...) wait for the real ones in
 // their route's prepare step.
 const services = { narrator: createQuietNarrator({ getSettings }), sfx: createQuietSfx(), real: false };
-const servicesReady = createServices({ getSettings, getRecording: (id) => blobs.get(id) }).then((s) => Object.assign(services, s, { real: true }));
+// A take of the name that isn't kept yet lives in memory (js/app/scratch.js); the story can still play it.
+const getRecording = (id) => (scratch.has(id) ? Promise.resolve(scratch.get(id)) : blobs.get(id));
+const servicesReady = createServices({ getSettings, getRecording }).then((s) => Object.assign(services, s, { real: true }));
 armAudioUnlock(services);
 
 // ---- 6. Router ---------------------------------------------------------------------------
-const withBook = (screen, extra = null) => ({
-  ...screen,
-  prepare: async (match, signal) => ({ ...(await prepareBook(match, signal)), ...(extra ? await extra(match, signal) : {}) }),
-});
-const withLexicon = async () => ({ lexicon: await lexiconReady });
+const withLexicon = async () => ({ lexicon: await lexiconSoon() });
 const withServices = async () => (await servicesReady, {});
 const both = (...fns) => async (match, signal) => Object.assign({}, ...(await Promise.all(fns.map((f) => f(match, signal)))));
 
+/**
+ * A route whose screen module loads the first time it opens (in its prepare
+ * step, alongside the book and whatever else it waits for). If the module
+ * can't load (a flaky connection), prepare fails and the router shows the
+ * friendly "didn't load — try again" screen.
+ * @param {string} path
+ * @param {string} name
+ * @param {object | (() => Promise<object>)} screen a module, or a loader for one
+ * @param {{book?: boolean, extra?: Function|null}} [opts]
+ */
+function route(path, name, screen, { book = false, extra = null } = {}) {
+  let mod = typeof screen === 'function' ? null : screen;
+  const load = () => (mod ? Promise.resolve(mod) : screen().then((m) => (mod = m)));
+  return {
+    path,
+    name,
+    prepare: async (match, signal) => {
+      const [, fromBook, fromExtra] = await Promise.all([load(), book ? prepareBook(match, signal) : null, extra ? extra(match, signal) : null]);
+      return { ...(fromBook ?? {}), ...(fromExtra ?? {}) };
+    },
+    render: (root, ctx) => mod.render(root, ctx),
+  };
+}
+
 const routes = [
-  { path: '/', name: 'home', render: home.render },
-  { path: '/b/:book', name: 'landing', ...withBook(landing) },
-  { path: '/b/:book/name', name: 'name', ...withBook(nameScreen) },
-  { path: '/b/:book/say', name: 'say', ...withBook(say, both(withLexicon, withServices)) },
-  { path: '/b/:book/read/:page', name: 'read', ...withBook(read, withServices) },
-  { path: '/b/:book/read', name: 'read', ...withBook(read, withServices) },
-  { path: '/b/:book/magic/:page', name: 'magic', ...withBook(magic, withServices) },
-  { path: '/b/:book/record', name: 'record', ...withBook(record, both(withLexicon, withServices)) },
-  { path: '/b/:book/gift', name: 'gift', ...withBook(gift, both(withLexicon, withServices)) },
-  { path: '/open', name: 'open', render: openPack.render, prepare: withServices },
-  { path: '/settings', name: 'settings', render: settings.render, prepare: withServices },
-  { path: '/qr/:book', name: 'qr', ...withBook(qr) },
-  { path: '/print/:book', name: 'print', ...withBook(print) },
-  { path: '/stickers/:book', name: 'stickers', ...withBook(stickers) },
-  { path: '/b/:book/letters', name: 'letters', ...withBook(letters, withServices) },
+  route('/', 'home', home),
+  route('/b/:book', 'landing', landing, { book: true }),
+  route('/b/:book/name', 'name', () => import('./app/screens/name.js'), { book: true }),
+  route('/b/:book/say', 'say', () => import('./app/screens/pronunciation.js'), { book: true, extra: both(withLexicon, withServices) }),
+  route('/b/:book/read/:page', 'read', () => import('./app/screens/read.js'), { book: true, extra: withServices }),
+  route('/b/:book/read', 'read', () => import('./app/screens/read.js'), { book: true, extra: withServices }),
+  route('/b/:book/magic/:page', 'magic', () => import('./app/screens/magic.js'), { book: true, extra: withServices }),
+  route('/b/:book/record', 'record', () => import('./app/screens/record.js'), { book: true, extra: both(withLexicon, withServices) }),
+  route('/b/:book/gift', 'gift', () => import('./app/screens/gift.js'), { book: true, extra: both(withLexicon, withServices) }),
+  route('/open', 'open', () => import('./app/screens/open.js'), { extra: withServices }),
+  route('/settings', 'settings', () => import('./app/screens/settings.js'), { extra: withServices }),
+  route('/qr/:book', 'qr', () => import('./app/screens/qr.js'), { book: true }),
+  route('/print/:book', 'print', () => import('./app/screens/print.js'), { book: true }),
+  route('/stickers/:book', 'stickers', () => import('./app/screens/stickers.js'), { book: true }),
+  route('/b/:book/letters', 'letters', () => import('./app/screens/letters.js'), { book: true, extra: withServices }),
 ];
 
 let router = null;
@@ -129,7 +166,7 @@ const root = document.getElementById('app');
 
 function makeContext(match, extras) {
   try {
-    document.title = pageTitle(extras.book ?? null);
+    document.title = pageTitle(extras.book ?? null, match.route?.name === 'landing' ? null : match.route?.name ?? null);
   } catch {
     /* ignore */
   }
@@ -148,7 +185,10 @@ function makeContext(match, extras) {
     get lexicon() {
       return extras.lexicon ?? lexicon;
     },
-    getLexicon: () => lexiconReady,
+    /** The names dictionary: `getLexicon()` waits for it however long it takes; `getLexicon(ms)` gives up after ms (null). */
+    getLexicon: (ms) => (ms ? lexiconSoon(ms) : lexiconLoaded),
+    /** Memory-only store for recordings that aren't kept yet (js/app/scratch.js). */
+    scratch,
     /** Resolves once the real narrator and sound effects have loaded (screens that don't wait in prepare). */
     servicesReady,
     blobs,
@@ -179,6 +219,33 @@ router = startRouter({
   },
 });
 document.documentElement.classList.add('is-booted');
+
+// "Skip to content" jumps to the screen's <main> (focus moves there) without
+// touching the address, which belongs to the router.
+document.addEventListener('click', (e) => {
+  const link = e.target?.closest?.('a.skip-link');
+  const main = link ? document.getElementById('main') : null;
+  if (!main) return;
+  e.preventDefault();
+  if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
+  try {
+    main.focus();
+  } catch {
+    /* ignore */
+  }
+});
+
+// Once the first screen is up and the phone is idle, fetch the next steps'
+// code (how the name is said, the reader) so they open without a wait.
+try {
+  const warm = () => {
+    for (const load of [() => import('./app/screens/name.js'), () => import('./app/screens/pronunciation.js'), () => import('./app/screens/read.js')]) load().catch(() => {});
+  };
+  const idle = globalThis.requestIdleCallback ?? ((fn) => setTimeout(fn, 1500));
+  setTimeout(() => idle(warm, { timeout: 4000 }), 2500);
+} catch {
+  /* only a speed-up */
+}
 
 // ---- 7. Global safety net ------------------------------------------------------------------
 let lastToastAt = 0;

@@ -35,6 +35,10 @@ import { clipDurationMs } from './clip.js';
 
 const IDLE_REPROMPT_MS = 8000; // tests may shorten it with SB_TEST.idleMs
 const SLIDE_MS = 420;
+// A turn from a tap, a key or a swipe is ignored this soon after the last turn:
+// toddlers double-tap, and the screen must not run ahead of the physical book.
+// Not scaled in test mode: it is about fingers, not story timing.
+export const TURN_GUARD_MS = 450;
 const SFX_GAP_MS = 250;
 const AUTO_TURN_MS = 1600;
 const PART_TIMEOUT_MS = 5000; // a recorded part that takes longer to fetch is skipped (computer voice instead)
@@ -159,6 +163,52 @@ function sceneBox(svgRoot, el) {
     return { x: Math.min(pts[0][0], pts[1][0]), y: Math.min(pts[0][1], pts[1][1]), width: Math.abs(pts[1][0] - pts[0][0]), height: Math.abs(pts[1][1] - pts[0][1]) };
   } catch {
     return null;
+  }
+}
+
+/**
+ * Where the prompt goes on a phone held sideways, where the words float over
+ * the picture: at the bottom as usual, or at the top when the part the child
+ * has to grab is down at the bottom (the prompt would hide it).
+ * @param {[number, number]|null} extent top and bottom (scene y, 0-1000) of where the child works the mechanism
+ * @returns {'top'|'bottom'}
+ */
+export function promptSide(extent, { sceneHeight = 1000, band = 0.25 } = {}) {
+  if (!Array.isArray(extent) || !extent.every(Number.isFinite)) return 'bottom';
+  const [y0, y1] = extent[0] <= extent[1] ? extent : [extent[1], extent[0]];
+  const underBottom = Math.max(0, y1 - sceneHeight * (1 - band));
+  const underTop = Math.max(0, sceneHeight * band - y0);
+  return underBottom > underTop ? 'top' : 'bottom';
+}
+
+/**
+ * The vertical extent (scene units) of where the child works a mechanism:
+ * the knob's whole run for sliders and pull-tabs, the wheel, the button, the flap.
+ * @returns {[number, number]|null}
+ */
+export function controlExtent(mechanic, svg = null) {
+  const c = mechanic?.control ?? {};
+  const knob = 70; // roughly half a knob or hand, in scene units
+  const ys = (pts) => pts.filter((p) => Array.isArray(p) && Number.isFinite(p[1])).map((p) => p[1]);
+  switch (mechanic?.type) {
+    case 'slider':
+    case 'pull-tab': {
+      const y = ys([c.from, c.to]);
+      return y.length ? [Math.min(...y) - knob, Math.max(...y) + knob] : null;
+    }
+    case 'wheel':
+    case 'push-button': {
+      const [cy] = ys([c.center]);
+      const r = Number(c.radius) || 0;
+      return Number.isFinite(cy) ? [cy - r, cy + r] : null;
+    }
+    case 'flap': {
+      const flap = svg && typeof c.flap === 'string' ? [...svg.querySelectorAll('[id]')].find((e) => `#${e.id}` === c.flap) : null;
+      const b = flap && sceneBox(svg, flap);
+      return b ? [b.y, b.y + b.height] : null;
+    }
+    default:
+      return null;
   }
 }
 
@@ -316,6 +366,7 @@ export async function mountReader(root, opts) {
   let wakeLock = null;
   let swipe = null;
   let lastSwipeAt = 0;
+  let lastTurnAt = -Infinity; // performance.now() of the last page turn (by anyone)
   let startGate = null; // resolves on the "Tap to start" button when opened without a tap
   const leaving = new Set();
 
@@ -351,8 +402,12 @@ export async function mountReader(root, opts) {
   // "Find Ava's letter": the first-letter game, offered at the end when the app can open it.
   const lettersBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-letters', 'data-testid': 'letter-game', hidden: true }, h('span', { class: 'sb-r-pill-icon', html: ICONS.letter }), fillTemplate("Find {name's} {letter|letters}", person));
   const endBar = h('div', { class: 'sb-r-endbar', hidden: true }, againBtn, nightBtn, lettersBtn);
-  const band = h('div', { class: 'sb-r-band' }, h('div', { class: 'sb-r-band-inner' }, badgeBand, textEl, endBar));
+  // "Tap to hear the story" (speech that needs a tap first) sits with the words,
+  // never over the page-turn buttons.
   const hearBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-hear', 'data-testid': 'tap-to-hear', hidden: true }, h('span', { class: 'sb-r-pill-icon', html: ICONS.play }), 'Tap to hear the story');
+  // The words scroll on their own if they must; the end-of-story buttons stay
+  // pinned below them, always in view (small phones included).
+  const band = h('div', { class: 'sb-r-band' }, h('div', { class: 'sb-r-band-inner' }, h('div', { class: 'sb-r-words' }, hearBtn, badgeBand, textEl)), endBar);
   const night = h('div', { class: 'sb-r-night', hidden: true, 'aria-live': 'polite' });
   const startLayer = h('div', { class: 'sb-r-start', hidden: true },
     h('button', { type: 'button', class: 'sb-r-startbtn', 'data-testid': 'start-story' }, h('span', { class: 'sb-r-start-icon', html: ICONS.play }), h('span', {}, 'Tap to start the story')));
@@ -365,7 +420,6 @@ export async function mountReader(root, opts) {
     band,
     prevBtn,
     nextWrap,
-    hearBtn,
     night,
     startLayer,
   );
@@ -1040,6 +1094,14 @@ export async function mountReader(root, opts) {
     state.waiting = true;
     const prompt = state.page.prompt || '';
     if (prompt && textEl.dataset.part !== 'prompt') showPart('prompt', planLines([prompt], person, recording).lines);
+    // Phone landscape (CSS): the prompt moves to the top when the part to grab is at the bottom.
+    let side = 'bottom';
+    try {
+      side = promptSide(controlExtent(state.page.mechanic, currentSvg()));
+    } catch {
+      /* keep it at the bottom */
+    }
+    el.dataset.promptAt = side;
     state.control?.hint(true);
   }
 
@@ -1060,6 +1122,7 @@ export async function mountReader(root, opts) {
     pageCtl = ctl;
     const { signal } = ctl;
     const page = pages[num - 1];
+    if (cur && cur.n !== num) lastTurnAt = performance.now(); // any turn: taps, keys, swipes, auto-turn, goTo
     confettiLayer.replaceChildren(); // a party never follows us onto the next page
     let resolveCompletion;
     const completion = new Promise((r) => {
@@ -1067,6 +1130,7 @@ export async function mountReader(root, opts) {
     });
     cur = { n: num, page, signal, completed: false, resolveCompletion, waiting: false, reprompted: false, celebration: null, finished: false };
     delete el.dataset.interacting;
+    delete el.dataset.promptAt;
     const state = cur;
     setState('reading');
     updateChrome(num);
@@ -1156,6 +1220,7 @@ export async function mountReader(root, opts) {
       }
       setState('reading');
       delete el.dataset.interacting;
+      delete el.dataset.promptAt;
       await untilAbort(state.celebration, signal);
       if (signal.aborted) return;
       await readAfter(state, parts.after, signal);
@@ -1233,13 +1298,19 @@ export async function mountReader(root, opts) {
     }
   }
 
-  function go(n) {
+  /**
+   * Turn to page n. `fromInput`: a tap, key or swipe, which is ignored while
+   * the last turn is still settling (a double tap turns one page, not two).
+   */
+  function go(n, { fromInput = false } = {}) {
     if (destroyed || !cur) return;
     const target = Math.min(pages.length, Math.max(1, n));
     if (target === cur.n) return;
+    if (fromInput && performance.now() - lastTurnAt < TURN_GUARD_MS) return;
     play('swoosh');
     openPage(target, { dir: Math.sign(target - cur.n) });
   }
+  const turnBy = (step) => cur && go(cur.n + step, { fromInput: true });
 
   // ---- Pause / play: the button, Space and K ----------------------------------------
   function setPaused(on) {
@@ -1511,8 +1582,8 @@ export async function mountReader(root, opts) {
   // ---- Input ---------------------------------------------------------------------
   const on = (target, type, fn, o) => target.addEventListener(type, fn, { ...o, signal: life.signal });
 
-  on(prevBtn, 'click', () => cur && go(cur.n - 1));
-  on(nextBtn, 'click', () => cur && go(cur.n + 1));
+  on(prevBtn, 'click', () => turnBy(-1));
+  on(nextBtn, 'click', () => turnBy(1));
   on(replayBtn, 'click', () => cur && openPage(cur.n, { dir: 0 }));
   on(exitBtn, 'click', () => {
     pageCtl?.abort();
@@ -1619,7 +1690,7 @@ export async function mountReader(root, opts) {
     const minDx = Math.max(50, el.clientWidth * 0.08);
     if (Math.abs(dx) > minDx && Math.abs(dx) > Math.abs(dy) * 1.4 && performance.now() - s.t < 900) {
       lastSwipeAt = Date.now();
-      go(cur.n + (dx < 0 ? 1 : -1));
+      turnBy(dx < 0 ? 1 : -1);
     }
   });
   on(el, 'pointercancel', () => {
@@ -1633,10 +1704,10 @@ export async function mountReader(root, opts) {
     if (document.querySelector('dialog[open], [aria-modal="true"]:not([hidden])') && !el.contains(t)) return;
     if (ev.key === 'ArrowRight' || ev.key === 'PageDown') {
       ev.preventDefault();
-      go(cur.n + 1);
+      turnBy(1);
     } else if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') {
       ev.preventDefault();
-      go(cur.n - 1);
+      turnBy(-1);
     } else if (ev.key === 'k' || ev.key === 'K' || ev.key === ' ' || ev.key === 'Spacebar') {
       // Space on a focused button presses that button instead.
       if (ev.key !== 'k' && ev.key !== 'K' && t?.closest?.('button, [role="button"], a[href]')) return;

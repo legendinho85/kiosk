@@ -2,7 +2,7 @@
 // gated settings), the page scaffold, and friendly error panels.
 
 import { h, icon, button, linkButton, tiffinMark, toast } from './ui.js';
-import { openParentGate, gatePassed } from './parent-gate.js';
+import { openParentGate, gatePassed, grownUpCheck } from './parent-gate.js';
 import { prefs } from '../core/storage.js';
 
 export const SERIES_NAME = 'Tiffin & Me';
@@ -38,14 +38,77 @@ export function appBar(ctx, { back = null, settings = true } = {}) {
  * @returns {{el: HTMLElement, main: HTMLElement}}
  */
 export function screen(ctx, { name, back = null, settings = true, body, footer = null }) {
-  const main = h('main', { class: `screen-body ${name}-body`, id: 'main' }, body);
+  // tabindex -1: the "Skip to content" link (and the router) can move focus here.
+  const main = h('main', { class: `screen-body ${name}-body`, id: 'main', tabindex: '-1' }, body);
   const el = h('div', { class: `screen screen-${name}`, 'data-screen': name }, appBar(ctx, { back, settings }), main, footer);
   return { el, main };
 }
 
 /** Small reassurance line: what happens to the child's name. */
-export function privacyLine(text = 'No account, no sign-up. The name stays on this phone.') {
+export function privacyLine(text = PRIVACY_WORDS.name.local) {
   return h('p', { class: 'reassure' }, icon('shield', { size: 20 }), h('span', {}, text));
+}
+
+/**
+ * What we promise about privacy, in two versions: while the story is read by
+ * a voice on this device, and once a grown-up has chosen an online voice
+ * (which sends the story's words, name included, to Google or Microsoft).
+ * A reassurance must never say "everything stays on this phone" when it doesn't.
+ */
+export const PRIVACY_WORDS = Object.freeze({
+  name: {
+    local: 'No account, no sign-up. The name stays on this phone.',
+    online: 'No account, no sign-up. The name is saved only on this phone — but the online voice you chose sends the story’s words, name included, to Google or Microsoft.',
+  },
+  ready: {
+    local: 'Everything stays on this phone. No account, no tracking.',
+    online: 'No account, no tracking, and names are saved only on this phone. The online voice you chose sends the story’s words, name included, to Google or Microsoft (you can switch it off in settings).',
+  },
+  voice: {
+    local: 'The story is read by a computer voice on this device.',
+    online: 'The story is read by an online voice: the words, name included, are sent to Google or Microsoft to be spoken.',
+  },
+});
+
+/**
+ * Is the story being read by an online voice (or allowed to be, before we can
+ * tell)? Only after the grown-up has agreed to online voices.
+ * @param {object} ctx screen context
+ */
+export function usingOnlineVoice(ctx) {
+  if (ctx?.state?.settings?.allowOnlineVoices !== true) return false;
+  try {
+    const status = ctx.narrator?.voiceStatus?.();
+    if (status && typeof status.usingOnline === 'boolean') return status.usingOnline;
+  } catch {
+    /* can't tell: say it could be sent */
+  }
+  return true;
+}
+
+/**
+ * A reassurance line that tells the truth about the reading voice: the
+ * `local` words normally, the `online` words when an online voice reads.
+ * Checked again once the real narrator has found its voices.
+ * @param {object} ctx
+ * @param {{local: string, online: string}} words e.g. PRIVACY_WORDS.ready
+ * @param {{signal?: AbortSignal, line?: HTMLElement}} [opts] `line`: an existing element whose text to keep true
+ */
+export function voicePrivacyLine(ctx, words, { signal, line = null } = {}) {
+  const el = line ?? privacyLine(words.local);
+  const text = line ? el : el.lastChild;
+  const update = () => {
+    if (signal?.aborted) return;
+    const online = usingOnlineVoice(ctx);
+    text.textContent = online ? words.online : words.local;
+    el.dataset.voice = online ? 'online' : 'local';
+  };
+  update();
+  Promise.resolve(ctx?.servicesReady)
+    .catch(() => null)
+    .then(() => Promise.resolve(ctx?.narrator?.ready).catch(() => null))
+    .then(update, () => {});
+  return el;
 }
 
 /**
@@ -141,7 +204,11 @@ export function voiceConsentCard(ctx, { signal, name = '', onChange } = {}) {
     h('p', { class: 'consent-private' }, 'Or stay private: the words light up in time, and you read them aloud together.'),
     h('div', { class: 'consent-actions' }, allow, decline),
   );
-  allow.addEventListener('click', () => {
+  allow.addEventListener('click', async () => {
+    // Sending the name to Google or Microsoft is a grown-up's decision: once a
+    // child has had the phone, ask for the hold first.
+    if (!(await grownUpCheck({ title: 'Grown-ups: use the online voice?', lead: 'Press and hold for 3 seconds. The story’s words, including the name, will be sent to Google or Microsoft to be spoken.' }))) return;
+    if (signal?.aborted) return;
     ctx.setState((s) => ({ ...s, settings: { ...s.settings, allowOnlineVoices: true } }));
     prefs.set(CONSENT_PREF, false);
     el.hidden = true;

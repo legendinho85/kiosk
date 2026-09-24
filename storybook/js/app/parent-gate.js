@@ -9,6 +9,12 @@ import { h, icon, button, modal } from './ui.js';
 
 export const HOLD_MS = 3000;
 
+/** The words on the camera gate (the reader's camera button and the magic-window route). */
+export const CAMERA_GATE = Object.freeze({
+  title: 'Grown-ups: open the camera?',
+  lead: 'Press and hold for 3 seconds to use the magic window. We look at the page. Nothing is recorded.',
+});
+
 /**
  * The hold timer, without any DOM: start/cancel/tick with an injectable clock.
  * @param {{holdMs?: number, now?: () => number, onProgress?: (p: number) => void, onComplete?: () => void}} opts
@@ -247,16 +253,61 @@ export function openParentGate({ holdMs, title = 'Grown-ups only', lead = 'Press
   });
 }
 
-// Once a grown-up has held the gate, don't ask again until the app reloads.
-let passedAt = 0;
-const PASS_MS = 10 * 60 * 1000;
+// ---- The grown-ups' pass ---------------------------------------------------------
+// Once a grown-up has held the gate, the grown-up screens don't ask again for
+// a minute (settings renews it while they stay there). Anything a child uses
+// on their own — the reader, the letter game, the magic window — ends the
+// pass at once (enterChildMode), so a phone handed back to a child is locked
+// again: a toddler's tap on the camera, the settings gear or a microphone
+// button asks for the hold, however recently a grown-up held it.
 
-/** Remember that the gate was passed (for this page load, for ten minutes). */
-export function markGatePassed() {
-  passedAt = Date.now();
+let passedAt = 0;
+let childMode = false;
+/** How long a hold lets grown-ups move between grown-up screens without asking again. */
+export const PASS_MS = 60 * 1000;
+
+/** Remember that a grown-up has just held the gate (for PASS_MS, this page load only). */
+export function markGatePassed(now = Date.now()) {
+  passedAt = now;
+  childMode = false;
 }
 
-/** Has a grown-up passed the gate recently? */
-export function gatePassed() {
-  return passedAt > 0 && Date.now() - passedAt < PASS_MS;
+/** Has a grown-up held the gate in the last minute, with no child screen since? */
+export function gatePassed(now = Date.now()) {
+  return passedAt > 0 && now - passedAt < PASS_MS;
+}
+
+/** Still on grown-up screens: keep an unexpired pass going. */
+export function renewGatePass(now = Date.now()) {
+  if (gatePassed(now)) passedAt = now;
+}
+
+/** Forget any pass (e.g. after "Forget everything"). */
+export function clearGatePass() {
+  passedAt = 0;
+}
+
+/** A child-facing screen is showing (reader, letter game, magic window): the pass ends here. */
+export function enterChildMode() {
+  passedAt = 0;
+  childMode = true;
+}
+
+/** Has a child had the phone since a grown-up last held the gate (in this page load)? */
+export function inChildMode() {
+  return childMode;
+}
+
+/**
+ * Before something a child shouldn't start alone (the microphone, speech
+ * recognition that goes to Google or Apple, sending the name to an online
+ * voice): once a child has had the phone in this visit, ask for the hold
+ * (unless a grown-up has just held it). While a grown-up is setting up, it
+ * doesn't get in the way.
+ * @param {{title?: string, lead?: string}} [opts] words for the gate dialog
+ * @returns {Promise<boolean>}
+ */
+export async function grownUpCheck(opts = {}) {
+  if (!childMode || gatePassed()) return true;
+  return openParentGate(opts);
 }

@@ -32,6 +32,17 @@ export function parseHash(hash) {
 }
 
 /**
+ * Is this hash one of the app's routes ("#/…", "#!/…", or empty for the
+ * shelf)? Anything else ("#main" from the "Skip to content" link, a
+ * same-page anchor) is an in-page jump, not a navigation.
+ * @param {string} hash
+ */
+export function isRouteHash(hash) {
+  const s = String(hash ?? '');
+  return s === '' || s === '#' || /^#!?\//.test(s);
+}
+
+/**
  * Compile "/b/:book/read/:page" into a matcher. Parameters match one path
  * segment; a trailing "*" matches the rest of the path (as params.rest).
  * @param {string} pattern
@@ -119,6 +130,38 @@ export function startRouter({ root, routes, notFound, makeContext, onError }) {
   let current = null; // { match, cleanup, ctl }
   let seq = 0;
   let first = true;
+  let lastRouteHash = '';
+
+  /** An in-page anchor (e.g. "#main"): put the route back in the address and move focus there instead. */
+  function jumpTo(hash, oldUrl = '') {
+    let id = hash.replace(/^#/, '');
+    try {
+      id = decodeURIComponent(id);
+    } catch {
+      /* use as is */
+    }
+    try {
+      let back = lastRouteHash || '#/';
+      try {
+        const old = oldUrl ? new URL(oldUrl).hash : '';
+        if (old && isRouteHash(old)) back = old; // the page the reader was on, say
+      } catch {
+        /* keep lastRouteHash */
+      }
+      history.replaceState(history.state, '', back);
+    } catch {
+      /* sandboxed */
+    }
+    const el = id ? document.getElementById(id) : null;
+    if (!el) return;
+    if (!el.hasAttribute('tabindex') && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute('tabindex', '-1');
+    try {
+      el.focus({ preventScroll: false });
+      el.scrollIntoView?.({ block: 'start' });
+    } catch {
+      /* ignore */
+    }
+  }
 
   async function runCleanup(entry) {
     if (!entry) return;
@@ -132,8 +175,18 @@ export function startRouter({ root, routes, notFound, makeContext, onError }) {
   }
 
   async function show() {
+    // Opened with a plain anchor (no route yet): that's the shelf.
+    if (!isRouteHash(location.hash) && !lastRouteHash) {
+      try {
+        history.replaceState(history.state, '', '#/');
+      } catch {
+        /* sandboxed: parseHash below still copes */
+      }
+    }
     const my = ++seq;
-    const match = matchRoute(routes, location.hash) ?? { route: notFound, params: {}, query: parseHash(location.hash).query, path: parseHash(location.hash).path };
+    const hash = isRouteHash(location.hash) ? location.hash : '#/';
+    lastRouteHash = hash;
+    const match = matchRoute(routes, hash) ?? { route: notFound, params: {}, query: parseHash(hash).query, path: parseHash(hash).path };
     const prev = current;
     current = null;
     await runCleanup(prev);
@@ -205,7 +258,7 @@ export function startRouter({ root, routes, notFound, makeContext, onError }) {
     }
   }
 
-  const onHash = () => show();
+  const onHash = (e) => (isRouteHash(location.hash) ? show() : jumpTo(location.hash, e?.oldURL));
   window.addEventListener('hashchange', onHash);
   show();
 

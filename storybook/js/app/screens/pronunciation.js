@@ -6,11 +6,16 @@
 // what it heard), or record their own voice for the story to play.
 
 import { h, icon, button, respellNode, debounce, toast } from '../ui.js';
-import { screen, voiceConsentCard } from '../chrome.js';
-import { activeProfile, upsertProfile } from '../../core/storage.js';
+import { screen, voiceConsentCard, voicePrivacyLine, PRIVACY_WORDS } from '../chrome.js';
+import { grownUpCheck } from '../parent-gate.js';
+import { activeProfile } from '../../core/storage.js';
 import { person as makePerson } from '../../core/personalise.js';
-import { getCandidates, customCandidate, toPronunciation } from '../../pronounce/index.js';
+import { getCandidates, customCandidate } from '../../pronounce/index.js';
 import { planLines } from '../../narrator/plan.js';
+import { updateProfile } from '../../family/family.js';
+import { storedPronunciation, editReturn } from './name.js';
+
+export { storedPronunciation };
 
 // ---- Pure helpers (unit-tested) ---------------------------------------------------------
 
@@ -80,8 +85,10 @@ export function candidateNote(c) {
 // ---- Screen -----------------------------------------------------------------------------
 
 export function render(root, ctx) {
-  const profile = activeProfile(ctx.state);
   const bookId = ctx.bookId;
+  // ?child=<id>: a child whose name is being changed (from settings or the
+  // ready screen). Who the story is for doesn't change.
+  const profile = (ctx.query?.child && ctx.state.profiles.find((p) => p.id === ctx.query.child)) || activeProfile(ctx.state);
   if (!profile) {
     ctx.navigate(`#/b/${bookId}`, { replace: true });
     return null;
@@ -90,17 +97,29 @@ export function render(root, ctx) {
   const life = new AbortController();
   const display = profile.display;
   const saved = profile.pronunciation ?? {};
+  // A kept recording lives on the device under recordingId. A new take stays
+  // in memory (ctx.scratch) under takeId until "Done", so going Back leaves
+  // nothing behind and never replaces the kept one.
   const recordingId = saved.recordingId || `rec_${profile.id}`;
+  const takeId = `rec_${profile.id}_take`;
 
   // Candidates: dictionary / as written / suggestions, plus the saved one if
-  // the parent typed or said it last time.
-  let candidates = getCandidates(ctx.lexicon, display, { max: 4 });
-  if (findSaved(candidates, saved) < 0 && saved.say && (saved.source === 'custom' || saved.source === 'heard')) {
-    candidates = mergeCandidates(candidates, [{ id: saved.source, say: saved.say, ipa: saved.ipa ?? '', respell: saved.respell ?? '', label: saved.label ?? '', source: saved.source }]).list;
-  }
-  let selected = candidates[Math.max(0, findSaved(candidates, saved))] ?? null;
+  // the parent typed or said it last time. A provisional pronunciation (saved
+  // before the dictionary loaded) was nobody's choice: the best guess wins.
+  let lexicon = ctx.lexicon ?? null;
+  const baseCandidates = () => {
+    let list = getCandidates(lexicon, display, { max: 4 });
+    if (findSaved(list, saved) < 0 && saved.say && (saved.source === 'custom' || saved.source === 'heard')) {
+      list = mergeCandidates(list, [{ id: saved.source, say: saved.say, ipa: saved.ipa ?? '', respell: saved.respell ?? '', label: saved.label ?? '', source: saved.source }]).list;
+    }
+    return list;
+  };
+  const savedIndex = (list) => (saved.provisional ? -1 : findSaved(list, saved));
+  let candidates = baseCandidates();
+  let selected = candidates[Math.max(0, savedIndex(candidates))] ?? null;
+  let chosenHere = false; // the parent tapped "That's it!" (or added a spelling) on this visit
 
-  let recording = null; // {blob, durationMs}
+  let recording = null; // {blob, durationMs, fresh?: true}
   let useRecording = Boolean(saved.useRecording && saved.recordingId);
   let playing = null; // {ctl, btn}
 
@@ -159,7 +178,8 @@ export function render(root, ctx) {
       size: 'md',
       testid: 'candidate-choose',
       class: 'cand-choose',
-      attrs: { 'aria-pressed': String(Boolean(isSel)), 'aria-label': isSel ? `${title}: chosen` : `Choose ${title}` },
+      // The accessible name starts with the words on the button (voice control: "tap That's it").
+      attrs: { 'aria-pressed': String(Boolean(isSel)), 'aria-label': isSel ? `Chosen: ${title}` : `That’s it! ${title}` },
       onClick: () => chooseCandidate(c),
     });
     return h(
@@ -191,6 +211,7 @@ export function render(root, ctx) {
 
   function chooseCandidate(c) {
     selected = c;
+    chosenHere = true;
     renderList();
     live.textContent = `Chosen: ${candidateTitle(c)}.`;
   }
@@ -199,7 +220,10 @@ export function render(root, ctx) {
     const { list: next, added } = mergeCandidates(candidates.filter((c) => !extra.some((e) => e.id === c.id)), extra);
     candidates = next;
     const pick = added[0] ?? candidates.find((c) => extra.some((e) => norm(e.say) === norm(c.say)));
-    if (select && pick) selected = pick;
+    if (select && pick) {
+      selected = pick;
+      chosenHere = true;
+    }
     renderList({ flash: pick?.id });
     return pick;
   }
@@ -210,7 +234,7 @@ export function render(root, ctx) {
   const hearBtn = button({ text: 'Hear it in the story', icon: 'play', variant: 'secondary', size: 'md', testid: 'hear-in-story', class: 'hear-story-btn', attrs: { 'aria-pressed': 'false' } });
 
   const currentPerson = () => makePerson(display, selected?.say || display);
-  const currentPlan = () => planLines(lines, currentPerson(), { useRecording: Boolean(useRecording && recording), recordingId, linePauseMs: 300 });
+  const currentPlan = () => planLines(lines, currentPerson(), { useRecording: Boolean(useRecording && recording), recordingId: recording?.fresh ? takeId : recordingId, linePauseMs: 300 });
 
   function renderPreview() {
     const plan = currentPlan();
@@ -341,6 +365,9 @@ export function render(root, ctx) {
         ctl.abort();
         return;
       }
+      // The browser may send this clip to Google or Apple: a grown-up's decision once a child has had the phone.
+      if (!(await grownUpCheck({ title: 'Grown-ups: say the name for us?', lead: 'Press and hold for 3 seconds. Your browser may send what you say to its speech service to turn it into text.' }))) return;
+      if (life.signal.aborted || ctl) return;
       stopPlaying();
       ctl = new AbortController();
       life.signal.addEventListener('abort', () => ctl?.abort(), { once: true });
@@ -392,6 +419,8 @@ export function render(root, ctx) {
     let ctl = null;
 
     const setStage = (s) => {
+      // Keyboard and screen-reader users keep their place as the buttons change.
+      const hadFocus = stage.contains(document.activeElement);
       stage.dataset.state = s;
       // The record button moves between the idle and done layouts.
       if (s === 'done') doneActions.replaceChildren(playBtn, recordBtn);
@@ -399,14 +428,28 @@ export function render(root, ctx) {
         ...(s === 'idle' ? [h('div', { class: 'alt-actions' }, recordBtn)] : []),
         ...(s === 'countdown' ? [count] : []),
         ...(s === 'recording' ? [h('div', { class: 'rec-live' }, h('span', { class: 'rec-dot', 'aria-hidden': 'true' }), meter, stopBtn)] : []),
-        ...(s === 'processing' ? [h('p', { class: 'rec-processing' }, 'Tidying up your recording…')] : []),
+        ...(s === 'processing' ? [h('p', { class: 'rec-processing', tabindex: '-1' }, 'Tidying up your recording…')] : []),
         ...(s === 'done' ? [doneRow] : []),
       );
+      const lost = !document.activeElement || document.activeElement === document.body || !document.activeElement.isConnected;
+      if (hadFocus || lost) {
+        const target = s === 'recording' ? stopBtn : s === 'done' ? playBtn : s === 'idle' ? recordBtn : s === 'countdown' ? stage : stage.querySelector('.rec-processing');
+        if (s === 'countdown' && !stage.hasAttribute('tabindex')) stage.setAttribute('tabindex', '-1');
+        try {
+          target?.focus({ preventScroll: true });
+        } catch {
+          /* ignore */
+        }
+      }
     };
 
     const wait = (ms) => new Promise((r) => setTimeout(r, ms * (Number(globalThis.SB_TEST?.timeScale) || 1)));
 
     recordBtn.addEventListener('click', async () => {
+      if (ctl) return;
+      // The microphone is a grown-up's tool here: once a child has had the phone, ask for the hold.
+      if (!(await grownUpCheck({ title: 'Grown-ups: record the name?', lead: 'Press and hold for 3 seconds, then say the name in your own voice.' }))) return;
+      if (life.signal.aborted || ctl) return;
       stopPlaying();
       ctl = new AbortController();
       life.signal.addEventListener('abort', () => ctl?.abort(), { once: true });
@@ -432,8 +475,9 @@ export function render(root, ctx) {
         });
         if (life.signal.aborted) return;
         setStage('processing');
-        recording = result;
-        await ctx.blobs.put(recordingId, result.blob);
+        // A new take: memory only until "Done" (so Back keeps what was saved before).
+        recording = { ...result, fresh: true };
+        ctx.scratch?.put(takeId, result.blob);
         if (life.signal.aborted) return;
         useRecording = true;
         toggle.checked = true;
@@ -472,18 +516,27 @@ export function render(root, ctx) {
 
   // ---- Done ----------------------------------------------------------------------------------
   const live = h('p', { class: 'sr-only', 'aria-live': 'polite' });
-  const done = button({ text: 'Done — let’s read!', iconAfter: 'arrow', variant: 'primary', size: 'lg', testid: 'pronunciation-done', class: 'done-button' });
+  // "Done" (not "let's read!"): it goes back to the book's page, where Start reading is.
+  const done = button({ text: 'Done', icon: 'check', variant: 'primary', size: 'lg', testid: 'pronunciation-done', class: 'done-button' });
   done.addEventListener('click', async () => {
     stopPlaying();
+    done.disabled = true;
     const chosen = selected ?? candidates[0] ?? { say: display, label: 'As written', source: 'as-written' };
     const keepRecording = Boolean(recording);
+    // Keep a new take now (it was in memory until the parent said Done).
+    if (recording?.fresh) await ctx.blobs.put(recordingId, recording.blob);
+    ctx.scratch?.delete(takeId);
     const pronunciation = { ...storedPronunciation(chosen), useRecording: Boolean(useRecording && keepRecording), recordingId: keepRecording ? recordingId : null };
+    // Still no dictionary and nobody picked: keep it a stand-in, so the dictionary's best match replaces it when it arrives.
+    if (!lexicon && !chosenHere && (saved.provisional || !saved.say)) pronunciation.provisional = true;
     // Don't keep a voice recording we're not going to use.
     if (!keepRecording && saved.recordingId) ctx.blobs.delete(saved.recordingId).catch?.(() => {});
+    if (life.signal.aborted) return;
     const latest = ctx.state.profiles.find((p) => p.id === profile.id) ?? profile;
-    ctx.setState((s) => upsertProfile(s, { ...latest, pronunciation }));
+    // Update this child only: the child the story is for (and anyone reading together) stays the same.
+    ctx.setState((s) => updateProfile(s, { ...latest, pronunciation }));
     toast(`Lovely — we’ll say ${display} like that.`, { kind: 'success', timeout: 2600 });
-    ctx.navigate(`#/b/${bookId}`);
+    ctx.navigate(editReturn(bookId, ctx.query));
   });
 
   // ---- Layout --------------------------------------------------------------------------------
@@ -514,7 +567,7 @@ export function render(root, ctx) {
   const storyCard = h('section', { class: 'card story-check', 'aria-labelledby': 'story-check-title' },
     h('div', { class: 'story-check-head' }, h('h2', { id: 'story-check-title' }, 'Try it in the story'), hearBtn),
     preview,
-    h('p', { class: 'field-hint story-voice-note' }, 'The story is read by a computer voice on this device.'));
+    voicePrivacyLine(ctx, PRIVACY_WORDS.voice, { signal: life.signal, line: h('p', { class: 'field-hint story-voice-note', 'data-testid': 'story-voice-note' }) }));
   const alts = h('section', { class: 'alts', 'aria-labelledby': 'alts-title' },
     h('h2', { id: 'alts-title', class: 'alts-title' }, 'None of these?'),
     h('div', { class: 'alt-grid' }, typeBlock, sayBlockHost, recordBlockHost));
@@ -522,31 +575,52 @@ export function render(root, ctx) {
   const footer = h('div', { class: 'done-bar' }, h('div', { class: 'done-bar-inner' }, done));
   const { el } = screen(ctx, {
     name: 'say',
-    back: { href: `#/b/${bookId}/name?child=${encodeURIComponent(profile.id)}`, label: 'Back to the name', text: 'Name' },
+    back: { href: `#/b/${bookId}/name?child=${encodeURIComponent(profile.id)}${ctx.query?.from === 'settings' ? '&from=settings' : ''}`, label: 'Back to the name', text: 'Name' },
     body: [head, h('div', { class: 'say-columns' }, h('div', { class: 'say-main' }, list, storyCard), alts), live],
     footer,
   });
   root.append(el);
   renderList();
 
+  // The names dictionary hadn't arrived when this screen opened (a slow
+  // connection): add its suggestions when it does, without undoing a choice.
+  if (!lexicon && typeof ctx.getLexicon === 'function') {
+    const dictNote = h('p', { class: 'dict-note', 'data-testid': 'dict-note', role: 'status' }, h('span', { class: 'spinner', 'aria-hidden': 'true' }), ` Looking ${display} up in our names dictionary…`);
+    list.before(dictNote);
+    Promise.resolve(ctx.getLexicon())
+      .catch(() => null)
+      .then((index) => {
+        if (life.signal.aborted) return;
+        if (!index) {
+          dictNote.remove();
+          return;
+        }
+        lexicon = index;
+        const mine = candidates.filter((c) => c.source === 'custom' || c.source === 'heard');
+        const keep = chosenHere ? selected : null;
+        candidates = mergeCandidates(baseCandidates(), mine).list;
+        if (keep) {
+          const same = candidates.find((c) => norm(c.say) === norm(keep.say));
+          if (same) selected = same;
+          else {
+            candidates = [...candidates, keep];
+            selected = keep;
+          }
+        } else selected = candidates[Math.max(0, savedIndex(candidates))] ?? null;
+        renderList();
+        const found = candidates[0]?.source === 'dictionary';
+        dictNote.replaceChildren(found ? `Found ${display} in our names dictionary.` : '');
+        dictNote.hidden = !found;
+        if (found) setTimeout(() => dictNote.remove(), 4000);
+      });
+  }
+
   return () => {
     life.abort();
     stopPlaying();
     updateCustomSoon.cancel();
+    ctx.scratch?.delete(takeId);
   };
-}
-
-/**
- * The pronunciation as it is stored on the child's profile. The language
- * label of a dictionary entry or a spelling-rule guess ("Irish", "Mandarin
- * style") hints at a family's origin, so it stays on screen and is never
- * saved (data minimisation; see docs/compliance-checklist.md).
- * @param {object} candidate
- */
-export function storedPronunciation(candidate) {
-  const p = toPronunciation(candidate);
-  if (p.source === 'dictionary' || p.source === 'suggestion') p.label = '';
-  return p;
 }
 
 /** Parent-friendly text for why "say it" came back empty. */

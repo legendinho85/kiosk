@@ -215,33 +215,111 @@ export const prefs = {
 const DB = 'starring';
 const STORE = 'recordings';
 const memBlobs = new Map();
+// Opening (or a transaction) that takes longer than this is given up on: the
+// blob stays in memory for this visit. It never hangs a caller, e.g. behind a
+// database delete that another old tab is still blocking.
+const IDB_TIMEOUT_MS = 3000;
 
-function openDb() {
-  return new Promise((resolve) => {
-    try {
-      if (!globalThis.indexedDB) return resolve(null);
-      const req = indexedDB.open(DB, 1);
-      req.onupgradeneeded = () => req.result.createObjectStore(STORE);
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => resolve(null);
-      req.onblocked = () => resolve(null);
-    } catch {
-      resolve(null);
-    }
-  });
+// One shared connection, reopened when needed. It closes itself when anyone
+// (forgetEverything, or this app in another tab) wants to delete or upgrade
+// the database, so they are never blocked by us.
+let dbPromise = null;
+let dbConn = null; // the connection dbPromise resolved to
+
+function dropConn(db) {
+  if (db && dbConn === db) {
+    dbConn = null;
+    dbPromise = null;
+  }
 }
 
-async function tx(mode, fn) {
+function openDb() {
+  if (dbPromise) return dbPromise;
+  const p = new Promise((resolve) => {
+    let settled = false;
+    const done = (db) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(db);
+    };
+    const timer = setTimeout(() => done(null), IDB_TIMEOUT_MS);
+    try {
+      if (!globalThis.indexedDB) return done(null);
+      const req = indexedDB.open(DB, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore(STORE);
+      req.onsuccess = () => {
+        const db = req.result;
+        db.onversionchange = () => {
+          db.close();
+          dropConn(db);
+        };
+        db.onclose = () => dropConn(db); // closed by the browser (storage cleared, disk trouble)
+        if (settled) {
+          // Too late: the caller already carried on without it.
+          db.close();
+          return;
+        }
+        if (dbPromise === p) dbConn = db;
+        done(db);
+      };
+      req.onerror = () => done(null);
+      req.onblocked = () => done(null);
+    } catch {
+      done(null);
+    }
+  });
+  dbPromise = p;
+  // A failed open isn't kept: the next call tries again.
+  p.then((db) => {
+    if (!db && dbPromise === p) dbPromise = null;
+  });
+  return p;
+}
+
+/** Close the shared connection (if open) so the database can be deleted. */
+async function closeDb() {
+  const p = dbPromise;
+  dbPromise = null;
+  dbConn = null;
+  const db = await p?.catch(() => null);
+  try {
+    db?.close();
+  } catch {
+    /* already closed */
+  }
+}
+
+async function tx(mode, fn, retried = false) {
   const db = await openDb();
   if (!db) return undefined;
   return new Promise((resolve) => {
+    let t;
     try {
-      const t = db.transaction(STORE, mode);
-      const req = fn(t.objectStore(STORE));
-      t.oncomplete = () => resolve(req?.result);
-      t.onerror = () => resolve(undefined);
-      t.onabort = () => resolve(undefined);
+      t = db.transaction(STORE, mode);
     } catch {
+      // The connection was closed under us (e.g. by a delete): open a fresh one once.
+      dropConn(db);
+      resolve(retried ? undefined : tx(mode, fn, true));
+      return;
+    }
+    const timer = setTimeout(() => resolve(undefined), IDB_TIMEOUT_MS);
+    try {
+      const req = fn(t.objectStore(STORE));
+      t.oncomplete = () => {
+        clearTimeout(timer);
+        resolve(req?.result);
+      };
+      t.onerror = () => {
+        clearTimeout(timer);
+        resolve(undefined);
+      };
+      t.onabort = () => {
+        clearTimeout(timer);
+        resolve(undefined);
+      };
+    } catch {
+      clearTimeout(timer);
       resolve(undefined);
     }
   });
@@ -264,8 +342,44 @@ export const blobs = {
   },
 };
 
-/** Remove every trace of the app's data from this device. */
-export async function forgetEverything() {
+/**
+ * Delete the recordings database. Resolves 'deleted', 'none' (no IndexedDB
+ * here), 'error', or 'blocked' when another tab still holds it open after
+ * `timeoutMs` (it is deleted as soon as that tab lets go; the recordings were
+ * already wiped from it by then).
+ */
+function deleteDb(timeoutMs) {
+  return new Promise((resolve) => {
+    let blocked = false;
+    const timer = setTimeout(() => resolve(blocked ? 'blocked' : 'error'), timeoutMs);
+    const done = (v) => {
+      clearTimeout(timer);
+      resolve(v);
+    };
+    try {
+      if (!globalThis.indexedDB) return done('none');
+      const req = indexedDB.deleteDatabase(DB);
+      req.onsuccess = () => done('deleted');
+      req.onerror = () => done('error');
+      req.onblocked = () => {
+        blocked = true;
+      };
+    } catch {
+      done('error');
+    }
+  });
+}
+
+/**
+ * Remove every trace of the app's data from this device: names, settings and
+ * readings (localStorage), small preferences, and every recording
+ * (IndexedDB). Resolves once the recordings are really gone, so a "Done"
+ * message is true when it shows:
+ * `{ recordings: 'deleted' | 'none' | 'blocked' | 'error' }` ('blocked': another
+ * open tab of the app is still holding the database; its recordings have been
+ * wiped and the database goes when that tab lets go).
+ */
+export async function forgetEverything({ timeoutMs = 4000 } = {}) {
   memory = null;
   memBlobs.clear();
   memPrefs = {};
@@ -275,9 +389,11 @@ export async function forgetEverything() {
   } catch {
     /* ignore */
   }
-  try {
-    globalThis.indexedDB?.deleteDatabase(DB);
-  } catch {
-    /* ignore */
-  }
+  if (!globalThis.indexedDB) return { recordings: 'none' };
+  // Empty the store first: that works even while another tab holds the
+  // database open, which would hold up the delete below.
+  await tx('readwrite', (s) => s.clear());
+  await closeDb();
+  const recordings = await deleteDb(timeoutMs);
+  return { recordings };
 }

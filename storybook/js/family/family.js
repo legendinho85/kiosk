@@ -4,8 +4,8 @@
 // audio file), and the words used when sharing a pack. Pure helpers apart
 // from the blob store that is passed in, so they are unit-tested in Node.
 
-import { fillTemplate, togetherPerson, person as makePerson } from '../core/personalise.js';
-import { readingChildren, readingLabel } from '../core/storage.js';
+import { fillTemplate, togetherPerson, person as makePerson, nameKey } from '../core/personalise.js';
+import { readingChildren, readingLabel, readingsFor, activeProfile } from '../core/storage.js';
 import { asciiSlug } from './pack.js';
 
 /** Up to this many children can share a story. */
@@ -90,6 +90,92 @@ export function recordingSteps(book) {
     }
   }
   return steps;
+}
+
+// ---- Whose reading is it? --------------------------------------------------------------
+// A grown-up's reading says one child's name on every page, so it belongs to
+// that child: {childId, childKey, childName} on the Reading (from the record
+// screen, or the pack's `child`). Readings saved before this was recorded say
+// nobody's name for certain, so they stay available to every child. The
+// choice of who reads is remembered per child and book, in
+// state.activeReading under "<bookId>::<childId>" (the plain "<bookId>" entry
+// follows the latest choice, as storage.activeReadingFor expects).
+
+/** The key in state.activeReading for one child's choice for one book. */
+export function readingChoiceKey(bookId, childId) {
+  return `${bookId}::${childId}`;
+}
+
+/** The child fields to put on a Reading recorded or sent for this child. */
+export function readingChildFields(child) {
+  if (!child?.display) return {};
+  const key = child.key || nameKey(child.display);
+  return { ...(child.id ? { childId: child.id } : {}), ...(key ? { childKey: key } : {}), childName: child.display };
+}
+
+/** Was this reading made for this child? (Readings that don't say are for anyone.) */
+export function readingIsFor(reading, child) {
+  if (!reading || !child) return false;
+  if (reading.childId) return reading.childId === child.id;
+  if (reading.childKey) return reading.childKey === child.key || (Boolean(child.fullName) && nameKey(child.fullName) === reading.childKey);
+  return true;
+}
+
+/** Was this reading made for this child in particular (not a reading that doesn't say)? */
+export function readingIsOnlyFor(reading, child) {
+  return Boolean(reading && child && (reading.childId || reading.childKey) && readingIsFor(reading, child));
+}
+
+/** The readings of a book a child can choose (newest first). */
+export function childReadings(state, bookId, child = activeProfile(state)) {
+  return child ? readingsFor(state, bookId).filter((r) => readingIsFor(r, child)) : [];
+}
+
+/**
+ * The reading that plays for the child being read to, or null for the
+ * computer voice. Siblings reading together always get the computer voice
+ * (a recording says one name).
+ * @param {object} state
+ * @param {string} bookId
+ * @param {object|null} [child] a profile (default: the one child reading now)
+ */
+export function childReading(state, bookId, child = null) {
+  const kids = child ? [child] : readingChildren(state);
+  if (kids.length !== 1) return null;
+  const kid = kids[0];
+  const choices = state.activeReading ?? {};
+  const key = readingChoiceKey(bookId, kid.id);
+  const id = Object.prototype.hasOwnProperty.call(choices, key) ? choices[key] : choices[bookId];
+  const r = id ? (state.readings ?? []).find((x) => x.id === id && x.bookId === bookId) ?? null : null;
+  return r && readingIsFor(r, kid) ? r : null;
+}
+
+/** Choose who reads a book for a child: a reading id, or null for the computer voice. */
+export function chooseReading(state, bookId, childId, readingId) {
+  const activeReading = { ...(state.activeReading ?? {}), [bookId]: readingId ?? null };
+  if (childId) activeReading[readingChoiceKey(bookId, childId)] = readingId ?? null;
+  return { ...state, activeReading };
+}
+
+/** The readings recorded for this child in particular (removed with them). */
+export function readingsOnlyFor(state, child) {
+  return (state.readings ?? []).filter((r) => readingIsOnlyFor(r, child));
+}
+
+/**
+ * Replace a profile (the whole object) in place: unlike storage.upsertProfile it doesn't make it
+ * the active child or touch "reading together" (editing another child's name
+ * from settings mustn't change who the story is for).
+ */
+export function updateProfile(state, profile) {
+  const now = Date.now();
+  return { ...state, profiles: state.profiles.map((p) => (p.id === profile.id ? { createdAt: p.createdAt ?? now, ...profile, updatedAt: now } : p)) };
+}
+
+/** Forget a child's reading choices (after the child is removed). */
+export function dropReadingChoices(state, childId) {
+  const suffix = `::${childId}`;
+  return { ...state, activeReading: Object.fromEntries(Object.entries(state.activeReading ?? {}).filter(([k]) => !k.endsWith(suffix))) };
 }
 
 /** How much of a book a reading covers. */

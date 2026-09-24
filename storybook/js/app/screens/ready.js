@@ -10,13 +10,23 @@
 // this browser has. Round 3 (§12): name stickers for the printed book.
 
 import { h, icon, button, linkButton, respellNode, toast, setBusy } from '../ui.js';
-import { screen, privacyLine, envBanner, voiceConsentCard } from '../chrome.js';
+import { screen, envBanner, voiceConsentCard, voicePrivacyLine, PRIVACY_WORDS } from '../chrome.js';
 import { createCover } from '../cover.js';
 import { person as makePerson } from '../../core/personalise.js';
-import { readingChildren, setTogether, readingsFor, activeReadingFor, readingLabel } from '../../core/storage.js';
+import { readingChildren, setTogether, readingLabel, prefs } from '../../core/storage.js';
 import { planLines } from '../../narrator/plan.js';
-import { readingPerson, recordingSteps, readingCoverage, MAX_TOGETHER, artNames, selectChild } from '../../family/family.js';
+import { readingPerson, recordingSteps, readingCoverage, MAX_TOGETHER, artNames, selectChild, childReadings, childReading, chooseReading } from '../../family/family.js';
 import { saveReadingAudio, yotoTip } from '../family-ui.js';
+import { placeFor } from '../place.js';
+
+/** Can this device open the camera here? (The same check as js/ar/magic-window.js, without loading it.) */
+export function cameraAvailable(env = globalThis) {
+  try {
+    return Boolean(env?.navigator?.mediaDevices?.getUserMedia) && env.isSecureContext !== false;
+  } catch {
+    return false;
+  }
+}
 
 /** How the saved pronunciation is described to the parent ("shih-VAWN", or “Siobhan” as written). */
 export function pronunciationSummary(profile) {
@@ -115,8 +125,9 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
   const kids = readingChildren(ctx.state);
   const together = kids.length > 1;
   const who = readingPerson(ctx.state) ?? profilePerson(profile);
-  const reading = activeReadingFor(ctx.state, bookId);
-  const readings = readingsFor(ctx.state, bookId);
+  // Only this child's readings (a recording says one child's name); siblings together get the computer voice.
+  const reading = childReading(ctx.state, bookId);
+  const readings = childReadings(ctx.state, bookId, profile);
   const steps = recordingSteps(book);
   const bedtime = Boolean(ctx.state.settings?.bedtime);
   let playCtl = null;
@@ -153,19 +164,20 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
 
   cover.setName(who.display, { art: who.art, pop: again });
 
-  const start = linkButton({ text: bedtime ? 'Start the bedtime story' : 'Start reading', href: `#/b/${bookId}/read/1`, icon: bedtime ? 'moon' : 'play', variant: 'primary', size: 'xl', testid: 'start-reading', class: `start-button${bedtime ? ' is-bedtime' : ''}` });
+  // Where the story got to last time, for these children (a tap on Home mid-story shouldn't lose the place).
+  let place = 0;
+  try {
+    place = placeFor(prefs, bookId, book.pages.length, kids);
+  } catch {
+    place = 0;
+  }
+  const start = linkButton({ text: bedtime ? 'Start the bedtime story' : place ? 'Start again' : 'Start reading', href: `#/b/${bookId}/read/1`, icon: bedtime ? 'moon' : 'play', variant: place && !bedtime ? 'secondary' : 'primary', size: place && !bedtime ? 'lg' : 'xl', testid: 'start-reading', class: `start-button${bedtime ? ' is-bedtime' : ''}` });
+  const carryOn = place && !bedtime ? linkButton({ text: `Carry on from page ${place}`, href: `#/b/${bookId}/read/${place}`, icon: 'play', variant: 'primary', size: 'xl', testid: 'carry-on', class: 'start-button carry-on' }) : null;
+  // The magic window route asks for the grown-ups' hold itself (js/app/screens/magic.js).
   const magicBtn = linkButton({ text: 'Magic window', href: `#/b/${bookId}/magic/1`, icon: 'camera', variant: 'secondary', size: 'lg', testid: 'open-magic', class: 'magic-button' });
-  const magicNote = h('p', { class: 'magic-note' }, icon('sparkle', { size: 18 }), h('span', {}, `Point your camera at the real book and watch ${who.display}’s ${(who.count ?? 1) > 1 ? 'names' : 'name'} appear on the page. We look at the page; nothing is recorded.`));
-  const magicWrap = h('div', { class: 'magic-wrap', hidden: true }, magicBtn, magicNote);
-
+  const magicNote = h('p', { class: 'magic-note' }, icon('sparkle', { size: 18 }), h('span', {}, `Point your camera at the real book and watch ${who.display}’s ${(who.count ?? 1) > 1 ? 'names' : 'name'} appear on the page. We look at the page; nothing is recorded. Grown-ups: press and hold to open it.`));
   // Only offer the magic window when this device can do it.
-  import('../../ar/magic-window.js')
-    .then((m) => {
-      if (!ctx.signal?.aborted && m.isCameraSupported?.()) magicWrap.hidden = false;
-    })
-    .catch(() => {
-      /* not built yet or unavailable: simply don't offer it */
-    });
+  const magicWrap = h('div', { class: 'magic-wrap', hidden: !cameraAvailable() }, magicBtn, magicNote);
 
   // What will happen when they press Start: whose voice, and whether it's bedtime.
   const pills = h('div', { class: 'ready-pills' },
@@ -261,7 +273,7 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
       h('div', { class: 'together-chips' }, chips),
       together
         ? h('p', { class: 'together-names' }, 'The story is for ', h('strong', { 'data-testid': 'together-names' }, artNames(kids)), ` — ${kids.length === 2 ? 'both' : 'all their'} names, in the words and the pictures.`)
-        : h('p', { class: 'field-hint' }, `Brothers and sisters can share a story: tick up to ${MAX_TOGETHER - 1} more.`),
+        : h('p', { class: 'field-hint' }, `Reading with more than one child? Tick up to ${MAX_TOGETHER - 1} more to put all their names in the story.`),
     );
   }
 
@@ -305,7 +317,8 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
           checked: o.id === chosen,
           disabled: Boolean(off),
           onChange: () => {
-            ctx.setState((s) => ({ ...s, activeReading: { ...(s.activeReading ?? {}), [bookId]: o.reading ? o.reading.id : null } }));
+            // Remembered for this child and book.
+            ctx.setState((s) => chooseReading(s, bookId, profile.id, o.reading ? o.reading.id : null));
             repaint(`[data-testid=reader-choice][data-reader="${o.id}"]`);
           },
         });
@@ -405,7 +418,7 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
     h('p', { class: 'eyebrow' }, bedtime ? 'Ready for bed' : 'All set'),
     h('h1', { class: 'ready-title', 'data-testid': 'ready-title' }, `${who.display}’s story is ready`),
     h('div', { class: 'ready-cover' }, cover.el),
-    h('div', { class: 'ready-actions' }, pills, start, magicWrap),
+    h('div', { class: 'ready-actions' }, pills, carryOn, start, magicWrap),
   );
 
   const consent = voiceConsentCard(ctx, { signal, name: who.display });
@@ -414,7 +427,7 @@ function paintReady(root, ctx, profile, repaint, { cover, repaint: again = false
     body: [
       envBanner({ signal }),
       hero,
-      h('div', { class: 'ready-side' }, giftCard, consent, childCard, storyCard, audioCard, stickersCard, giveCard, tips, privacyLine('Everything stays on this phone. No account, no tracking.')),
+      h('div', { class: 'ready-side' }, giftCard, consent, childCard, storyCard, audioCard, stickersCard, giveCard, tips, voicePrivacyLine(ctx, PRIVACY_WORDS.ready, { signal })),
     ],
   });
   el.classList.toggle('is-bedtime', bedtime);

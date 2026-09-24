@@ -6,13 +6,12 @@
 // with the name in it as the parent types.
 
 import { h, icon, button, linkButton, debounce } from '../ui.js';
-import { screen, privacyLine, envBanner } from '../chrome.js';
+import { screen, envBanner, voicePrivacyLine, PRIVACY_WORDS } from '../chrome.js';
 import { createCover } from '../cover.js';
 import { normaliseName, NAME_ERRORS, NAME_MAX_LENGTH } from '../../core/personalise.js';
 import { newId, upsertProfile } from '../../core/storage.js';
-import { getCandidates } from '../../pronounce/index.js';
-import { storedPronunciation } from './pronunciation.js';
-import { selectChild } from '../../family/family.js';
+import { getCandidates, toPronunciation } from '../../pronounce/index.js';
+import { selectChild, updateProfile } from '../../family/family.js';
 
 /** Names longer than this (in letters) are offered a nickname ("What do you call them at home?"). */
 export const LONG_NAME_LETTERS = 10;
@@ -71,10 +70,52 @@ export function nameError(raw) {
   return r.ok ? '' : NAME_ERRORS[r.error] ?? NAME_ERRORS['invalid-chars'];
 }
 
-/** The best-guess pronunciation for a new name (dictionary first, else as written). */
+/**
+ * The pronunciation as it is stored on the child's profile. The language
+ * label of a dictionary entry or a spelling-rule guess ("Irish", "Mandarin
+ * style") hints at a family's origin, so it stays on screen and is never
+ * saved (data minimisation; see docs/compliance-checklist.md).
+ * (Also exported by pronunciation.js.)
+ * @param {object} candidate
+ */
+export function storedPronunciation(candidate) {
+  const p = toPronunciation(candidate);
+  if (p.source === 'dictionary' || p.source === 'suggestion') p.label = '';
+  return p;
+}
+
+/**
+ * The best-guess pronunciation for a new name (dictionary first, else as
+ * written). Without the names dictionary (it hadn't loaded yet) the guess is
+ * marked `provisional`: nobody chose it, so it is replaced by the
+ * dictionary's best match once the dictionary arrives (upgradePronunciations)
+ * and the pronunciation screen doesn't treat it as the parent's choice.
+ */
 export function defaultPronunciation(lexicon, display) {
   const [first] = getCandidates(lexicon, display, { max: 4 });
-  return storedPronunciation(first ?? { say: display, label: 'As written', source: 'as-written' });
+  const p = storedPronunciation(first ?? { say: display, label: 'As written', source: 'as-written' });
+  return lexicon ? p : { ...p, provisional: true };
+}
+
+/**
+ * Replace provisional pronunciations (saved before the dictionary loaded)
+ * with the dictionary's best guess, keeping any recording. Returns the same
+ * state object when nothing changes.
+ */
+export function upgradePronunciations(state, lexicon) {
+  if (!lexicon || !state?.profiles?.some((p) => p.pronunciation?.provisional)) return state;
+  const profiles = state.profiles.map((p) => {
+    const old = p.pronunciation;
+    if (!old?.provisional) return p;
+    const next = defaultPronunciation(lexicon, p.display);
+    return { ...p, pronunciation: { ...next, useRecording: Boolean(old.useRecording && old.recordingId), recordingId: old.recordingId ?? null } };
+  });
+  return { ...state, profiles };
+}
+
+/** Where "Done" on the name and pronunciation screens goes back to: settings when the edit started there. */
+export function editReturn(bookId, query) {
+  return query?.from === 'settings' ? '#/settings' : `#/b/${bookId}`;
 }
 
 /**
@@ -140,7 +181,8 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
   import('../../core/clash.js').then((m) => (clashLib = m)).catch(() => {});
   const continueBtn = button({ text: 'Continue', iconAfter: 'arrow', variant: 'primary', size: 'lg', type: 'submit', testid: 'name-continue', class: 'name-continue' });
 
-  const heading = editing ? `Change ${profile.display}’s name` : mode === 'add' ? 'Who’s reading today?' : 'What’s your child’s name?';
+  // "Who's reading?" means the grown-up reader elsewhere (record screen), so the child is "the story is for".
+  const heading = editing ? `Change ${profile.display}’s name` : mode === 'add' ? 'Add another child: what’s their name?' : 'What’s your child’s name?';
   const lead = editing
     ? 'Fix the spelling, or use the name you call them at home.'
     : 'We’ll read the story aloud with their name in it, and write it into the pictures.';
@@ -153,7 +195,7 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
     h('div', { class: 'name-row' }, input, continueBtn),
     error,
     hint,
-    privacyLine(),
+    voicePrivacyLine(ctx, PRIVACY_WORDS.name, { signal: ctx.signal }),
   );
 
   const chips = !editing && others.length
@@ -183,7 +225,7 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
           linkButton({ text: 'Open a family recording', href: '#/open', icon: 'file', variant: 'link', size: 'sm', testid: 'open-pack' })));
   const coverPanel = h('section', { class: 'cover-panel', 'aria-label': 'Your book' }, cover.el, h('p', { class: 'cover-note' }, icon('sparkle', { size: 18 }), h('span', {}, 'Watch the name appear on the cover.')), extras);
 
-  const back = editing || mode === 'add' ? { href: `#/b/${bookId}`, label: 'Back', text: 'Back' } : null;
+  const back = editing || mode === 'add' ? { href: editReturn(bookId, ctx.query), label: 'Back', text: 'Back' } : null;
   const { el } = screen(ctx, { name: 'name', back, body: [formPanel, coverPanel] });
   root.append(el);
 
@@ -209,10 +251,10 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
     hint.hidden = !msg && !keep;
     hint.classList.toggle('is-clash', Boolean(clash));
     const suggestion = nicknameSuggestion(display);
+    const offer = Boolean(suggestion) && normaliseName(nickInput.value).display !== suggestion;
+    // (replaceChildren(null) would write the word "null": pass nothing instead.)
     suggestHost.replaceChildren(
-      suggestion && normaliseName(nickInput.value).display !== suggestion
-        ? button({ text: suggestion, icon: 'plus', variant: 'chip', size: 'sm', testid: 'nickname-suggestion', attrs: { 'aria-label': `Use ${suggestion}` }, onClick: () => { nickInput.value = suggestion; update(); update.flush(); nickInput.focus(); } })
-        : null,
+      ...(offer ? [button({ text: suggestion, icon: 'plus', variant: 'chip', size: 'sm', testid: 'nickname-suggestion', attrs: { 'aria-label': `Use ${suggestion}` }, onClick: () => { nickInput.value = suggestion; update(); update.flush(); nickInput.focus(); } })] : []),
     );
   };
 
@@ -264,7 +306,8 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
       return;
     }
     continueBtn.disabled = true;
-    const lexicon = ctx.lexicon ?? (await ctx.getLexicon?.().catch(() => null)) ?? null;
+    // Wait a moment for the names dictionary; without it the guess is provisional (see defaultPronunciation).
+    const lexicon = ctx.lexicon ?? (await Promise.resolve(ctx.getLexicon?.(2500)).catch(() => null)) ?? null;
     if (ctx.signal?.aborted) return;
     const keepSound = editing && profile.key === r.key && profile.pronunciation?.say;
     const names = { display: r.display, key: r.key };
@@ -275,6 +318,13 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
     else if ('fullName' in next) {
       next = { ...next };
       delete next.fullName;
+    }
+    if (editing) {
+      // Changing a name doesn't change who the story is for (or who's reading together).
+      ctx.setState((s) => updateProfile(s, next));
+      const from = ctx.query?.from === 'settings' ? '&from=settings' : '';
+      ctx.navigate(`#/b/${bookId}/say?child=${encodeURIComponent(next.id)}${from}`);
+      return;
     }
     ctx.setState((s) => upsertProfile(s, next));
     ctx.navigate(`#/b/${bookId}/say`);
