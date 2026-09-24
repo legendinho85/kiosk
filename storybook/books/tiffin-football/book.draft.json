@@ -55,7 +55,7 @@
       "prompt": "Lift the flap on the kit bag!",
       "after": [
         "Here it is!",
-        "Tip-tap, tip-tap, off we go!"
+        "Tip-tap, tip-tap, on we go!"
       ],
       "sfx": {
         "open": "pop"
@@ -77,7 +77,7 @@
       "after": [
         "Stretch! Bend! Jump!",
         "Boing, boing, boing!",
-        "Tip-tap, tip-tap, off we go!"
+        "Tip-tap, tip-tap, on we go!"
       ],
       "sfx": {
         "open": "boing"
@@ -98,7 +98,7 @@
       "prompt": "Slide the ball across... and back again!",
       "after": [
         "{name} to Tiffin... thud!",
-        "Tip-tap, tip-tap, off we go!"
+        "Tip-tap, tip-tap, on we go!"
       ],
       "sfx": {
         "open": "whistle"
@@ -118,7 +118,7 @@
       "prompt": "Pull the tab! Dive, Tiffin, dive!",
       "after": [
         "Boing! Big save, Tiffin!",
-        "Tip-tap, tip-tap, off we go!"
+        "Tip-tap, tip-tap, on we go!"
       ],
       "sfx": {
         "open": "kick"

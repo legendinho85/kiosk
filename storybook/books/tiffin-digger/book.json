@@ -10,6 +10,11 @@
     "name": "Tiffin",
     "species": "otter"
   },
+  "characters": [
+    "Tiffin",
+    "Goose",
+    "Frog"
+  ],
   "palette": {
     "sky": "#9FDCF7",
     "grass": "#74C655",

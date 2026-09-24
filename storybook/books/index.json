@@ -7,6 +7,14 @@
       "series": "Tiffin & Me",
       "cover": "scenes/p1.svg",
       "ages": "1–4"
+    },
+    {
+      "id": "tiffin-digger",
+      "title": "Beep beep, {name}!",
+      "subtitle": "A Tiffin & Me digger story",
+      "series": "Tiffin & Me",
+      "cover": "scenes/p1.svg",
+      "ages": "1–4"
     }
   ]
 }
