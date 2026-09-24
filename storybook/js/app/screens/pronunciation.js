@@ -6,7 +6,7 @@
 // what it heard), or record their own voice for the story to play.
 
 import { h, icon, button, respellNode, debounce, toast } from '../ui.js';
-import { screen } from '../chrome.js';
+import { screen, voiceConsentCard } from '../chrome.js';
 import { activeProfile, upsertProfile } from '../../core/storage.js';
 import { person as makePerson } from '../../core/personalise.js';
 import { getCandidates, customCandidate, toPronunciation } from '../../pronounce/index.js';
@@ -487,10 +487,18 @@ export function render(root, ctx) {
 
   // ---- Layout --------------------------------------------------------------------------------
   const voiceNote = h('p', { class: 'voice-note', hidden: true, 'data-testid': 'no-voice' }, icon('info', { size: 18 }), h('span', {}, 'This browser has no reading voice at the moment, so you won’t hear anything yet. The story still works — or try recording your own voice below.'));
+  // Only online voices here? Ask the grown-up (privacy) rather than saying there's no voice.
+  const consent = voiceConsentCard(ctx, { signal: life.signal, name: display, onChange: () => (voiceNote.hidden = true) });
   Promise.resolve(narrator.ready)
     .catch(() => null)
     .then(() => {
-      if (!life.signal.aborted && !narrator.hasVoice?.() && !globalThis.SB_TEST?.forceSilent) voiceNote.hidden = false;
+      let needsConsent = false;
+      try {
+        needsConsent = Boolean(narrator.voiceStatus?.()?.needsConsent);
+      } catch {
+        needsConsent = false;
+      }
+      if (!life.signal.aborted && !narrator.hasVoice?.() && !needsConsent && !globalThis.SB_TEST?.forceSilent) voiceNote.hidden = false;
     });
 
   const head = h(
@@ -500,6 +508,7 @@ export function render(root, ctx) {
     h('h1', {}, 'How do we say ', h('span', { class: 'say-name' }, display), '?'),
     h('p', { class: 'lead' }, 'Children light up when a story gets their name right. Tap ', h('span', { class: 'inline-play', 'aria-label': 'play' }, icon('play', { size: 14 })), ' to listen, then choose the one that sounds right.'),
     voiceNote,
+    consent,
   );
   const storyCard = h('section', { class: 'card story-check', 'aria-labelledby': 'story-check-title' },
     h('div', { class: 'story-check-head' }, h('h2', { id: 'story-check-title' }, 'Try it in the story'), hearBtn),

@@ -1,11 +1,14 @@
 // #/settings — for grown-ups only (behind the press-and-hold gate).
 // Children, voice, reading speed, story options, privacy, demo links.
 
-import { h, icon, button, linkButton, confirmDialog, toast, respellNode } from '../ui.js';
+import { h, icon, button, linkButton, confirmDialog, toast, respellNode, setBusy } from '../ui.js';
 import { screen } from '../chrome.js';
 import { holdButton, gatePassed, markGatePassed } from '../parent-gate.js';
-import { removeProfile, forgetEverything, loadState, DEFAULT_SETTINGS } from '../../core/storage.js';
+import { removeProfile, removeReading, forgetEverything, loadState, readingLabel, activeProfile, DEFAULT_SETTINGS } from '../../core/storage.js';
+import { fillTemplate, person as makePerson } from '../../core/personalise.js';
+import { readingCoverage, recordingSteps, selectChild } from '../../family/family.js';
 import { pronunciationSummary } from './ready.js';
+import { sendReading, playReading } from '../family-ui.js';
 
 export const SPEEDS = Object.freeze([
   { id: 'slower', label: 'Slower', rate: 0.75 },
@@ -23,7 +26,12 @@ export const TOGGLES = Object.freeze([
   { key: 'sfx', title: 'Sound effects', text: 'Whistles, kicks and cheers when things happen.' },
   { key: 'readPrompts', title: 'Read the “your turn” prompts', text: 'Like “Lift the flap on the kit bag!”' },
   { key: 'autoTurn', title: 'Turn pages automatically', text: 'Moves on by itself after each page. Leave off to turn the page together.' },
+  { key: 'bedtime', title: 'Bedtime mode', text: 'A dim, calm screen and softer sounds; the story carries on by itself, page after page.' },
 ]);
+
+/** The words next to the online-voices switch (privacy: be plain about what is sent where). */
+export const ONLINE_VOICES_TEXT =
+  'Some computers have nicer “online” voices from Google or Microsoft. To use them, the story’s words — including your child’s name — are sent to Google or Microsoft to be spoken. Leave this off to keep everything on this device.';
 
 /** Voice list label: "Serena (en-GB)" with a hint for on-device voices. */
 export function voiceLabel(v) {
@@ -82,7 +90,7 @@ export function render(root, ctx) {
                   size: 'sm',
                   testid: 'retune-child',
                   onClick: () => {
-                    ctx.setState((s) => ({ ...s, activeProfileId: p.id }));
+                    ctx.setState((s) => selectChild(s, p.id));
                     ctx.navigate(`#/b/${bookId}/say`);
                   },
                 }),
@@ -95,13 +103,14 @@ export function render(root, ctx) {
   async function deleteChild(p) {
     const ok = await confirmDialog({
       title: `Remove ${p.display}?`,
-      message: `This removes ${p.display}’s name, pronunciation and any recording from this phone.`,
+      message: `This removes ${p.display}’s name, pronunciation, any recording and any gift message from this phone.`,
       confirmText: 'Remove',
       danger: true,
       testid: 'confirm-delete',
     });
     if (!ok || life.signal.aborted) return;
     if (p.pronunciation?.recordingId) ctx.blobs.delete(p.pronunciation.recordingId).catch?.(() => {});
+    if (p.gift?.recordingId) ctx.blobs.delete(p.gift.recordingId).catch?.(() => {});
     ctx.setState((s) => removeProfile(s, p.id));
     renderChildren();
     toast(`${p.display} has been removed from this phone.`, { kind: 'success' });
@@ -132,6 +141,24 @@ export function render(root, ctx) {
     previewBtn.classList.remove('is-playing');
   });
   voiceSelect.addEventListener('change', () => setSetting({ voiceURI: voiceSelect.value || null }));
+
+  // Online voices are opt-in: they send the words (and the name) to Google or Microsoft.
+  const onlineInput = h('input', {
+    type: 'checkbox',
+    role: 'switch',
+    id: 'setting-allowOnlineVoices',
+    class: 'switch-input',
+    'data-testid': 'setting-allowOnlineVoices',
+    checked: settings().allowOnlineVoices === true,
+    onChange: (e) => {
+      setSetting({ allowOnlineVoices: e.target.checked });
+      toast(e.target.checked ? 'Online voices are on. The story’s words go to Google or Microsoft to be spoken.' : 'Online voices are off. Everything stays on this device.', { kind: 'info', timeout: 5000 });
+    },
+  });
+  const onlineToggle = h('label', { class: 'toggle online-toggle', for: 'setting-allowOnlineVoices' },
+    h('span', { class: 'toggle-text' }, h('strong', {}, 'Use online voices'), h('span', {}, ONLINE_VOICES_TEXT)),
+    onlineInput,
+    h('span', { class: 'switch', 'aria-hidden': 'true' }));
   Promise.resolve(ctx.narrator.ready)
     .catch(() => [])
     .then(() => {
@@ -170,6 +197,110 @@ export function render(root, ctx) {
     return h('label', { class: 'toggle', for: id }, h('span', { class: 'toggle-text' }, h('strong', {}, t.title), h('span', {}, t.text)), input, h('span', { class: 'switch', 'aria-hidden': 'true' }));
   }));
 
+  // ---- Family recordings ---------------------------------------------------------------------------
+  const readingList = h('ul', { class: 'settings-readings', role: 'list', 'data-testid': 'settings-readings' });
+  const bookInfo = new Map(); // bookId -> Promise<book|null>
+  const loadBookInfo = (id) => {
+    if (!bookInfo.has(id)) bookInfo.set(id, import('../../core/book.js').then((m) => m.loadBook(id)).catch(() => null));
+    return bookInfo.get(id);
+  };
+  let playing = null; // {id, ctl, btn}
+  const stopReading = () => {
+    playing?.ctl.abort();
+    playing?.btn?.classList.remove('is-playing');
+    playing = null;
+  };
+  function renderReadings() {
+    stopReading();
+    const readings = [...(ctx.state.readings ?? [])].sort((a, b) => (a.bookId === b.bookId ? b.updatedAt - a.updatedAt : a.bookId.localeCompare(b.bookId)));
+    if (!readings.length) {
+      readingList.replaceChildren(h('li', { class: 'settings-empty' }, 'No family recordings yet.'));
+      return;
+    }
+    const child = activeProfile(ctx.state);
+    readingList.replaceChildren(
+      ...readings.map((r) => {
+        const isActive = ctx.state.activeReading?.[r.bookId] === r.id;
+        const meta = h('p', { class: 'settings-reading-meta' }, '…');
+        loadBookInfo(r.bookId).then((book) => {
+          const title = book ? fillTemplate(book.title, makePerson(child?.display ?? 'you')) : r.bookId;
+          const cov = book ? readingCoverage(r, recordingSteps(book)) : null;
+          meta.textContent = `${title}${cov ? ` · ${cov.complete ? 'every page' : `${cov.done} of ${cov.total} parts`}` : ''}`;
+        });
+        const play = button({ text: 'Play', icon: 'play', variant: 'link', size: 'sm', testid: 'reading-play', attrs: { 'aria-pressed': 'false' } });
+        play.addEventListener('click', async () => {
+          if (playing?.id === r.id) return stopReading();
+          stopReading();
+          const ctl = new AbortController();
+          playing = { id: r.id, ctl, btn: play };
+          play.classList.add('is-playing');
+          play.setAttribute('aria-pressed', 'true');
+          await playReading(ctx, r, { signal: ctl.signal });
+          play.classList.remove('is-playing');
+          play.setAttribute('aria-pressed', 'false');
+          if (playing?.ctl === ctl) playing = null;
+        });
+        const use = isActive
+          ? null
+          : button({
+              text: 'Use this one',
+              icon: 'check',
+              variant: 'link',
+              size: 'sm',
+              testid: 'reading-use',
+              onClick: () => {
+                ctx.setState((s) => ({ ...s, activeReading: { ...(s.activeReading ?? {}), [r.bookId]: r.id } }));
+                renderReadings();
+                toast(`${readingLabel(r)} will read the story.`, { kind: 'success' });
+              },
+            });
+        const send = button({ text: 'Send', icon: 'share', variant: 'link', size: 'sm', testid: 'reading-send' });
+        const linkHost = h('div', { class: 'download-host', hidden: true });
+        send.addEventListener('click', async () => {
+          stopReading();
+          setBusy(send, true);
+          const book = await loadBookInfo(r.bookId);
+          await sendReading(ctx, r, { book, childName: child?.display ?? '', host: linkHost });
+          setBusy(send, false);
+        });
+        const del = button({ text: 'Delete', icon: 'trash', variant: 'link-danger', size: 'sm', testid: 'reading-delete', onClick: () => deleteReading(r) });
+        return h(
+          'li',
+          { class: 'settings-reading', 'data-testid': 'settings-reading', 'data-reading': r.id },
+          h('span', { class: 'reading-avatar', 'aria-hidden': 'true' }, icon('heart', { size: 20 })),
+          h('div', { class: 'settings-child-text' },
+            h('p', { class: 'settings-child-name' }, readingLabel(r), isActive ? h('span', { class: 'badge' }, 'Reads the story') : null),
+            meta),
+          h('div', { class: 'settings-child-actions' }, play, use, send, del),
+          linkHost,
+        );
+      }),
+    );
+  }
+  async function deleteReading(r) {
+    stopReading();
+    const ok = await confirmDialog({
+      title: `Delete ${readingLabel(r).replace(/^Read by/, 'the reading by')}?`,
+      message: 'This removes the recording from this phone. Anyone you sent it to keeps their copy.',
+      confirmText: 'Delete',
+      danger: true,
+      testid: 'confirm-delete-reading',
+    });
+    if (!ok || life.signal.aborted) return;
+    const { state, blobIds } = removeReading(ctx.state, r.id);
+    ctx.setState(state);
+    for (const id of blobIds) {
+      try {
+        await ctx.blobs.delete(id);
+      } catch {
+        /* already gone */
+      }
+    }
+    renderReadings();
+    toast('The reading has been deleted from this phone.', { kind: 'success' });
+  }
+  renderReadings();
+
   // ---- Privacy + forget ------------------------------------------------------------------------
   const forget = button({
     text: 'Forget everything on this device',
@@ -204,15 +335,25 @@ export function render(root, ctx) {
         h('label', { class: 'field-label', for: 'voice' }, 'Voice'),
         h('div', { class: 'voice-row' }, voiceSelect, previewBtn),
         voiceNote,
+        onlineToggle,
         h('p', { class: 'field-label', id: 'speed-title' }, 'Reading speed'),
         speedGroup),
+      section('family-title', 'Family recordings', 'mic',
+        h('p', { class: 'field-hint family-hint' }, 'Readings recorded by grandparents and family, and ones sent to you. They stay on this phone unless you send them.'),
+        readingList,
+        h('div', { class: 'demo-links' },
+          linkButton({ text: 'Record a reading', href: `#/b/${bookId}/record`, icon: 'mic', variant: 'secondary', size: 'sm', testid: 'settings-record' }),
+          linkButton({ text: 'Open a family recording', href: '#/open', icon: 'file', variant: 'secondary', size: 'sm', testid: 'settings-open-pack' }),
+          linkButton({ text: 'Set up a gift', href: `#/b/${bookId}/gift`, icon: 'gift', variant: 'secondary', size: 'sm', testid: 'settings-gift' }))),
       section('story-title', 'In the story', 'book', toggles),
       section('privacy-title', 'Privacy', 'shield',
         h('ul', { class: 'privacy-list' },
           h('li', {}, 'No account, no sign-up, no adverts, no tracking.'),
           h('li', {}, 'Names, pronunciations and recordings are stored only on this device.'),
           h('li', {}, 'The camera picture never leaves your phone and is never recorded.'),
-          h('li', {}, '“Say it for us” uses your browser’s speech service, which may send that one clip to Google or Apple to turn it into text.')),
+          h('li', {}, '“Say it for us” uses your browser’s speech service, which may send that one clip to Google or Apple to turn it into text.'),
+          h('li', {}, 'Online voices are off unless you switch them on (under “Reading voice”).'),
+          h('li', {}, 'Family recordings and gifts travel only in the files you choose to send. Nothing is uploaded.')),
         forget),
       section('demo-title', 'For demos', 'qr',
         h('p', { class: 'field-hint' }, 'Show the book’s QR code on a laptop and scan it with a phone, or print test pages to try the magic window.'),
@@ -227,5 +368,6 @@ export function render(root, ctx) {
   return () => {
     life.abort();
     previewing?.abort();
+    stopReading();
   };
 }

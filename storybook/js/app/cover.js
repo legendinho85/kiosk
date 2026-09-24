@@ -81,10 +81,11 @@ function fillSimple(svg, display) {
 
 /**
  * Create a live cover.
- * @param {{book: object, bookId?: string, baseUrl?: string, display?: string, signal?: AbortSignal, caption?: boolean, label?: string}} opts
- * @returns {{el: HTMLElement, setName(display: string, opts?: {pop?: boolean}): void, loaded: Promise<'scene'|'fallback'>}}
+ * @param {{book: object, bookId?: string, baseUrl?: string, display?: string, art?: string, signal?: AbortSignal, caption?: boolean, label?: string}} opts
+ *   art: the form drawn inside the picture when it differs from `display` (siblings: "Amara & Zak")
+ * @returns {{el: HTMLElement, setName(display: string, opts?: {pop?: boolean, art?: string}): void, loaded: Promise<'scene'|'fallback'>}}
  */
-export function createCover({ book, bookId = book?.id, baseUrl, display = '', signal, caption = true } = {}) {
+export function createCover({ book, bookId = book?.id, baseUrl, display = '', art: artName = '', signal, caption = true } = {}) {
   const base = baseUrl ?? bookUrl(bookId);
   const art = h('div', { class: 'cover-art is-loading', 'data-testid': 'cover-art' });
   const title = h('p', { class: 'cover-title', 'data-testid': 'cover-title' });
@@ -94,6 +95,8 @@ export function createCover({ book, bookId = book?.id, baseUrl, display = '', si
   let slots = null;
   let nameFit = null;
   let current = String(display ?? '');
+  let currentArt = String(artName ?? '');
+  const who = () => makePerson(current, undefined, { art: currentArt || undefined });
 
   const renderTitle = () => {
     title.replaceChildren(...titleNodes(book?.title ?? 'Goal, {name}!', current));
@@ -111,11 +114,11 @@ export function createCover({ book, bookId = book?.id, baseUrl, display = '', si
         // stars show through via .is-blank).
         fillSimple(svg, '');
         for (const t of svg.querySelectorAll('text.sb-letter')) t.textContent = '';
-      } else if (nameFit) slots = nameFit.fillNameSlots(svg, makePerson(current), { animate: false });
-      else fillSimple(svg, current);
+      } else if (nameFit) slots = nameFit.fillNameSlots(svg, who(), { animate: false });
+      else fillSimple(svg, currentArt || current);
     } catch (err) {
       console.warn('[cover] could not write the name', err);
-      fillSimple(svg, current);
+      fillSimple(svg, currentArt || current);
     }
     if (pop && current) popNames();
   };
@@ -166,10 +169,12 @@ export function createCover({ book, bookId = book?.id, baseUrl, display = '', si
   return {
     el,
     loaded,
-    setName(next, { pop = false } = {}) {
+    setName(next, { pop = false, art: nextArt = '' } = {}) {
       const n = String(next ?? '');
-      if (n === current) return;
+      const a = String(nextArt ?? '');
+      if (n === current && a === currentArt) return;
       current = n;
+      currentArt = a;
       renderTitle();
       fill({ pop });
     },

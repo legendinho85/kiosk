@@ -20,6 +20,9 @@ import * as magic from './app/screens/magic.js';
 import * as settings from './app/screens/settings.js';
 import * as qr from './app/screens/qr.js';
 import * as print from './app/screens/print.js';
+import * as record from './app/screens/record.js';
+import * as gift from './app/screens/gift.js';
+import * as openPack from './app/screens/open.js';
 
 // ---- 1. Test hook (before anything reads it) ----------------------------------------
 const hook = testHookFromSearch(location.search);
@@ -98,6 +101,9 @@ const routes = [
   { path: '/b/:book/read/:page', name: 'read', ...withBook(read, withServices) },
   { path: '/b/:book/read', name: 'read', ...withBook(read, withServices) },
   { path: '/b/:book/magic/:page', name: 'magic', ...withBook(magic, withServices) },
+  { path: '/b/:book/record', name: 'record', ...withBook(record, both(withLexicon, withServices)) },
+  { path: '/b/:book/gift', name: 'gift', ...withBook(gift, both(withLexicon, withServices)) },
+  { path: '/open', name: 'open', render: openPack.render, prepare: withServices },
   { path: '/settings', name: 'settings', render: settings.render, prepare: withServices },
   { path: '/qr/:book', name: 'qr', ...withBook(qr) },
   { path: '/print/:book', name: 'print', ...withBook(print) },
@@ -123,6 +129,8 @@ function makeContext(match, extras) {
       return extras.lexicon ?? lexicon;
     },
     getLexicon: () => lexiconReady,
+    /** Resolves once the real narrator and sound effects have loaded (screens that don't wait in prepare). */
+    servicesReady,
     blobs,
     params: match.params,
     query: match.query,

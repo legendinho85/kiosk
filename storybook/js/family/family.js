@@ -22,6 +22,15 @@ export function readingPerson(state) {
   return togetherPerson(kids.map((p) => ({ display: p.display, say: p.pronunciation?.say || p.display })));
 }
 
+/**
+ * Make a child the one we're reading for. A "reading together" group they're
+ * not part of is dropped (it would otherwise still be read).
+ */
+export function selectChild(state, id) {
+  const group = state.together ?? [];
+  return { ...state, activeProfileId: id, together: group.includes(id) ? group : [] };
+}
+
 /** The joined names as drawn in the pictures: "Amara & Zak". */
 export function artNames(children) {
   return children.map((c) => c.display).join(' & ');

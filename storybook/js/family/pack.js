@@ -80,10 +80,10 @@ export class PackError extends Error {
 
 // ---- Small pure helpers (unit-tested) -------------------------------------------
 
-// C0/C1 controls (newlines are handled separately), bidi overrides/isolates
+// C0/C1 controls (tabs and newlines are handled separately), bidi overrides/isolates
 // (they can make "Grandma" display as something else), zero-width joiners
 // used for spoofing are left alone because emoji need them.
-const CONTROL = /[\u0000-\u0009\u000B-\u001F\u007F-\u009F‪-‮⁦-⁩﻿]/g;
+const CONTROL = /[\u0000-\u0008\u000B-\u001F\u007F-\u009F‪-‮⁦-⁩﻿]/g;
 
 /**
  * Clean untrusted text: strings only, NFC, no control or direction-override
@@ -321,7 +321,13 @@ function readAudio(entry, where, budget, warnings) {
 
 async function knownBooks(books) {
   let list = books;
-  if (typeof list === 'function') list = await list();
+  if (typeof list === 'function') {
+    try {
+      list = await list();
+    } catch {
+      throw new PackError('no-books');
+    }
+  }
   if (!Array.isArray(list)) {
     try {
       const { loadBookList } = await import('../core/book.js');

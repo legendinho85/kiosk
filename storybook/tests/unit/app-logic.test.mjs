@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHold, HOLD_MS } from '../../js/app/parent-gate.js';
-import { letterCount, longNameHint, nameError, defaultPronunciation, LONG_NAME_LETTERS } from '../../js/app/screens/name.js';
+import { letterCount, longNameHint, nameError, defaultPronunciation, LONG_NAME_LETTERS, nicknameOffer, nicknameSuggestion, resolveNames } from '../../js/app/screens/name.js';
 import { storyLines, mergeCandidates, findSaved, candidateTitle, candidateNote, recognitionMessage, storedPronunciation } from '../../js/app/screens/pronunciation.js';
 import { pronunciationSummary, profilePerson } from '../../js/app/screens/ready.js';
 import { pageParam } from '../../js/app/screens/read.js';
-import { speedFor, SPEEDS, TOGGLES, voiceLabel } from '../../js/app/screens/settings.js';
+import { speedFor, SPEEDS, TOGGLES, voiceLabel, ONLINE_VOICES_TEXT } from '../../js/app/screens/settings.js';
 import { fallbackLandingUrl } from '../../js/app/screens/qr.js';
 import { respellParts, debounce } from '../../js/app/ui.js';
 import { createQuietNarrator } from '../../js/app/services.js';
@@ -86,16 +86,32 @@ test('a broken unlock handler does not break the gate', () => {
 // ---- Name screen -----------------------------------------------------------------------
 
 test('long names get a gentle hint, counted in letters only', () => {
-  assert.equal(LONG_NAME_LETTERS, 12);
+  assert.equal(LONG_NAME_LETTERS, 10);
   assert.equal(letterCount('Anna-Sophia'), 10);
   assert.equal(letterCount("D'Arcy O'Neill"), 11);
   assert.equal(letterCount('Zoë'), 3);
   assert.equal(letterCount('Zoë'), 3, 'combining marks join their letter');
-  assert.equal(longNameHint('Maximilian'), '');
-  assert.equal(longNameHint('Anna-Sophia'), '');
-  assert.match(longNameHint('Mary-Elizabeth'), /shorter/, '13 letters');
-  assert.match(longNameHint('Maximilianus Jr'), /shorter name you use at home/);
-  assert.match(longNameHint('Oluwaseuntobi'), /shorter/);
+  assert.equal(longNameHint('Maximilian'), '', '10 letters, one part: fine');
+  assert.equal(longNameHint('Ava'), '');
+  assert.match(longNameHint('Anna-Sophia'), /short name/, 'two parts');
+  assert.match(longNameHint('Mary-Elizabeth'), /keep “Mary-Elizabeth” as their full name/);
+  assert.match(longNameHint('Oluwaseuntobi'), /short name/, '13 letters');
+});
+
+test('nicknames: offered for long or several-part names; the short name is used in the story', () => {
+  assert.equal(nicknameOffer('Maximilian'), false);
+  assert.equal(nicknameOffer('Maximiliano'), true, '11 letters');
+  assert.equal(nicknameOffer('Mary Kate'), true, 'two parts');
+  assert.equal(nicknameOffer("D'Arcy"), false, 'an apostrophe is not a second part');
+  assert.equal(nicknameSuggestion('Anna-Sophia'), 'Anna');
+  assert.equal(nicknameSuggestion('mary elizabeth'), 'Mary');
+  assert.equal(nicknameSuggestion('Oluwaseuntobi'), '', 'no guessing inside one long name');
+  assert.equal(nicknameSuggestion('J Rose'), '', 'a single letter is not a name');
+  assert.deepEqual(resolveNames('maximilian-james', 'max'), { ok: true, display: 'Max', key: 'max', fullName: 'Maximilian-James' });
+  assert.deepEqual(resolveNames('Maximilian', ''), { ok: true, display: 'Maximilian', key: 'maximilian', fullName: null });
+  assert.deepEqual(resolveNames('Ava', 'AVA'), { ok: true, display: 'Ava', key: 'ava', fullName: null }, 'same name: no full name kept');
+  assert.deepEqual(resolveNames('', 'Max'), { ok: false, field: 'name', error: 'empty' });
+  assert.deepEqual(resolveNames('Maximilian', 'Max2'), { ok: false, field: 'nickname', error: 'invalid-chars' });
 });
 
 test('name errors come from NAME_ERRORS', () => {
@@ -201,7 +217,9 @@ test('reading speeds map to the nearest preset', () => {
   assert.equal(speedFor(1.2).id, 'normal');
   assert.equal(speedFor(undefined).id, 'normal');
   assert.ok(SPEEDS.every((s) => s.rate > 0.5 && s.rate <= 1));
-  assert.deepEqual(TOGGLES.map((t) => t.key).sort(), ['autoTurn', 'highlight', 'readPrompts', 'sfx']);
+  assert.deepEqual(TOGGLES.map((t) => t.key).sort(), ['autoTurn', 'bedtime', 'highlight', 'readPrompts', 'sfx']);
+  assert.match(ONLINE_VOICES_TEXT, /Google or Microsoft/);
+  assert.match(ONLINE_VOICES_TEXT, /name/);
   assert.equal(voiceLabel({ label: 'Serena', lang: 'en-GB', local: true }), 'Serena (en-GB)');
   assert.equal(voiceLabel({ name: 'Google UK English Female', lang: 'en-GB', local: false }), 'Google UK English Female (en-GB) · online');
 });

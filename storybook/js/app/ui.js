@@ -87,6 +87,15 @@ export const ICONS = Object.freeze({
   refresh: `<path d="M5.5 12a6.5 6.5 0 1 0 2-4.7M5 4.5v4h4" ${S}/>`,
   moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/>',
   ball: `<circle cx="12" cy="12" r="8.5" ${S}/><path d="M12 7.8l3.4 2.5-1.3 4h-4.2l-1.3-4zM12 3.5v4.3M15.4 10.3l4.2-1.3M14.1 14.3l2.6 3.5M9.9 14.3l-2.6 3.5M8.6 10.3 4.4 9" ${S} stroke-width="1.7"/>`,
+  // Family features
+  gift: `<rect x="3.5" y="8.5" width="17" height="4.5" rx="1.2" ${S}/><path d="M5 13v7h14v-7M12 8.5V20" ${S}/><path d="M12 8.5C10.5 5 6.8 4.2 6.8 6.6c0 1.6 2.6 1.9 5.2 1.9zM12 8.5c1.5-3.5 5.2-4.3 5.2-1.9 0 1.6-2.6 1.9-5.2 1.9z" ${S} stroke-width="2"/>`,
+  share: `<path d="M12 14.5V3.8M8 7.5l4-4 4 4" ${S} stroke-width="2.4"/><path d="M8.5 10.5H6.5a1.5 1.5 0 0 0-1.5 1.5v7a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5h-2" ${S}/>`,
+  download: `<path d="M12 3.8v11M7.8 10.8l4.2 4.2 4.2-4.2" ${S} stroke-width="2.4"/><path d="M4.5 16.5v2.2a1.8 1.8 0 0 0 1.8 1.8h11.4a1.8 1.8 0 0 0 1.8-1.8v-2.2" ${S}/>`,
+  file: `<path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z" ${S}/><path d="M14 3.5V8h4.5" ${S}/><path d="M12 11.2c-.9-1.5-3.4-1.2-3.4.8 0 1.8 3.4 3.8 3.4 3.8s3.4-2 3.4-3.8c0-2-2.5-2.3-3.4-.8z" fill="currentColor"/>`,
+  users: `<circle cx="9" cy="8.5" r="3.3" ${S}/><path d="M3 19.5c.6-3.3 3-5.2 6-5.2s5.4 1.9 6 5.2" ${S}/><circle cx="16.6" cy="9.3" r="2.6" ${S} stroke-width="2"/><path d="M16.8 14.3c2.2.2 3.8 1.8 4.2 4.4" ${S} stroke-width="2"/>`,
+  note: `<path d="M9.5 17.5V5.5l10-2v12" ${S}/><circle cx="7" cy="17.5" r="2.6" fill="currentColor"/><circle cx="17" cy="15.5" r="2.6" fill="currentColor"/>`,
+  pause: '<rect x="6.5" y="5" width="4" height="14" rx="1.4" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.4" fill="currentColor"/>',
+  skip: `<path d="M6 6.5l7 5.5-7 5.5zM17.5 6v12" ${S}/>`,
 });
 
 /**

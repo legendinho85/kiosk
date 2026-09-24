@@ -4,7 +4,7 @@
 import { h, linkButton } from '../ui.js';
 import { messageScreen } from '../chrome.js';
 import { activeProfile } from '../../core/storage.js';
-import { profilePerson } from './ready.js';
+import { readingPerson } from '../../family/family.js';
 import { pageParam, replaceHash } from './read.js';
 
 export function render(root, ctx) {
@@ -48,7 +48,7 @@ export function render(root, ctx) {
       bookId,
       baseUrl: ctx.baseUrl,
       page,
-      person: profilePerson(profile),
+      person: readingPerson(ctx.state),
       narrator: ctx.narrator,
       sfx: ctx.sfx,
       onExit: backToReading,

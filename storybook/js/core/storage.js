@@ -126,9 +126,11 @@ export function removeProfile(state, id) {
  */
 export function readingChildren(state) {
   const byId = new Map(state.profiles.map((p) => [p.id, p]));
-  const group = (state.together ?? []).map((id) => byId.get(id)).filter(Boolean).slice(0, 3);
-  if (group.length > 1) return group;
   const one = activeProfile(state);
+  const group = (state.together ?? []).map((id) => byId.get(id)).filter(Boolean).slice(0, 3);
+  // The group only applies while the active child is part of it; picking
+  // another child on their own means reading just for them.
+  if (group.length > 1 && (!one || group.includes(one))) return group;
   return one ? [one] : [];
 }
 

@@ -363,7 +363,8 @@ loaded). Always offers "back to reading" and never records or uploads video.
 
 ## 10. Visual language
 Fonts: **Andika** (reading text — designed for early readers) and **Fredoka**
-(headings), from Google Fonts, falling back to system rounded sans-serif.
+(headings), self-hosted from `fonts/` (SIL OFL, see `css/fonts.css`) so no
+request leaves for Google; system rounded sans-serif as the fallback.
 Tokens (in `css/app.css`): `--ink #2B2A33`, `--paper #FFF8EC`, `--card #FFFFFF`,
 `--accent` (book colour), `--sun #FFC83D`, `--sky #7EC8F0`, `--grass #6CC24A`,
 `--berry #E8505B`, focus ring `--focus #1D6FE0`. Parent screens are calm and
@@ -435,9 +436,13 @@ A single JSON file parents share by WhatsApp/email/AirDrop (no server):
   "child": { "display": "Ava", "fullName": null, "pronunciation": { "say": "Ava", "ipa": "", "respell": "", "label": "", "source": "gift" } }, // gift packs
   "message": { "from": "Auntie Jo", "text": "Happy birthday!", "audio": {"mime": "audio/wav", "data": "<base64>"} } } // gift packs (audio optional)
 ```
-`buildPack(...) -> Blob`, `readPack(file) -> Promise<ParsedPack>` (untrusted
-input: size caps (30 MB), audio MIME allow-list, text length caps, never
-rendered as HTML), `importPack(state, parsed, blobs) -> Promise<{state, summary}>`.
+`buildPack(...) -> Promise<Blob>` (async: it reads the audio blobs),
+`readPack(file, {books}) -> Promise<ParsedPack>` (untrusted input: 30 MB cap
+checked before reading, per-clip/total audio caps, audio MIME allow-list plus
+magic-byte check, strict base64, text caps with control/direction characters
+removed, bookId must be a known book, never rendered as HTML),
+`importPack(state, parsed, blobs) -> Promise<{state, summary}>`. Reading packs
+may also carry `language` and `child` (who it was recorded for).
 Filenames: `<book>-<reader-or-child>.starring.json`.
 
 ### App screens — `js/app/screens/*`

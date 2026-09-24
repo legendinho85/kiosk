@@ -76,6 +76,11 @@ test('siblings reading together', async () => {
   s = setTogether(s, ['a']);
   assert.deepEqual(s.together, []);
   s = setTogether(s, ['a', 'z']);
+  s = { ...s, activeProfileId: 'a' };
+  assert.deepEqual(readingChildren(s).map((p) => p.id), ['a', 'z']);
+  s = upsertProfile(s, { id: 'b', display: 'Bo', key: 'bo', pronunciation: { say: 'Bo' } });
+  assert.deepEqual(readingChildren(s).map((p) => p.id), ['b'], 'a child outside the group reads alone');
+  s = { ...s, activeProfileId: 'z' };
   s = removeProfile(s, 'z');
   assert.deepEqual(s.together, ['a']);
   assert.deepEqual(readingChildren(s).map((p) => p.id), ['a']);

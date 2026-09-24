@@ -1,8 +1,9 @@
 // Shared pieces of the grown-up screens: the top bar (series name, back,
 // gated settings), the page scaffold, and friendly error panels.
 
-import { h, icon, button, linkButton, tiffinMark } from './ui.js';
+import { h, icon, button, linkButton, tiffinMark, toast } from './ui.js';
 import { openParentGate, gatePassed } from './parent-gate.js';
+import { prefs } from '../core/storage.js';
 
 export const SERIES_NAME = 'Tiffin & Me';
 
@@ -82,4 +83,95 @@ export function bookErrorScreen(ctx, err) {
           linkButton({ text: 'See all books', href: '#/', icon: 'book', variant: 'secondary' }),
         ],
       });
+}
+
+// ---- Environment and privacy notices ----------------------------------------------
+
+let envDismissed = false;
+
+/**
+ * "This page opened inside Instagram, which can't read aloud…": shown at the
+ * top of the landing and name screens when js/core/env.js says the page is
+ * somewhere that will let the family down. Hidden when all is well, or if the
+ * module is missing.
+ * @param {{signal?: AbortSignal}} [opts]
+ */
+export function envBanner({ signal } = {}) {
+  const text = h('p', { class: 'env-hint-text', 'data-testid': 'env-hint-text' });
+  const close = button({ label: 'Hide this message', icon: 'close', variant: 'quiet', size: 'sm', testid: 'env-hint-close', class: 'env-hint-close' });
+  const el = h('aside', { class: 'env-hint', role: 'note', 'aria-label': 'Tip for this browser', 'data-testid': 'env-hint', hidden: true }, h('span', { class: 'env-hint-icon', 'aria-hidden': 'true' }, icon('alert', { size: 20 })), text, close);
+  close.addEventListener('click', () => {
+    envDismissed = true;
+    el.remove();
+  });
+  if (!envDismissed) {
+    import('../core/env.js')
+      .then((m) => {
+        if (signal?.aborted) return;
+        const hint = m.detectEnvironment?.()?.openInBrowserHint;
+        if (hint) {
+          text.textContent = hint;
+          el.hidden = false;
+        }
+      })
+      .catch(() => {});
+  }
+  return el;
+}
+
+const CONSENT_PREF = 'onlineVoices.declined';
+
+/**
+ * Asks the grown-up about online voices when this browser only has online
+ * English voices (narrator.voiceStatus().needsConsent). Until they agree the
+ * story reads silently with the words lighting up; the default is to stay
+ * private. Hidden when there's nothing to ask.
+ * @param {object} ctx screen context (narrator, setState, state, servicesReady)
+ * @param {{signal?: AbortSignal, name?: string, onChange?: () => void}} [opts]
+ */
+export function voiceConsentCard(ctx, { signal, name = '', onChange } = {}) {
+  const allow = button({ text: 'Use the online voice', icon: 'speaker', variant: 'secondary', size: 'md', testid: 'consent-allow' });
+  const decline = button({ text: 'Stay private', icon: 'shield', variant: 'quiet', size: 'md', testid: 'consent-decline' });
+  const who = name ? `${name}’s` : 'your child’s';
+  const el = h(
+    'section',
+    { class: 'card consent-card', 'data-testid': 'voice-consent', 'aria-labelledby': 'consent-title', hidden: true },
+    h('div', { class: 'consent-head' }, h('span', { class: 'consent-icon', 'aria-hidden': 'true' }, icon('speaker', { size: 22 })), h('h2', { id: 'consent-title' }, 'Hear the story read aloud?')),
+    h('p', {}, 'The only reading voices in this browser are online voices from Google or Microsoft. To use one, the story’s words — including ', who, ' name — are sent to them.'),
+    h('p', { class: 'consent-private' }, 'Or stay private: the words light up in time, and you read them aloud together.'),
+    h('div', { class: 'consent-actions' }, allow, decline),
+  );
+  allow.addEventListener('click', () => {
+    ctx.setState((s) => ({ ...s, settings: { ...s.settings, allowOnlineVoices: true } }));
+    prefs.set(CONSENT_PREF, false);
+    el.hidden = true;
+    toast('The online voice will read the story. You can change this in settings.', { kind: 'success' });
+    onChange?.();
+  });
+  decline.addEventListener('click', () => {
+    prefs.set(CONSENT_PREF, true);
+    el.hidden = true;
+    toast('Staying private: the words will light up without a voice. You can change this in settings.', { kind: 'info', timeout: 6000 });
+    onChange?.();
+  });
+  const check = () => {
+    if (signal?.aborted || ctx.state.settings?.allowOnlineVoices || prefs.get(CONSENT_PREF, false)) return;
+    let status = null;
+    try {
+      status = ctx.narrator?.voiceStatus?.() ?? null;
+    } catch {
+      status = null;
+    }
+    el.hidden = !status?.needsConsent;
+  };
+  Promise.resolve(ctx.servicesReady)
+    .catch(() => null)
+    .then(() => Promise.resolve(ctx.narrator?.ready).catch(() => null))
+    .then(() => {
+      check();
+      // Some browsers list their voices a moment later.
+      const t = setTimeout(check, 1500);
+      signal?.addEventListener('abort', () => clearTimeout(t), { once: true });
+    });
+  return el;
 }

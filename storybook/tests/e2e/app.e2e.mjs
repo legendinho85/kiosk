@@ -52,18 +52,41 @@ function eq(a, b, msg) {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ---- server ----------------------------------------------------------------------------
+// The server runs in its own process group (npx starts http-server as a child),
+// and the whole group is killed however this script ends: normally, on an
+// uncaught error, or on Ctrl-C / SIGTERM from tests/e2e/run.mjs. No stray
+// server survives a run.
 async function startServer() {
   const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  // Own process group, so stopping it also stops the http-server that npx starts.
-  const proc = spawn(npx, ['--yes', 'http-server', ROOT, '-p', String(PORT), '-a', '127.0.0.1', '-c-1', '-s'], { stdio: 'ignore', detached: process.platform !== 'win32' });
-  proc.stop = () => {
+  const groups = process.platform !== 'win32';
+  const proc = spawn(npx, ['--yes', 'http-server', ROOT, '-p', String(PORT), '-a', '127.0.0.1', '-c-1', '-s'], { stdio: 'ignore', detached: groups });
+  let stopped = false;
+  proc.stop = (signal = 'SIGTERM') => {
+    if (stopped) return;
+    stopped = true;
     try {
-      if (process.platform !== 'win32') process.kill(-proc.pid, 'SIGTERM');
-      else proc.kill();
+      if (groups) process.kill(-proc.pid, signal);
+      else proc.kill(signal);
     } catch {
-      proc.kill();
+      try {
+        proc.kill(signal);
+      } catch {
+        /* already gone */
+      }
     }
   };
+  process.on('exit', () => proc.stop('SIGKILL'));
+  for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+    process.once(sig, () => {
+      proc.stop('SIGKILL');
+      process.exit(130);
+    });
+  }
+  process.once('uncaughtException', (err) => {
+    console.error(err);
+    proc.stop('SIGKILL');
+    process.exit(1);
+  });
   for (let i = 0; i < 100; i++) {
     try {
       const r = await fetch(`${BASE}/package.json`);
@@ -156,7 +179,13 @@ const readerExists = existsSync(path.join(ROOT, 'js/reader/reader.js'));
 
 // ---- tests -------------------------------------------------------------------------------
 const server = await startServer();
-const browser = await chromium.launch({ args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required'] });
+let browser;
+try {
+  browser = await chromium.launch({ args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required'] });
+} catch (err) {
+  server.stop();
+  throw err;
+}
 console.log(`app e2e on ${BASE}${SHOTS ? ` (screenshots in ${SHOTS})` : ''}`);
 
 try {
@@ -191,12 +220,13 @@ try {
     eq(await hashOf(page), `#/b/${BOOK}`, 'still on the landing page');
   });
 
-  await step('a long name gets the "name you use at home" hint', async () => {
+  await step('a long name is offered a nickname ("What do you call them at home?")', async () => {
     await page.getByTestId('name-input').fill('Maximiliana-Rose');
-    await page.getByTestId('name-hint').waitFor();
-    assert(/shorter name you use at home/.test(await page.getByTestId('name-hint').innerText()), 'hint text');
+    await page.getByTestId('nickname-offer').waitFor();
+    assert(/keep “Maximiliana-Rose” as their full name/.test(await page.getByTestId('name-hint').innerText()), 'hint text');
+    eq(await page.getByTestId('nickname-suggestion').innerText(), 'Maximiliana', 'first part offered');
     await page.getByTestId('name-input').fill('Maximilian');
-    await page.getByTestId('name-hint').waitFor({ state: 'hidden' });
+    await page.getByTestId('nickname-offer').waitFor({ state: 'hidden' });
   });
 
   await step('typing "siobhan" writes "Siobhan" onto the live cover', async () => {
@@ -583,6 +613,9 @@ try {
       await check(`#/b/${BOOK}/say`, '[data-testid=candidate]');
       await check('#/', '[data-testid=shelf-book]');
       await check(`#/qr/${BOOK}`, '[data-testid=qr-url]');
+      await check(`#/b/${BOOK}/record`, '[data-testid=reader-name]');
+      await check(`#/b/${BOOK}/gift`, '[data-testid=gift-child]');
+      await check('#/open', '[data-testid=pack-pick]');
       await check('#/settings', '[data-testid=gate-screen]');
       await holdGate(p, 400);
       await p.getByTestId('settings-child').first().waitFor();

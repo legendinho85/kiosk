@@ -2,12 +2,17 @@
 // Turning pages updates the address without re-mounting the reader
 // (history.replaceState doesn't fire hashchange), so a reload or the back
 // button lands on the right page.
+//
+// Family features (docs/architecture.md §11): siblings reading together are
+// one "person" ("Amara and Zak"; "Amara & Zak" in the pictures), a grown-up's
+// recorded reading plays instead of the computer voice, and bedtime mode
+// comes from settings.
 
 import { h, clearToasts } from '../ui.js';
 import { openParentGate, gatePassed } from '../parent-gate.js';
 import { messageScreen } from '../chrome.js';
-import { activeProfile } from '../../core/storage.js';
-import { profilePerson } from './ready.js';
+import { activeProfile, activeReadingFor } from '../../core/storage.js';
+import { readingPerson, readingAdapter } from '../../family/family.js';
 
 /** Clamp a page parameter to the book. */
 export function pageParam(value, pageCount) {
@@ -56,8 +61,10 @@ export function render(root, ctx) {
       book,
       bookId,
       baseUrl: ctx.baseUrl,
-      person: profilePerson(profile),
+      person: readingPerson(ctx.state),
       pronunciation: profile.pronunciation,
+      reading: readingAdapter(activeReadingFor(ctx.state, bookId), ctx.blobs),
+      bedtime: Boolean(ctx.state.settings?.bedtime),
       settings: ctx.state.settings,
       narrator: ctx.narrator,
       sfx: ctx.sfx,
