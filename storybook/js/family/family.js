@@ -6,7 +6,18 @@
 
 import { fillTemplate, togetherPerson, person as makePerson, nameKey } from '../core/personalise.js';
 import { readingChildren, readingLabel, readingsFor, activeProfile } from '../core/storage.js';
-import { asciiSlug } from './pack.js';
+
+/** An ASCII slug for filenames: "Grandma Rosé" -> "Grandma-Rose". */
+export function asciiSlug(text, fallback = 'family') {
+  const s = String(text ?? '')
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^A-Za-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40)
+    .replace(/-+$/g, '');
+  return s || fallback;
+}
 
 /** Up to this many children can share a story. */
 export const MAX_TOGETHER = 3;

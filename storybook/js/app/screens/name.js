@@ -306,9 +306,11 @@ export function renderNameForm(root, ctx, { mode = 'first', profile = null } = {
       return;
     }
     continueBtn.disabled = true;
-    // Wait a moment for the names dictionary; without it the guess is provisional (see defaultPronunciation).
-    const lexicon = ctx.lexicon ?? (await Promise.resolve(ctx.getLexicon?.(2500)).catch(() => null)) ?? null;
-    if (ctx.signal?.aborted) return;
+    // No waiting here for the names dictionary: without it the guess is
+    // provisional (see defaultPronunciation) and is replaced by the
+    // dictionary's best match as soon as it arrives (js/main.js); the
+    // pronunciation screen, next, waits a moment for it and adds it live.
+    const lexicon = ctx.lexicon ?? null;
     const keepSound = editing && profile.key === r.key && profile.pronunciation?.say;
     const names = { display: r.display, key: r.key };
     let next = editing

@@ -446,9 +446,11 @@ const sleep = (ms, signal) =>
 /**
  * Siblings: draw each `[data-siblings="copies"]` group once per child, fanned
  * out round where the artist drew it (`data-sibling-step`: the gap between
- * copies in the group's own units, default 150; `data-sibling-turn`: degrees
+ * copies in the parent's units, default 150; `data-sibling-turn`: degrees
  * between them, default 7; `data-sibling-scale`: default 0.9 for two, 0.8 for
- * three). Each copy's name slots get `data-sibling="i"` (that child's name).
+ * three; `data-sibling-shift`: moves the whole fan sideways; each may be two
+ * values, for two and for three children, e.g. `data-sibling-scale="0.75 0.62"`).
+ * Each copy's name slots get `data-sibling="i"` (that child's name).
  * Copies' ids get a "-s2"/"-s3" suffix. Re-running with one child removes them.
  * @param {SVGSVGElement} svgRoot
  * @param {string[]|null} names
@@ -466,9 +468,15 @@ export function expandSiblingCopies(svgRoot, names) {
     for (const t of el.querySelectorAll('text.sb-name')) delete t.dataset.sibling;
     const n = names?.length ?? 0;
     if (n < 2) continue;
-    const step = Number(el.dataset.siblingStep) || 150;
-    const turn = Number(el.dataset.siblingTurn ?? 7);
-    const scale = Number(el.dataset.siblingScale) || (n === 2 ? 0.9 : 0.8);
+    // Each setting may give one value, or two: for two children, then for three.
+    const opt = (v, dflt) => {
+      const list = String(v ?? '').trim().split(/[\s,]+/).map(Number).filter(Number.isFinite);
+      return list.length ? list[Math.min(n - 2, list.length - 1)] : dflt;
+    };
+    const step = opt(el.dataset.siblingStep, 150);
+    const turn = opt(el.dataset.siblingTurn, 7);
+    const scale = opt(el.dataset.siblingScale, n === 2 ? 0.9 : 0.8);
+    const shift = opt(el.dataset.siblingShift, 0); // move the whole fan sideways
     // The copies pivot on the group's own origin, where the artist placed it.
     let ox = 0;
     let oy = 0;
@@ -490,7 +498,7 @@ export function expandSiblingCopies(svgRoot, names) {
       const k = i - (n - 1) / 2;
       const g = document.createElementNS(SVG_NS, 'g');
       g.setAttribute('data-sibling-fan', String(i));
-      g.setAttribute('transform', `translate(${round(ox + k * step)} ${round(oy)}) rotate(${round(k * turn)}) scale(${round(scale)}) translate(${round(-ox)} ${round(-oy)})`);
+      g.setAttribute('transform', `translate(${round(ox + shift + k * step)} ${round(oy)}) rotate(${round(k * turn)}) scale(${round(scale)}) translate(${round(-ox)} ${round(-oy)})`);
       g.appendChild(copy);
       parent.insertBefore(g, next);
     }

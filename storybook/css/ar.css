@@ -858,3 +858,54 @@ html.mw-open, html.mw-open body { overflow: hidden; }
   .tp-sheet:last-child { break-after: auto; page-break-after: auto; }
   .tp-art[data-state="loading"]::after { display: none; }
 }
+
+/* ==== Easier reading (settings.highContrast / settings.easyRead) =========================================
+   js/main.js puts data-contrast="high" / data-easy-read="true" on <html>; the settings promise them
+   "on every screen", so the magic window and the printable test pages follow them too. */
+
+/* Higher contrast: near-black words on plain white, solid edges, no see-through panels. */
+html[data-contrast="high"] .mw {
+  --mw-ink: #000000;
+  --mw-ink-2: #141414;
+  --mw-muted: #2E2E2E;
+  --mw-paper: #FFFFFF;
+  --mw-line: #1A1A1A;
+  --mw-sun-deep: #000000;
+  --mw-accent: #B3261E;       /* 6.4:1 with white */
+  --mw-accent-deep: #7A1812;
+  --mw-name: #9E0B30;
+  --mw-focus: #0B3FB8;
+  --mw-glass: #FFFFFF;
+  --mw-dark: rgba(0, 0, 0, .9);
+}
+html[data-contrast="high"] .mw :is(.mw-card, .mw-hint, .mw-caption, .mw-panel) { background: #FFFFFF; border: 3px solid #000; }
+html[data-contrast="high"] .mw .mw-hint::after { border: 3px solid #000; border-top: 0; border-left: 0; }
+html[data-contrast="high"] .mw :is(.mw-pill, .mw-round, .mw-mini) { box-shadow: 0 0 0 3px #000, 0 4px 16px rgba(0, 0, 0, .35); }
+html[data-contrast="high"] .mw :is(.mw-steps, .mw-tool) { border: 2px solid #000; }
+html[data-contrast="high"] .mw .mw-btn-primary, html[data-contrast="high"] .mw .mw-done { box-shadow: 0 4px 0 #000; }
+html[data-contrast="high"] .mw .mw-btn-quiet { text-decoration: underline; text-underline-offset: 4px; }
+html[data-contrast="high"] .mw :is(.mw-chip, .mw-toast, .mw-track) { background: rgba(0, 0, 0, .9); color: #FFFFFF; border: 2px solid #FFFFFF; }
+html[data-contrast="high"] .mw .mw-chip-title { opacity: 1; }
+html[data-contrast="high"] .mw .mw-word.is-current { outline: 3px solid #000; outline-offset: 2px; }
+html[data-contrast="high"] .mw .mw-layer-note { background: #000; color: #FFF; }
+html[data-contrast="high"] .tp { --tp-ink: #000000; --tp-ink-2: #141414; --tp-muted: #2E2E2E; --tp-accent: #B3261E; }
+html[data-contrast="high"] .tp-intro { border: 2px solid #000; box-shadow: none; }
+
+/* Easy read: a size up, extra letter, word and line spacing, left aligned, no capitals for emphasis. */
+html[data-easy-read="true"] .mw :is(.mw-card-lead, .mw-card-body, .mw-steps, .mw-hint, .mw-toast, .mw-panel-hint, .mw-card-note, .mw-chip) {
+  letter-spacing: .05em;
+  word-spacing: .16em;
+  line-height: 1.6;
+  hyphens: none;
+}
+html[data-easy-read="true"] .mw .mw-card-lead { font-size: 20px; }
+html[data-easy-read="true"] .mw :is(.mw-card-body, .mw-steps, .mw-hint, .mw-toast) { font-size: 18px; }
+html[data-easy-read="true"] .mw :is(.mw-card-note, .mw-panel-hint, .mw-chip) { font-size: 17px; }
+html[data-easy-read="true"] .mw .mw-card-title { letter-spacing: .02em; word-spacing: .1em; line-height: 1.3; }
+html[data-easy-read="true"] .mw .mw-eyebrow { font-size: 16px; text-transform: none; letter-spacing: .04em; }
+html[data-easy-read="true"] .mw .mw-caption { letter-spacing: .04em; word-spacing: .14em; line-height: 1.5; }
+html[data-easy-read="true"] .mw .mw-track em { text-transform: none; letter-spacing: .03em; font-size: 13px; }
+html[data-easy-read="true"] .mw .mw-tool { font-size: 15px !important; letter-spacing: .03em; }
+html[data-easy-read="true"] .tp-intro p { font-size: 18px; line-height: 1.65; letter-spacing: .05em; word-spacing: .16em; }
+html[data-easy-read="true"] .tp-intro .tp-intro-hint { font-size: 17px; }
+html[data-easy-read="true"] .tp-intro h2 { letter-spacing: .02em; word-spacing: .1em; line-height: 1.3; }

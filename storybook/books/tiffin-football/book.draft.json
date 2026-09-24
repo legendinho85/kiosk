@@ -36,6 +36,7 @@
       ],
       "prompt": "",
       "after": [],
+      "alt": "Tiffin the otter, in a red number 7 football kit, waves on a sunny football pitch next to a goal. A big yellow banner says “Goal, {name}”.",
       "sfx": {
         "open": "whistle"
       },
@@ -54,9 +55,11 @@
       ],
       "prompt": "Lift the flap on the kit bag!",
       "after": [
-        "Here it is!",
+        "Here {it is|they are}!",
         "Tip-tap, tip-tap, on we go!"
       ],
+      "alt": "Tiffin, in her red kit, hugs a football and waves a boot. A red kit bag with a flap sits on a bench.",
+      "altAfter": "Tiffin hugs a football and waves a boot. Out of the red kit bag {pops a red number 1 shirt|pop red number 1 shirts} with {name} on the back.",
       "sfx": {
         "open": "pop"
       },
@@ -79,6 +82,8 @@
         "Boing, boing, boing!",
         "Tip-tap, tip-tap, on we go!"
       ],
+      "alt": "Tiffin warms up inside a big golden wheel on the pitch. The bunting above spells {name}.",
+      "altAfter": "Tiffin jumps for joy inside the big golden wheel. The bunting above spells {name}.",
       "sfx": {
         "open": "boing"
       },
@@ -100,6 +105,7 @@
         "{name} to Tiffin... thud!",
         "Tip-tap, tip-tap, on we go!"
       ],
+      "alt": "Kick-off! Tiffin kicks the ball along a path across the pitch. In the stand, the crowd holds up a banner that says “Go! {name}”.",
       "sfx": {
         "open": "whistle"
       },
@@ -120,6 +126,8 @@
         "Boing! Big save, Tiffin!",
         "Tip-tap, tip-tap, on we go!"
       ],
+      "alt": "Goose, in a blue number 9 kit, shoots at the goal and Tiffin dives to save it. The scoreboard says {name} 0, Blues 0.",
+      "altAfter": "Boing! Tiffin catches the ball in her big yellow gloves. The scoreboard says {name} 0, Blues 0.",
       "sfx": {
         "open": "kick"
       },
@@ -140,6 +148,8 @@
         "Goal!",
         "Goal, {name}! Goal, goal, goal!"
       ],
+      "alt": "Frog, in goal, dives the wrong way while Tiffin waits with her arms up. The ball is ready to go into the net. The scoreboard says {name} 0, Blues 0.",
+      "altAfter": "Goal! The ball is in the net, and Tiffin cheers. The scoreboard says {name} 1, Blues 0.",
       "sfx": {
         "open": "kick"
       },
@@ -157,9 +167,11 @@
       ],
       "prompt": "Lift the flap to find the prize!",
       "after": [
-        "A big gold cup for Tiffin and {name}!",
+        "A big gold cup! Well done, Tiffin! Well done, {name}!",
         "Tip-tap, tip-tap, hooray!"
       ],
+      "alt": "Full time! Tiffin jumps for joy with Goose and Frog. A red cloth covers something on a white podium, and the crowd holds up a banner that says “Go! {name}”.",
+      "altAfter": "A shiny gold cup stands on the podium, with {name} on its plaque. Confetti falls and everyone cheers.",
       "sfx": {
         "open": "whistle"
       },
@@ -179,6 +191,7 @@
       ],
       "prompt": "",
       "after": [],
+      "alt": "Night time. Tiffin sleeps in her basket under a starry blanket. {name's} red number 1 shirt, with {name} on the back, hangs on a chair by the lamp, and the gold cup sits on the windowsill.",
       "sfx": {
         "open": "ding"
       },

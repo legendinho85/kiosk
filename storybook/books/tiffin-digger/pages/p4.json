@@ -7,11 +7,11 @@
     "control": {
       "from": [
         250,
-        930
+        860
       ],
       "to": [
         60,
-        930
+        860
       ],
       "knob": "#dg-p4-tab",
       "springBack": true

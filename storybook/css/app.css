@@ -28,6 +28,7 @@
   --grass-deep: #2E7D32;     /* 5.1:1 with white */
   --grass-soft: #E6F5DE;
   --berry: #E8505B;
+  --berry-strong: #C43742; /* behind white text: 5.3:1 (--berry is 3.7:1, fine for icons only) */
   --danger: #B3261E;
   --link: #1B5FC4;
   --focus: #1D6FE0;
@@ -1229,9 +1230,15 @@ div.dialog {
   .how-step { flex-direction: column; }
 }
 
-/* The pronunciation screen needs height as well as width for two columns. */
-@media (min-width: 760px) and (min-height: 600px) {
-  .say-columns { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 28px; }
+/* The pronunciation screen needs height as well as width for two columns,
+   and the width must be the screen body's own: an iPad held upright caps the
+   body at 680px, where two columns squeezed each spelling into ~100px and
+   broke it mid-word. A container query asks the body itself. */
+.say-body { container-type: inline-size; container-name: say; }
+@media (min-height: 600px) {
+  @container say (min-width: 860px) {
+    .say-columns { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 28px; }
+  }
 }
 
 @media (min-width: 600px) and (orientation: portrait) {
@@ -1624,7 +1631,7 @@ div.dialog {
 .gift-grid { display: grid; gap: 18px; align-items: start; }
 .gift-col { display: grid; gap: 18px; align-content: start; }
 .gift-step-title { display: flex; align-items: center; gap: 10px; font-size: 21px; margin-bottom: 4px; }
-.gift-step-n { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--berry); color: #fff; font-size: 17px; }
+.gift-step-n { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--berry-strong); color: #fff; font-size: 17px; }
 .gift-name-input { font-size: 24px; min-height: 60px; }
 .gift-textarea { min-height: 112px; padding: 12px 16px; font-family: var(--font-body); font-size: 18px; font-weight: 400; line-height: 1.45; resize: vertical; }
 .gift-count { text-align: right; margin-top: 4px; font-size: 13.5px; }
@@ -1783,8 +1790,8 @@ div.dialog {
 .pack-actions .btn-primary { flex: 1 1 260px; }
 .gift-url { overflow-wrap: anywhere; }
 button.ready-pill { border: 0; cursor: pointer; min-height: 36px; }
-.ready-pill.is-gift { background: var(--berry); color: #fff; box-shadow: 0 3px 0 #B8323D; }
-.ready-pill.is-gift:hover { background: #D9434E; }
+.ready-pill.is-gift { background: var(--berry-strong); color: #fff; box-shadow: 0 3px 0 #972532; }
+.ready-pill.is-gift:hover { background: #B02E39; }
 .gift-message h2:focus { outline: none; }
 /* The page picture floats beside the words, so they start straight under the title. */
 .tp-head { display: block; }
@@ -1956,3 +1963,58 @@ html[data-contrast="high"] .brand .tiffin-mark { filter: none; }
 @media print {
   html[data-contrast="high"] .card { border-width: 1px; }
 }
+
+/* ---- Round 4 fixes ------------------------------------------------------------------ */
+
+/* Child screens are wrapped in <main id="main"> (skip link, landmarks); focus lands there quietly. */
+main[tabindex="-1"]:focus, .dict-note:focus, .rec-count:focus, .rec-stage:focus, .rec-processing:focus { outline: none; }
+.reader-main, .magic-main, .letters-main { display: block; }
+
+/* A pronunciation card's spelling breaks only where it must (between syllables), never mid-syllable in a roomy card. */
+.cand-sound .respell { overflow-wrap: normal; }
+@container say (max-width: 560px) {
+  .cand { grid-template-columns: auto minmax(0, 1fr); }
+  .cand-choose { grid-column: 1 / -1; width: 100%; }
+}
+
+/* "Looking Siobhán up in our names dictionary…" while it loads on a slow connection. */
+.dict-note { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--muted); font-size: 15px; }
+.dict-note .spinner { width: 18px; height: 18px; border-width: 2.5px; }
+
+/* Ready: "Carry on from page 5" above "Start again". */
+.ready-actions .carry-on + .start-button { margin-top: 2px; }
+
+/* Goodnight: the reader fades to "Night night, Ava." and this calm card stays (read it again, or grown-ups hold). */
+.goodnight-card {
+  min-height: 100vh; min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 22px;
+  padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  background: #121833;
+  color: #FFF4D6;
+  text-align: center;
+  animation: goodnight-in 1.2s ease-out both;
+}
+@keyframes goodnight-in { from { opacity: 0; } to { opacity: 1; } }
+.goodnight-moon { color: #FFE9A8; }
+.goodnight-moon svg { width: 96px; height: 96px; }
+.goodnight-text { margin: 0; font: 600 clamp(26px, 5vw, 44px)/1.2 var(--font-head); }
+.btn-night { background: #FFE9A8; color: #121833; box-shadow: 0 4px 0 #C9B57A; }
+.btn-night:hover { background: #FFF1C4; }
+.goodnight-grownups { display: grid; justify-items: center; gap: 6px; margin-top: 18px; opacity: .85; }
+.goodnight-grownups-title { margin: 0; font: 600 15px/1.3 var(--font-head); color: #D9D2BE; }
+.goodnight-grownups .gate-hint { color: #D9D2BE; }
+.goodnight-grownups .gate-button { background: #1E2750; color: #FFF4D6; }
+@media (prefers-reduced-motion: reduce) { .goodnight-card { animation: none; } }
+
+html[data-contrast="high"] { --berry-strong: #9E1F2B; }
+
+/* Tablets and computers: messages appear under the top bar, clear of the big buttons (Start, Magic window). */
+@media (min-width: 760px) {
+  .toasts { top: calc(var(--appbar-h, 64px) + 12px); bottom: auto; left: auto; right: 16px; transform: none; width: min(420px, calc(100vw - 32px)); }
+  .toast { animation-name: toast-in-top; }
+  .toast.is-leaving { transform: translateY(-8px); }
+}
+@keyframes toast-in-top { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }

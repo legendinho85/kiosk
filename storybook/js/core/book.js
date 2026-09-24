@@ -43,9 +43,11 @@ export function validateBook(book) {
   if (!book || typeof book !== 'object') return ['Book is not an object'];
   if (!book.id || !/^[a-z0-9-]+$/.test(book.id)) err('id must be kebab-case');
   if (!book.title) err('title is required');
+  // Magic-window image tracking: only a book that declares its targets file is tracked.
+  if (book.targets != null && typeof book.targets !== 'boolean' && !(typeof book.targets === 'string' && /\.mind$/.test(book.targets))) err('targets must be the path of a .mind file (or true for targets.mind)');
   if (!Array.isArray(book.pages) || book.pages.length === 0) return [...errors, 'pages must be a non-empty array'];
 
-  const texts = (p) => [...(p.text ?? []), p.prompt ?? '', ...(p.after ?? []), book.title ?? '', book.subtitle ?? ''];
+  const texts = (p) => [...(p.text ?? []), p.prompt ?? '', ...(p.after ?? []), p.alt ?? '', p.altAfter ?? '', book.title ?? '', book.subtitle ?? ''];
   book.pages.forEach((p, i) => {
     const at = `page ${p?.n ?? i + 1}`;
     if (!p || typeof p !== 'object') return err(`${at}: not an object`);
@@ -54,6 +56,8 @@ export function validateBook(book) {
     if (!p.scene || typeof p.scene !== 'string') err(`${at}: scene (path to an SVG) is required`);
     if (!Array.isArray(p.text)) err(`${at}: text must be an array of lines`);
     if (p.after != null && !Array.isArray(p.after)) err(`${at}: after must be an array of lines`);
+    // alt: what the picture shows, for screen readers (a template: {name} etc.); altAfter: once the mechanism is done.
+    for (const k of ['alt', 'altAfter']) if (p[k] != null && typeof p[k] !== 'string') err(`${at}: ${k} must be a line of text`);
     if (p.print != null) {
       const pr = p.print;
       if (!Array.isArray(pr.pages) || pr.pages.length !== 2) err(`${at}: print.pages must be [left, right] (null for an unprinted half)`);

@@ -79,7 +79,7 @@ const lexiconLoaded = loadLexicon()
     return null;
   });
 /** The dictionary if it arrives within `ms`, else null for now (it keeps loading). */
-const lexiconSoon = (ms = 2500) => Promise.race([lexiconLoaded, new Promise((r) => setTimeout(() => r(lexicon), ms))]);
+const lexiconSoon = (ms = 2000) => Promise.race([lexiconLoaded, new Promise((r) => setTimeout(() => r(lexicon), ms))]);
 lexiconLoaded.then((index) => {
   if (!index) return;
   const next = upgradePronunciations(state, index);

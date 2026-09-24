@@ -10,14 +10,20 @@
 //
 // #/b/:book/record?reading=<id>  carry on / redo parts of an existing reading
 // #/b/:book/record?for=gift      part of setting up a gift (js/app/screens/gift.js)
+//
+// A reading says one child's name, so it records who it was made for
+// ({childId, childKey, childName}): it plays for that child only.
+// In gift mode nothing is saved on the giver's phone: the takes and the
+// reading live in the gift draft (memory only) until the gift is wrapped.
 
 import { h, icon, button, linkButton, setBusy, clearToasts } from '../ui.js';
 import { screen, privacyLine } from '../chrome.js';
 import { normaliseName, nameKey, NAME_ERRORS, NAME_MAX_LENGTH, tokenizeLine, person as makePerson } from '../../core/personalise.js';
 import { activeProfile, newId, upsertProfile, upsertReading, readingLabel } from '../../core/storage.js';
-import { recordingSteps, readingCoverage, clock, formatDuration, storyTitle } from '../../family/family.js';
+import { recordingSteps, readingCoverage, clock, formatDuration, storyTitle, readingChildFields, chooseReading } from '../../family/family.js';
 import { partBlobId, PACK_LIMITS } from '../../family/pack.js';
-import { giftDraft } from '../../family/drafts.js';
+import { giftDraft, draftBlobs } from '../../family/drafts.js';
+import { grownUpCheck } from '../parent-gate.js';
 import { defaultPronunciation } from './name.js';
 import { sendReading, readingPack, landingUrl, displayUrl } from '../family-ui.js';
 
@@ -104,8 +110,13 @@ export function render(root, ctx) {
     return null;
   }
   const life = new AbortController();
-  const existing = ctx.query?.reading ? (ctx.state.readings ?? []).find((r) => r.id === ctx.query.reading && r.bookId === bookId) ?? null : null;
+  // Where the takes go: the device (a family reading), or the gift draft in memory (a gift).
+  const store = giftMode ? draftBlobs(draft) : ctx.blobs;
+  const existing = giftMode
+    ? draft.reading ?? null
+    : ctx.query?.reading ? (ctx.state.readings ?? []).find((r) => r.id === ctx.query.reading && r.bookId === bookId) ?? null : null;
   const profile = activeProfile(ctx.state);
+  let childFields = giftMode ? {} : readingChildFields(profile); // who the reading is for (set on "Let's start")
 
   /** @type {{id: string, bookId: string, readerName: string, language?: string, parts: object}} */
   let reading = existing ? JSON.parse(JSON.stringify(existing)) : null;
@@ -179,7 +190,7 @@ export function render(root, ctx) {
         howStep('mic', 'Tap record and read', 'Tap stop when you’ve finished the page. Listen back, or try again.'),
         howStep('heart', 'About three minutes', 'Stop whenever you like: the computer voice reads anything you skip.')),
     );
-    bodyHost.replaceChildren(h('div', { class: 'record-setup-grid' }, h('div', {}, intro, form), h('div', { class: 'record-side' }, how, privacyLine('Your recording stays on this phone unless you choose to send it.'))));
+    bodyHost.replaceChildren(h('div', { class: 'record-setup-grid' }, h('div', {}, intro, form), h('div', { class: 'record-side' }, how, privacyLine(giftMode ? 'Your reading stays in this gift only: nothing is saved on this phone, and it goes wherever you send the gift.' : 'Your recording stays on this phone unless you choose to send it.'))));
 
     recReady.then(() => {
       if (life.signal.aborted) return;
@@ -190,8 +201,11 @@ export function render(root, ctx) {
       }
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      // The microphone is a grown-up's tool: once a child has had the phone, ask for the hold.
+      if (!(await grownUpCheck({ title: 'Grown-ups: record the story?', lead: 'Press and hold for 3 seconds to record a reading in your voice.' }))) return;
+      if (life.signal.aborted) return;
       const who = readerInput.value.replace(/\s+/g, ' ').trim();
       if (!who) {
         error.textContent = 'Please type your name, like “Grandma Rose”.';
@@ -211,12 +225,16 @@ export function render(root, ctx) {
       if (!giftMode) {
         // So "Play it now" works on this phone: the child becomes the one we're reading for.
         const known = ctx.state.profiles.find((p) => p.key === n.key || (p.fullName && nameKey(p.fullName) === n.key));
+        const child = known ?? { id: newId('child'), display: n.display, key: n.key, pronunciation: defaultPronunciation(ctx.lexicon, n.display) };
         if (known) ctx.setState((s) => ({ ...s, activeProfileId: known.id }));
-        else ctx.setState((s) => upsertProfile(s, { id: newId('child'), display: n.display, key: n.key, pronunciation: defaultPronunciation(ctx.lexicon, n.display) }));
+        else ctx.setState((s) => upsertProfile(s, child));
+        // The reading says this child's name: it's theirs.
+        childFields = readingChildFields(child);
       } else {
         draft.from ||= who;
+        childFields = readingChildFields({ display: draft.childName });
       }
-      reading = { ...(reading ?? { id: newId('reading'), bookId, parts: {} }), readerName: who, language: langInput.value.replace(/\s+/g, ' ').trim() };
+      reading = { ...(reading ?? { id: newId('reading'), bookId, parts: {} }), ...childFields, readerName: who, language: langInput.value.replace(/\s+/g, ' ').trim() };
       if (existing) saveReading();
       const first = steps.findIndex((s) => !reading.parts?.[s.n]?.[s.part]);
       showSteps(existing && first >= 0 ? first : 0);
@@ -231,7 +249,17 @@ export function render(root, ctx) {
   function saveReading({ activate = false } = {}) {
     if (!reading) return;
     const snapshot = JSON.parse(JSON.stringify(reading));
-    ctx.setState((s) => upsertReading(s, snapshot, { activate }));
+    if (giftMode) {
+      // Memory only: it travels in the gift, not on this phone.
+      draft.reading = { createdAt: Date.now(), ...snapshot, updatedAt: Date.now() };
+      draft.readingId = snapshot.id;
+      return;
+    }
+    ctx.setState((s) => {
+      const next = upsertReading(s, snapshot, { activate });
+      // Chosen for the child it was recorded for (remembered per child).
+      return activate ? chooseReading(next, bookId, snapshot.childId ?? null, snapshot.id) : next;
+    });
   }
 
   // ---- 2. Page by page ------------------------------------------------------------------------
@@ -360,7 +388,7 @@ export function render(root, ctx) {
       const saved = reading.parts?.[step.n]?.[step.part];
       if (saved && !takes.has(key)) {
         // A part recorded earlier (carrying on): fetch it so it can be heard.
-        ctx.blobs.get(saved).then((blob) => {
+        store.get(saved).then((blob) => {
           if (blob && !life.signal.aborted) {
             takes.set(key, { blob, durationMs: 0 });
             if (steps[index] === step && mode === 'idle') setMode('done');
@@ -409,6 +437,13 @@ export function render(root, ctx) {
       recCtl = new AbortController();
       const my = recCtl;
       setMode('countdown');
+      // Focus would otherwise fall out of the page as the record button goes.
+      if (!count.hasAttribute('tabindex')) count.setAttribute('tabindex', '-1');
+      try {
+        count.focus({ preventScroll: true });
+      } catch {
+        /* ignore */
+      }
       for (const n of [3, 2, 1]) {
         count.textContent = String(n);
         count.classList.remove('is-tick');
@@ -419,6 +454,7 @@ export function render(root, ctx) {
         if (life.signal.aborted) return;
       }
       setMode('recording');
+      stopBtn.focus({ preventScroll: true });
       status.textContent = 'Recording… read the words, then tap stop.';
       const t0 = Date.now();
       tick = setInterval(() => {
@@ -437,7 +473,7 @@ export function render(root, ctx) {
         setMode('processing');
         const blob = await compact(result.blob);
         const id = partBlobId(reading.id, step.n, step.part);
-        await ctx.blobs.put(id, blob);
+        await store.put(id, blob);
         if (life.signal.aborted) return;
         takes.set(key, { blob, durationMs: result.durationMs });
         reading.parts = { ...(reading.parts ?? {}) };
@@ -527,7 +563,7 @@ export function render(root, ctx) {
       size: 'lg',
       testid: 'rec-play-now',
       onClick: () => {
-        ctx.setState((s) => ({ ...s, activeReading: { ...(s.activeReading ?? {}), [bookId]: reading.id } }));
+        ctx.setState((s) => chooseReading(s, bookId, reading.childId ?? s.activeProfileId ?? null, reading.id));
         ctx.navigate(`#/b/${bookId}/read/1`);
       },
     });

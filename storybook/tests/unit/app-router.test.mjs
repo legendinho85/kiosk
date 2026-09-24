@@ -63,7 +63,7 @@ test('main.js registers every route (contract §8, §11, §12)', async () => {
   const { readFileSync } = await import('node:fs');
   const src = readFileSync(new URL('../../js/main.js', import.meta.url), 'utf8');
   for (const path of ['/', '/b/:book', '/b/:book/name', '/b/:book/say', '/b/:book/read/:page', '/b/:book/magic/:page', '/settings', '/qr/:book', '/print/:book', '/b/:book/record', '/b/:book/gift', '/open', '/stickers/:book', '/b/:book/letters']) {
-    assert.ok(src.includes(`path: '${path}'`), `route ${path}`);
+    assert.ok(src.includes(`route('${path}',`), `route ${path}`);
   }
 });
 

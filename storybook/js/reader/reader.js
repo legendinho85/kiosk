@@ -826,11 +826,35 @@ export async function mountReader(root, opts) {
     }
     const pageEl = h('div', { class: 'sb-r-page is-current', 'data-testid': 'scene' });
     pageEl.classList.add(reduced() || !dir ? 'is-entering-fade' : dir > 0 ? 'is-entering-right' : 'is-entering-left');
-    svg.setAttribute('role', 'group');
-    svg.setAttribute('aria-label', 'Picture');
+    describeScene(svg, cur?.page);
     pageEl.append(svg);
     bookEl.append(pageEl);
     return pageEl;
+  }
+
+  /**
+   * What the picture shows, for screen readers: the page's `alt` (or, once
+   * the moving part is done, `altAfter`) with the name filled in, else the
+   * scene's own title. The words drawn in the art (the name, "GOAL!", their
+   * outline copies) are hidden from screen readers, since the description
+   * says them once; the moving part (a slider or button inside the picture)
+   * stays reachable.
+   */
+  function describeScene(svg, page, { done = false } = {}) {
+    if (!svg) return;
+    let text = '';
+    try {
+      const tpl = (done && page?.altAfter) || page?.alt;
+      text = typeof tpl === 'string' && tpl.trim() ? fillTemplate(tpl, person).trim() : '';
+    } catch {
+      /* a broken template: fall back below */
+    }
+    if (svg.classList.contains('sb-scene-missing')) text = 'This picture is still being painted.';
+    text ||= svg.dataset.title || 'The picture for this page';
+    svg.setAttribute('role', 'group');
+    svg.setAttribute('aria-roledescription', 'picture');
+    svg.setAttribute('aria-label', text);
+    for (const t of svg.querySelectorAll('text, image')) if (!t.closest('[data-testid="control"]')) t.setAttribute('aria-hidden', 'true');
   }
 
   function hideEl(node) {
@@ -942,6 +966,7 @@ export async function mountReader(root, opts) {
           state.cutClip?.(); // a recorded prompt stops once the child has done it
           state.control?.hint(false);
           state.celebration = runEffects(m.complete, svg, signal, { drivenTargets, reveal: true });
+          if (page.altAfter) describeScene(svg, page, { done: true });
           state.resolveCompletion?.();
         },
       });

@@ -128,7 +128,7 @@ const HARNESS_HTML = `<!doctype html>
 </head><body><div id="app"></div>
 <script type="module">
   import { loadBook, bookUrl } from '/js/core/book.js';
-  import { person } from '/js/core/personalise.js';
+  import { person, togetherPerson } from '/js/core/personalise.js';
   import * as mw from '/js/ar/magic-window.js';
   globalThis.SB_TEST = { forceSilent: true, timeScale: 0.05, ...(globalThis.SB_TEST ?? {}) };
   const q = new URLSearchParams(location.search);
@@ -139,7 +139,7 @@ const HARNESS_HTML = `<!doctype html>
   h.mount = async (opts = {}) => {
     h.handle = await mw.mountMagicWindow(document.getElementById('app'), {
       book, bookId: book.id, baseUrl: bookUrl(book.id), page: Number(q.get('page') ?? 4),
-      person: person(q.get('name') ?? 'Siobhan', 'Shiv-awn'), narrator,
+      person: q.get('sibs') ? togetherPerson(q.get('sibs').split(',').map((d) => ({ display: d }))) : person(q.get('name') ?? 'Siobhan', 'Shiv-awn'), narrator,
       sfx: { play: (n) => h.sfx.push(n), unlock() {} },
       onExit: () => { h.exits++; h.handle?.destroy(); },
       onPage: (n) => h.pages.push(n),
@@ -159,10 +159,11 @@ async function newPage(browser, { viewport = { width: 390, height: 844 }, init =
   page.on('console', (m) => {
     if (m.type() !== 'error') return;
     const url = m.location()?.url ?? '';
-    // A book without tracking targets is the normal case: the magic window asks once.
-    if (/Failed to load resource/.test(m.text()) && /targets\.mind$/.test(url)) return;
     errors.push(`${m.text()} ${url ? `(${url})` : ''}`);
   });
+  // Every request, to check that nothing goes looking for tracking files or third parties.
+  page.__requests = [];
+  page.on('request', (r) => page.__requests.push(r.url()));
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
   await page.route(`${HARNESS}*`, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: HARNESS_HTML }));
   if (routes) await routes(page);
@@ -494,8 +495,87 @@ try {
     assert(layer.artCount > 50 && layer.artVisible === 0, `the page's own art is hidden (${layer.artVisible} of ${layer.artCount} showing)`);
     assert((await page.evaluate(() => window.__h.sfx)).includes('ding'), 'a soft ding as the name writes itself in');
     await shot(page, 'mw-lineup-fakecam');
+    // A book without tracking targets asks for nothing more: no probe for a targets
+    // file, and no tracking library from a third party.
+    const extra = page.__requests.filter((u) => /targets\.mind|cdn\.jsdelivr\.net|mind-ar/.test(u) || !u.startsWith(BASE));
+    eq(extra, [], 'no tracking requests for a book without targets');
     noErrors(errors, 'magic window live');
     await context.close();
+  });
+
+  await step('magic window: siblings get "names"; higher contrast and easy read reach the cards and the hint', async () => {
+    const sibs = await newPage(browser);
+    await sibs.page.goto(`${HARNESS}?page=2&explain=always&sibs=Amara,Zak`);
+    await sibs.page.waitForFunction(() => window.__ready === true);
+    await waitState(sibs.page, 'explain');
+    const title = await sibs.page.locator('.mw-card-title').innerText();
+    eq(title, 'See Amara and Zak’s names on the real page', 'siblings title');
+    assert(/draw Amara and Zak’s names onto your book/.test(await sibs.page.getByTestId('mw-card-lead').innerText()), 'siblings lead');
+    noErrors(sibs.errors, 'siblings explainer');
+    await sibs.context.close();
+
+    const plain = await newPage(browser);
+    await plain.page.goto(`${HARNESS}?page=2&explain=always`);
+    await plain.page.waitForFunction(() => window.__ready === true);
+    await waitState(plain.page, 'explain');
+    const styles = (p) =>
+      p.evaluate(() => {
+        const cs = (sel) => getComputedStyle(document.querySelector(sel));
+        return {
+          note: cs('.mw-card-note').color,
+          noteSize: parseFloat(cs('.mw-card-note').fontSize),
+          steps: cs('.mw-steps').color,
+          stepsSize: parseFloat(cs('.mw-steps').fontSize),
+          stepsSpacing: parseFloat(cs('.mw-steps').letterSpacing) || 0,
+          card: cs('.mw-card').backgroundColor,
+          cardBorder: parseFloat(cs('.mw-card').borderTopWidth),
+          scrollW: document.scrollingElement.scrollWidth,
+          w: innerWidth,
+        };
+      });
+    const before = await styles(plain.page);
+    await plain.context.close();
+    const hc = await newPage(browser, { init: `document.documentElement.dataset.contrast = 'high'; document.documentElement.dataset.easyRead = 'true';` });
+    await hc.page.goto(`${HARNESS}?page=2&explain=always`);
+    await hc.page.waitForFunction(() => window.__ready === true);
+    await waitState(hc.page, 'explain');
+    const after = await styles(hc.page);
+    eq([after.note, after.steps, after.card], ['rgb(46, 46, 46)', 'rgb(20, 20, 20)', 'rgb(255, 255, 255)'], 'darker words on a plain white card');
+    assert(after.cardBorder >= 3, `a solid edge round the card (${after.cardBorder})`);
+    assert(after.noteSize > before.noteSize && after.stepsSize > before.stepsSize && after.stepsSpacing > 0, `easy read: bigger, spaced-out words (${JSON.stringify({ before, after })})`);
+    assert(after.scrollW <= after.w, 'no sideways scroll');
+    await shot(hc.page, 'mw-explainer-contrast-easyread');
+    noErrors(hc.errors, 'contrast explainer');
+    await hc.context.close();
+  });
+
+  await step('tracking library: loaded only with every file checked against its hash (a changed file is refused)', async () => {
+    const mindar = path.join(npmPackage('mind-ar', '1.2.5'), 'dist');
+    const serve = (tamper) => (p) =>
+      p.route(/cdn\.jsdelivr\.net\/npm\/mind-ar@1\.2\.5\/dist\/([\w.-]+)$/, (r) => {
+        const name = path.basename(new URL(r.request().url()).pathname);
+        const f = path.join(mindar, name);
+        if (!existsSync(f)) return r.fulfill({ status: 404, body: '' });
+        let body = readFileSync(f);
+        if (tamper && name.startsWith('controller-')) body = Buffer.concat([body, Buffer.from('\n;globalThis.__tampered = true;\n')]);
+        return r.fulfill({ status: 200, contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body });
+      });
+    for (const tamper of [false, true]) {
+      const { page, context } = await newPage(browser, { routes: serve(tamper) });
+      await page.goto(`${BASE}/package.json`);
+      const got = await page.evaluate(async () => {
+        const mw = await import('/js/ar/magic-window.js');
+        try {
+          const mod = await mw.loadMindAr();
+          return { ok: true, controller: typeof mod.Controller, tampered: globalThis.__tampered ?? false };
+        } catch (err) {
+          return { ok: false, error: String(err?.message ?? err), tampered: globalThis.__tampered ?? false };
+        }
+      });
+      if (tamper) assert(!got.ok && !got.tampered, `a changed file is refused before it runs: ${JSON.stringify(got)}`);
+      else eq(got, { ok: true, controller: 'function', tampered: false }, 'the pinned files load');
+      await context.close();
+    }
   });
 
   await step('magic window: drag, slider, rotate, ghost, reset; the fit is remembered; page arrows; Magic!; destroy stops the camera', async () => {
@@ -853,7 +933,7 @@ try {
       const routeMindar = (p) =>
         p.route(/cdn\.jsdelivr\.net\/npm\/mind-ar@1\.2\.5\/dist\/([\w.-]+)$/, (r) => {
           const f = path.join(mindar, path.basename(new URL(r.request().url()).pathname));
-          return existsSync(f) ? r.fulfill({ status: 200, contentType: 'text/javascript', body: readFileSync(f) }) : r.fulfill({ status: 404, body: '' });
+          return existsSync(f) ? r.fulfill({ status: 200, contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(f) }) : r.fulfill({ status: 404, body: '' });
         });
       // Targets for pages 1-4 (index i = page i + 1), compiled from the printed art. Cached by content.
       const arts = [];
@@ -897,6 +977,12 @@ try {
           routes: async (p) => {
             await routeMindar(p);
             await p.route(/\/books\/tiffin-football\/targets\.mind$/, (r) => r.fulfill({ status: 200, contentType: 'application/octet-stream', body: readFileSync(targetFile) }));
+            // Only a book that declares its targets is tracked.
+            await p.route(/\/books\/tiffin-football\/book\.json$/, async (r) => {
+              const res = await r.fetch();
+              const json = await res.json();
+              await r.fulfill({ response: res, contentType: 'application/json', body: JSON.stringify({ ...json, targets: 'targets.mind' }) });
+            });
           },
         });
         await page.goto(`${BASE}/?test=1#/b/${BOOK}/magic/1`);

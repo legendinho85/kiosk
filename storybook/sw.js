@@ -10,7 +10,7 @@
 // Extended) so an offline visit looks right for names like Łucja or Siobhán.
 // Bump VERSION whenever a release changes files, to drop old caches.
 
-const VERSION = 'v0.3.0-1';
+const VERSION = 'v0.3.0-2';
 const CACHE = `tiffin-${VERSION}`;
 const NAV_TIMEOUT_MS = 4000;
 
@@ -43,8 +43,10 @@ const PRECACHE = [
   'js/app/cover.js',
   'js/app/family-ui.js',
   'js/app/parent-gate.js',
+  'js/app/place.js',
   'js/app/pron-picker.js',
   'js/app/router.js',
+  'js/app/scratch.js',
   'js/app/services.js',
   'js/app/ui.js',
   'js/app/screens/gift.js',

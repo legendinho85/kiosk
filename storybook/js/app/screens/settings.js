@@ -5,10 +5,12 @@
 
 import { h, icon, button, linkButton, confirmDialog, toast, respellNode, setBusy } from '../ui.js';
 import { screen } from '../chrome.js';
-import { holdButton, gatePassed, markGatePassed } from '../parent-gate.js';
+import { holdButton, gatePassed, markGatePassed, renewGatePass, clearGatePass } from '../parent-gate.js';
 import { removeProfile, removeReading, forgetEverything, loadState, readingLabel, activeProfile, DEFAULT_SETTINGS } from '../../core/storage.js';
 import { fillTemplate, person as makePerson } from '../../core/personalise.js';
-import { readingCoverage, recordingSteps, selectChild } from '../../family/family.js';
+import { readingCoverage, recordingSteps, readingsOnlyFor, readingBlobIds, dropReadingChoices, childReading, chooseReading, readingIsFor } from '../../family/family.js';
+import { clearGiftDraft } from '../../family/drafts.js';
+import { scratch } from '../scratch.js';
 import { pronunciationSummary } from './ready.js';
 import { sendReading, playReading } from '../family-ui.js';
 
@@ -34,7 +36,8 @@ export const TOGGLES = Object.freeze([
 
 /** Reading comfort: applied to every screen as data-easy-read / data-contrast on <html> (docs §12). */
 export const ACCESS_TOGGLES = Object.freeze([
-  { key: 'easyRead', title: 'Easy-read text', text: 'Bigger letters and more space between them — can help some children and grown-ups with dyslexia.' },
+  // Not "Easy Read": in the UK that's a particular format (plain words with pictures) for people with learning disabilities.
+  { key: 'easyRead', title: 'Dyslexia-friendly text', text: 'Bigger letters and more space between them — can help some children and grown-ups with dyslexia.' },
   { key: 'highContrast', title: 'Higher contrast', text: 'Darker words, plain backgrounds and stronger outlines, on every screen and in the story.' },
 ]);
 
@@ -54,10 +57,28 @@ export function voiceLabel(v) {
   return `${name} (${v.lang || 'unknown'})${v.local === false ? ' · online' : ''}`;
 }
 
+/**
+ * Everything "Forget everything" wipes that lives outside the device's
+ * storage: the gift being set up (name, message, voice message, reading),
+ * takes of a name not kept yet, and the grown-ups' pass.
+ */
+export function forgetInMemory() {
+  clearGiftDraft();
+  scratch.clear();
+  clearGatePass();
+}
+
+/** The words for "Remove Ava?": everything that goes with the child, readings made for them included. */
+export function deleteChildMessage(child, readingCount = 0) {
+  const readings = readingCount ? `, ${readingCount === 1 ? 'the reading' : `the ${readingCount} readings`} recorded for ${child.display}` : '';
+  return `This removes ${child.display}’s name, pronunciation, any recording of the name${readings} and any gift message from this phone.`;
+}
+
 export function render(root, ctx) {
   const life = new AbortController();
   const bookId = ctx.state.lastBook || 'tiffin-football';
-  const back = { href: `#/b/${bookId}`, label: 'Back to the story', text: 'Done' };
+  // The link says "Done"; its accessible name starts with that too (voice control).
+  const back = { href: `#/b/${bookId}`, label: 'Done, back to the story', text: 'Done' };
 
   if (!gatePassed()) {
     // Opened directly (or reloaded): ask for the grown-up hold first.
@@ -77,6 +98,8 @@ export function render(root, ctx) {
     root.append(screen(ctx, { name: 'settings', back, settings: false, body }).el);
     return () => gate.destroy();
   }
+  // A grown-up is here: moving between grown-up screens doesn't ask again for a minute.
+  renewGatePass();
 
   const settings = () => ctx.state.settings;
   const setSetting = (patch) => ctx.setState((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
@@ -97,18 +120,9 @@ export function render(root, ctx) {
                 h('p', { class: 'settings-child-name' }, p.display, p.id === activeProfileId ? h('span', { class: 'badge' }, 'Reading now') : null),
                 h('p', { class: 'settings-child-say' }, 'Said ', said.kind === 'respell' ? respellNode(said.text) : said.kind === 'recording' ? 'with your recording' : `“${said.text}”`)),
               h('div', { class: 'settings-child-actions' },
-                linkButton({ text: 'Edit name', href: `#/b/${bookId}/name?child=${encodeURIComponent(p.id)}`, icon: 'edit', variant: 'link', size: 'sm', testid: 'edit-child' }),
-                button({
-                  text: 'How we say it',
-                  icon: 'ear',
-                  variant: 'link',
-                  size: 'sm',
-                  testid: 'retune-child',
-                  onClick: () => {
-                    ctx.setState((s) => selectChild(s, p.id));
-                    ctx.navigate(`#/b/${bookId}/say`);
-                  },
-                }),
+                // Editing a child here doesn't change who the story is for, and comes back here.
+                linkButton({ text: 'Edit name', href: `#/b/${bookId}/name?child=${encodeURIComponent(p.id)}&from=settings`, icon: 'edit', variant: 'link', size: 'sm', testid: 'edit-child' }),
+                linkButton({ text: 'How we say it', href: `#/b/${bookId}/say?child=${encodeURIComponent(p.id)}&from=settings`, icon: 'ear', variant: 'link', size: 'sm', testid: 'retune-child' }),
                 button({ text: 'Delete', icon: 'trash', variant: 'link-danger', size: 'sm', testid: 'delete-child', onClick: () => deleteChild(p) })),
             );
           })
@@ -116,18 +130,47 @@ export function render(root, ctx) {
     );
   }
   async function deleteChild(p) {
+    // Readings made for this child say their name on every page: they go too.
+    const theirs = readingsOnlyFor(ctx.state, p);
     const ok = await confirmDialog({
       title: `Remove ${p.display}?`,
-      message: `This removes ${p.display}’s name, pronunciation, any recording and any gift message from this phone.`,
+      message: deleteChildMessage(p, theirs.length),
       confirmText: 'Remove',
       danger: true,
       testid: 'confirm-delete',
     });
     if (!ok || life.signal.aborted) return;
-    if (p.pronunciation?.recordingId) ctx.blobs.delete(p.pronunciation.recordingId).catch?.(() => {});
-    if (p.gift?.recordingId) ctx.blobs.delete(p.gift.recordingId).catch?.(() => {});
-    ctx.setState((s) => removeProfile(s, p.id));
+    const row = childList.querySelector(`[data-child="${CSS.escape(p.id)}"]`);
+    const nextId = row?.nextElementSibling?.dataset.child ?? row?.previousElementSibling?.dataset.child ?? null;
+    // Every recording of the name: the saved one, the usual id (older versions could leave one behind) and any take not kept.
+    const blobIds = new Set([p.pronunciation?.recordingId, `rec_${p.id}`, p.gift?.recordingId].filter(Boolean));
+    let next = removeProfile(ctx.state, p.id);
+    for (const r of theirs) {
+      const out = removeReading(next, r.id);
+      next = out.state;
+      for (const id of [...out.blobIds, ...readingBlobIds(r)]) blobIds.add(id);
+    }
+    ctx.setState(dropReadingChoices(next, p.id));
+    scratch.delete(`rec_${p.id}_take`);
+    for (const id of blobIds) {
+      try {
+        await ctx.blobs.delete(id);
+      } catch {
+        /* already gone */
+      }
+    }
     renderChildren();
+    renderReadings();
+    // Keep keyboard users in the list: the next child, or the heading when it's empty.
+    const target = (nextId && childList.querySelector(`[data-child="${CSS.escape(nextId)}"] a, [data-child="${CSS.escape(nextId)}"] button`)) || root.querySelector('#children-title');
+    if (target) {
+      if (target.id === 'children-title') target.setAttribute('tabindex', '-1');
+      try {
+        target.focus({ preventScroll: true });
+      } catch {
+        /* ignore */
+      }
+    }
     toast(`${p.display} has been removed from this phone.`, { kind: 'success' });
   }
   renderChildren();
@@ -165,9 +208,24 @@ export function render(root, ctx) {
     class: 'switch-input',
     'data-testid': 'setting-allowOnlineVoices',
     checked: settings().allowOnlineVoices === true,
-    onChange: (e) => {
-      setSetting({ allowOnlineVoices: e.target.checked });
-      toast(e.target.checked ? 'Online voices are on. The story’s words go to Google or Microsoft to be spoken.' : 'Online voices are off. Everything stays on this device.', { kind: 'info', timeout: 5000 });
+    onChange: async (e) => {
+      const on = e.target.checked;
+      if (on) {
+        // Sending the name to Google or Microsoft deserves a clear "yes".
+        const ok = await confirmDialog({
+          title: 'Use online voices?',
+          message: ONLINE_VOICES_TEXT,
+          confirmText: 'Use online voices',
+          testid: 'confirm-online-voices',
+        });
+        if (life.signal.aborted) return;
+        if (!ok) {
+          e.target.checked = false;
+          return;
+        }
+      }
+      setSetting({ allowOnlineVoices: on });
+      toast(on ? 'Online voices are on. The story’s words go to Google or Microsoft to be spoken.' : 'Online voices are off. Everything stays on this device.', { kind: 'info', timeout: 5000 });
     },
   });
   const onlineToggle = h('label', { class: 'toggle online-toggle', for: 'setting-allowOnlineVoices' },
@@ -193,15 +251,20 @@ export function render(root, ctx) {
     });
 
   // ---- Speed -----------------------------------------------------------------------------------
-  const speedGroup = h('div', { class: 'segmented', role: 'radiogroup', 'aria-labelledby': 'speed-title' });
+  // Built once and updated in place, so arrow keys move between the choices
+  // without focus falling out of the group.
+  const speedGroup = h('div', { class: 'segmented', role: 'radiogroup', 'aria-labelledby': 'speed-title' },
+    ...SPEEDS.map((s) =>
+      h('label', { class: 'segment', 'data-speed': s.id },
+        h('input', { type: 'radio', name: 'speed', value: s.id, 'data-testid': `speed-${s.id}`, onChange: () => { setSetting({ rate: s.rate }); renderSpeed(); } }),
+        h('span', {}, s.label))));
   const renderSpeed = () => {
     const cur = speedFor(settings().rate);
-    speedGroup.replaceChildren(
-      ...SPEEDS.map((s) =>
-        h('label', { class: `segment${s.id === cur.id ? ' is-on' : ''}` },
-          h('input', { type: 'radio', name: 'speed', value: s.id, checked: s.id === cur.id, 'data-testid': `speed-${s.id}`, onChange: () => { setSetting({ rate: s.rate }); renderSpeed(); } }),
-          h('span', {}, s.label))),
-    );
+    for (const label of speedGroup.querySelectorAll('.segment')) {
+      const on = label.dataset.speed === cur.id;
+      label.classList.toggle('is-on', on);
+      label.querySelector('input').checked = on;
+    }
   };
   renderSpeed();
 
@@ -235,10 +298,12 @@ export function render(root, ctx) {
       readingList.replaceChildren(h('li', { class: 'settings-empty' }, 'No family recordings yet.'));
       return;
     }
-    const child = activeProfile(ctx.state);
+    const active = activeProfile(ctx.state);
     readingList.replaceChildren(
       ...readings.map((r) => {
-        const isActive = ctx.state.activeReading?.[r.bookId] === r.id;
+        // Whose reading it is: the child it was recorded for (else the child we're reading for).
+        const child = (r.childId && ctx.state.profiles.find((p) => p.id === r.childId)) || ctx.state.profiles.find((p) => r.childKey && readingIsFor(r, p)) || (r.childName ? { display: r.childName } : null) || active;
+        const isActive = child?.id ? childReading(ctx.state, r.bookId, child)?.id === r.id : ctx.state.activeReading?.[r.bookId] === r.id;
         const meta = h('p', { class: 'settings-reading-meta' }, '…');
         loadBookInfo(r.bookId).then((book) => {
           const title = book ? fillTemplate(book.title, makePerson(child?.display ?? 'you')) : r.bookId;
@@ -267,7 +332,7 @@ export function render(root, ctx) {
               size: 'sm',
               testid: 'reading-use',
               onClick: () => {
-                ctx.setState((s) => ({ ...s, activeReading: { ...(s.activeReading ?? {}), [r.bookId]: r.id } }));
+                ctx.setState((s) => chooseReading(s, r.bookId, child?.id ?? null, r.id));
                 renderReadings();
                 toast(`${readingLabel(r)} will read the story.`, { kind: 'success' });
               },
@@ -336,6 +401,7 @@ export function render(root, ctx) {
       });
       if (!ok) return;
       await forgetEverything();
+      forgetInMemory();
       ctx.setState({ ...loadState(), lastBook: bookId }, { persist: false });
       toast('Done — nothing about your family is stored on this device now.', { kind: 'success' });
       ctx.navigate(`#/b/${bookId}`);

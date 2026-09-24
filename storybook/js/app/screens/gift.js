@@ -6,15 +6,16 @@
 // family pack file to send to the child's grown-up, who opens it on their
 // phone: the book is then ready for the child, with the giver's message.
 //
-// Nothing about the child is saved on the giver's phone: the gift lives in a
-// memory-only draft (js/family/drafts.js) until it is wrapped.
+// Nothing about the child is saved on the giver's phone: the gift — name,
+// message, spoken message and the giver's recorded reading — lives in a
+// memory-only draft (js/family/drafts.js) and travels only in the file.
 
 import { h, icon, button, linkButton, toast, setBusy, debounce } from '../ui.js';
 import { screen, privacyLine } from '../chrome.js';
 import { normaliseName, NAME_ERRORS, NAME_MAX_LENGTH } from '../../core/personalise.js';
-import { removeReading } from '../../core/storage.js';
 import { buildPack, packFilename, PACK_LIMITS } from '../../family/pack.js';
-import { giftDraft, clearGiftDraft } from '../../family/drafts.js';
+import { giftDraft, clearGiftDraft, draftBlobs } from '../../family/drafts.js';
+import { grownUpCheck } from '../parent-gate.js';
 import { giftShareText, readingCoverage, recordingSteps, clock, formatDuration, storyTitle } from '../../family/family.js';
 import { createPronunciationPicker } from '../pron-picker.js';
 import { createCover } from '../cover.js';
@@ -81,12 +82,21 @@ export function render(root, ctx) {
   const fromInput = h('input', { id: 'gift-from', class: 'text-input', type: 'text', 'data-testid': 'gift-from', maxlength: String(PACK_LIMITS.from), autocomplete: 'off', autocapitalize: 'words', placeholder: 'e.g. Auntie Jo', value: draft.from });
   const textInput = h('textarea', { id: 'gift-text', class: 'text-input gift-textarea', 'data-testid': 'gift-text', maxlength: String(PACK_LIMITS.message), rows: '4', placeholder: 'e.g. Happy birthday! I can’t wait to read this with you. Love, Auntie Jo x', 'aria-describedby': 'gift-text-count' });
   textInput.value = draft.text;
-  const counter = h('p', { class: 'field-hint gift-count', id: 'gift-text-count', 'aria-live': 'polite' });
+  // The count is linked to the box (aria-describedby) but not a live region:
+  // a screen reader would read it after every letter. Near the limit, a
+  // separate polite message says how many are left, once typing pauses.
+  const counter = h('p', { class: 'field-hint gift-count', id: 'gift-text-count' });
+  const nearLimit = h('p', { class: 'sr-only', 'aria-live': 'polite', 'data-testid': 'gift-text-left' });
   const updateCount = () => (counter.textContent = `${Array.from(textInput.value).length} / ${PACK_LIMITS.message}`);
+  const announceLeft = debounce(() => {
+    const left = PACK_LIMITS.message - Array.from(textInput.value).length;
+    nearLimit.textContent = left <= 40 ? `${left} ${left === 1 ? 'character' : 'characters'} left` : '';
+  }, 700);
   fromInput.addEventListener('input', () => (draft.from = fromInput.value));
   textInput.addEventListener('input', () => {
     draft.text = textInput.value;
     updateCount();
+    announceLeft();
   });
   updateCount();
 
@@ -98,6 +108,7 @@ export function render(root, ctx) {
     h('label', { class: 'field-label', for: 'gift-text' }, 'Write a few words'),
     textInput,
     counter,
+    nearLimit,
     h('p', { class: 'field-label gift-say-label' }, 'Say it out loud too ', h('span', { class: 'optional' }, '(optional)')),
     voiceHost);
 
@@ -126,6 +137,10 @@ export function render(root, ctx) {
   }
 
   async function recordMessage() {
+    if (recCtl) return;
+    // The microphone is a grown-up's tool: once a child has had the phone, ask for the hold.
+    if (!(await grownUpCheck({ title: 'Grown-ups: record a message?', lead: 'Press and hold for 3 seconds, then say your message.' }))) return;
+    if (life.signal.aborted) return;
     await recReady;
     if (!rec?.isRecordingSupported?.()) {
       renderVoice(draft.audio ? 'done' : 'idle', recorderMessage('unsupported'));
@@ -193,7 +208,8 @@ export function render(root, ctx) {
     readingHost);
   const steps = recordingSteps(book);
   function renderReading() {
-    const reading = draft.readingId ? (ctx.state.readings ?? []).find((r) => r.id === draft.readingId) : null;
+    // The giver's reading lives in the draft (memory only), not in this phone's readings.
+    const reading = draft.reading && draft.reading.id === draft.readingId ? draft.reading : null;
     if (!reading) {
       draft.readingId = null;
       const go = button({
@@ -249,13 +265,13 @@ export function render(root, ctx) {
     stopPlaying();
     setBusy(wrapBtn, true);
     try {
-      const reading = draft.includeReading && draft.readingId ? (ctx.state.readings ?? []).find((r) => r.id === draft.readingId) : null;
+      const reading = draft.includeReading && draft.reading && draft.reading.id === draft.readingId ? draft.reading : null;
       const pack = {
         kind: 'gift',
         bookId,
         readerName: reading ? reading.readerName || draft.from : '',
         language: reading?.language ?? '',
-        parts: reading ? await readingPartBlobs(reading, ctx.blobs) : {},
+        parts: reading ? await readingPartBlobs(reading, draftBlobs(draft)) : {},
         child: { display: draft.childName, pronunciation: draft.pronunciation ?? picker.value() ?? { say: draft.childName } },
         message: { from: draft.from, text: draft.text, audio: draft.audio },
       };
@@ -284,7 +300,6 @@ export function render(root, ctx) {
   }
 
   function showWrapped() {
-    const reading = draft.readingId ? (ctx.state.readings ?? []).find((r) => r.id === draft.readingId) : null;
     const instructions = h('p', { class: 'gift-instructions', 'data-testid': 'gift-instructions' }, '…');
     landingUrl(bookId).then((u) => {
       // The same words as giftInstructions(), with the address picked out.
@@ -303,21 +318,6 @@ export function render(root, ctx) {
         toast(ok ? 'Copied — paste it into your message.' : 'Couldn’t copy — press and hold the words to copy them.', { kind: ok ? 'success' : 'info' });
       },
     });
-    const tidy = reading
-      ? button({
-          text: 'Remove my recordings from this phone',
-          icon: 'trash',
-          variant: 'link-danger',
-          size: 'sm',
-          testid: 'gift-tidy',
-          onClick: async () => {
-            const { state, blobIds } = removeReading(ctx.state, reading.id);
-            ctx.setState(state);
-            for (const id of blobIds) await ctx.blobs.delete(id).catch?.(() => {});
-            tidy.replaceWith(h('p', { class: 'field-hint' }, 'Done — they’re only in the gift now.'));
-          },
-        })
-      : null;
     const body = h(
       'section',
       { class: 'gift-done', 'data-testid': 'gift-done' },
@@ -330,9 +330,8 @@ export function render(root, ctx) {
         h('div', { class: 'gift-next-actions' }, copyBtn, button({ text: 'Send it again', icon: 'share', variant: 'secondary', size: 'sm', testid: 'gift-send', onClick: () => send() }))),
       linkHost,
       h('p', { class: 'gift-file' }, icon('file', { size: 18 }), h('span', {}, 'The file: ', h('strong', {}, wrapped.filename))),
-      privacyLine('Nothing is uploaded: the gift is only in the file you send.'),
+      privacyLine('Nothing is uploaded, and nothing is kept on this phone: the gift — your recordings too — is only in the file you send.'),
       h('div', { class: 'record-more' },
-        tidy,
         button({ text: 'Set up another gift', icon: 'plus', variant: 'link', size: 'sm', testid: 'gift-another', onClick: () => { clearGiftDraft(); ctx.navigate(`#/b/${bookId}/gift`); } }),
         linkButton({ text: 'All books', href: '#/', icon: 'book', variant: 'link', size: 'sm' })),
     );
@@ -345,7 +344,7 @@ export function render(root, ctx) {
   const { el } = screen(ctx, {
     name: 'gift',
     back,
-    body: [head, h('div', { class: 'gift-grid' }, h('div', { class: 'gift-col' }, nameCard, messageCard), h('div', { class: 'gift-col' }, readingCard, privacyLine('The gift is only on this phone until you send it. Nothing is uploaded.')))],
+    body: [head, h('div', { class: 'gift-grid' }, h('div', { class: 'gift-col' }, nameCard, messageCard), h('div', { class: 'gift-col' }, readingCard, privacyLine('Nothing about the gift is saved on this phone, and nothing is uploaded: it stays on this page until you wrap it into the file you send. (Keep this page open until then.)')))],
     footer,
   });
   root.append(el);
@@ -361,5 +360,6 @@ export function render(root, ctx) {
     stopPlaying();
     picker.stop();
     coverSoon.cancel();
+    announceLeft.cancel();
   };
 }

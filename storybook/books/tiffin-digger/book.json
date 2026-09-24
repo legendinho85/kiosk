@@ -42,6 +42,7 @@
       ],
       "prompt": "",
       "after": [],
+      "alt": "Tiffin the otter, in a yellow hard hat, waves from the cab of a big red digger with {name} on its side. A yellow banner says “Beep beep, {name}”.",
       "sfx": {
         "open": "beep"
       },
@@ -63,6 +64,8 @@
         "Hard {hat|hats} on, {name}!",
         "Rumble, rumble, beep, beep, beep!"
       ],
+      "alt": "Tiffin, in a hard hat and an orange safety vest, pats her hat. An orange hat box with a lid sits on a bench.",
+      "altAfter": "Tiffin holds her hard hat with both paws. Out of the orange hat box {pops a yellow hard hat|pop yellow hard hats} with {name} on the front.",
       "sfx": {
         "open": "pop"
       },
@@ -208,6 +211,8 @@
         "The digger wakes up!",
         "Rumble, rumble, beep, beep, beep!"
       ],
+      "alt": "A big red digger with {name} on its side is asleep at the building site, with Tiffin in the cab and a big horn button to press.",
+      "altAfter": "Beep! The big red digger with {name} on its side wakes up, its orange light flashing, with Tiffin in the cab.",
       "sfx": {
         "open": "ding"
       },
@@ -299,6 +304,8 @@
         "Up, up... plop! Into Goose's dumper.",
         "Rumble, rumble, beep, beep, beep!"
       ],
+      "alt": "Tiffin scoops mud with the big red digger. Goose waits in a blue dumper truck, and a plan on an easel says “{name's} Park”.",
+      "altAfter": "Up, up… plop! The mud is in Goose's dumper. The plan on the easel says “{name's} Park”.",
       "sfx": {
         "open": "rumble"
       },
@@ -307,11 +314,11 @@
         "control": {
           "from": [
             250,
-            930
+            860
           ],
           "to": [
             60,
-            930
+            860
           ],
           "knob": "#dg-p4-tab",
           "springBack": true
@@ -486,6 +493,8 @@
         "Swoosh, swoosh! Thank you, {name}!",
         "Rumble, rumble, beep, beep, beep!"
       ],
+      "alt": "Frog's cement mixer has a big orange drum, but it is stuck. Tiffin waits by a new path that still needs filling.",
+      "altAfter": "Swoosh! The mixer has poured the new path, and {name} is written in the wet cement.",
       "sfx": {
         "open": "click"
       },
@@ -609,6 +618,8 @@
         "Down it goes... clunk!",
         "Beep beep, {name}! Beep, beep, beep!"
       ],
+      "alt": "At the new park, a big red slide hangs from a yellow crane with {name} on its side. Tiffin, Goose and Frog wait by the swings.",
+      "altAfter": "Clunk! The big red slide is on the tower. The yellow crane with {name} on its side looks on.",
       "sfx": {
         "open": "swoosh"
       },
@@ -906,6 +917,8 @@
         "{name's} Park is open!",
         "Rumble, rumble, hooray!"
       ],
+      "alt": "Opening day! Tiffin, Goose, Frog and friends wait at the park gate under bunting that spells {name}. A cloth covers the park sign.",
+      "altAfter": "The cloth is off! The park sign says “{name's} Park”, and everyone cheers.",
       "sfx": {
         "open": "cheer"
       },
@@ -972,6 +985,7 @@
       ],
       "prompt": "",
       "after": [],
+      "alt": "Night time. The digger has gone to sleep and Tiffin sleeps in her basket. A yellow hard hat with {name} on it waits on the chair by the lamp.",
       "sfx": {
         "open": "ding"
       },

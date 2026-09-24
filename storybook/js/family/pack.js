@@ -14,6 +14,9 @@
 
 import { normaliseName, nameKey, NAME_MAX_LENGTH } from '../core/personalise.js';
 import { newId, upsertProfile, upsertReading } from '../core/storage.js';
+import { asciiSlug, readingChildFields, chooseReading } from './family.js';
+
+export { asciiSlug };
 
 export const PACK_FORMAT = 'starring-pack';
 export const PACK_VERSION = 1;
@@ -167,17 +170,6 @@ export function encodeBase64(bytes) {
   return btoa(bin);
 }
 
-/** An ASCII slug for filenames: "Grandma Rosé" -> "Grandma-Rose". */
-export function asciiSlug(text, fallback = 'family') {
-  const s = String(text ?? '')
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^A-Za-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40)
-    .replace(/-+$/g, '');
-  return s || fallback;
-}
 
 /**
  * "<book>-<reader-or-child>.starring.json", e.g. "tiffin-football-Grandma-Rose.starring.json".
@@ -501,6 +493,18 @@ export async function importPack(state, parsed, blobs) {
     }
   };
 
+  // ---- who it's for: the child in the pack, matched to a child on this phone ----
+  // A reading says that child's name on every page, so it is kept as theirs
+  // (it plays for them, not for a brother or sister). A gift sets the child
+  // up; a reading for a child who isn't on this phone yet keeps their name
+  // (childKey) and becomes theirs when they are added.
+  const c = parsed.child ?? null;
+  const known = c ? next.profiles.find((p) => p.key === c.key || (p.fullName && nameKey(p.fullName) === c.key) || (c.fullName && p.key === nameKey(c.fullName))) ?? null : null;
+  const giftChildId = parsed.kind === 'gift' && c ? known?.id ?? newId('child') : null;
+  const owner = parsed.kind === 'gift' && c
+    ? { id: giftChildId, key: known?.key ?? c.key, display: known?.display ?? c.display }
+    : known ?? (c ? { key: c.key, display: c.display } : null);
+
   // ---- the recorded reading (reading packs, and gifts that include one) ----
   if (parsed.partCount) {
     const readerName = summary.readerName;
@@ -521,19 +525,20 @@ export async function importPack(state, parsed, blobs) {
     if (same) {
       for (const [n, p] of Object.entries(same.parts ?? {})) for (const part of ['main', 'after']) if (p?.[part] && !parts[n]?.[part]) await safeDelete(p[part]);
     }
-    const reading = { id, bookId: parsed.bookId, readerName, parts, packCreatedAt: parsed.createdAt, source: 'pack' };
+    const reading = { id, bookId: parsed.bookId, readerName, parts, packCreatedAt: parsed.createdAt, source: 'pack', ...readingChildFields(owner) };
     if (parsed.language) reading.language = parsed.language;
     if (same?.createdAt) reading.createdAt = same.createdAt;
     next = upsertReading(next, reading, { activate: true });
+    // Chosen for its child (remembered per child), when we know who that is on this phone.
+    if (owner?.id) next = chooseReading(next, parsed.bookId, owner.id, id);
     summary.readingId = id;
     summary.replaced = Boolean(same);
   }
 
   // ---- the child and the gift message (gift packs) ----
-  if (parsed.kind === 'gift' && parsed.child) {
-    const c = parsed.child;
-    const existing = next.profiles.find((p) => p.key === c.key || (p.fullName && nameKey(p.fullName) === c.key) || (c.fullName && p.key === nameKey(c.fullName)));
-    const id = existing?.id ?? newId('child');
+  if (parsed.kind === 'gift' && c) {
+    const existing = known;
+    const id = giftChildId;
     let recordingId = null;
     if (parsed.message?.audio) {
       recordingId = `gift_${id}_${parsed.createdAt}`;
@@ -552,6 +557,10 @@ export async function importPack(state, parsed, blobs) {
     summary.newChild = !existing;
     summary.keptPronunciation = Boolean(existing);
     summary.giftFrom = gift.from || null;
+  } else if (c) {
+    // A reading pack: who it was recorded for (childId when they're on this phone; never added here).
+    summary.childId = known?.id ?? null;
+    summary.childName = known?.display ?? c.display;
   }
   return { state: next, summary };
 }

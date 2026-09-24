@@ -69,14 +69,28 @@ export function createPronunciationPicker(ctx, { onChange, signal } = {}) {
         const sound = c.respell ? respellNode(c.respell) : h('span', {}, `“${c.say}”`);
         const playBtn = button({ label: `Listen: ${candidateTitle(c)}`, icon: 'play', variant: 'play', size: 'sm', testid: 'pp-play', class: 'pp-play' });
         playBtn.addEventListener('click', () => play(playBtn, c.say));
-        return h('div', { class: `pp-option${on ? ' is-on' : ''}` }, playBtn, radio, h('label', { for: id, class: 'pp-text' }, h('span', { class: 'pp-sound' }, sound), h('span', { class: 'pp-title' }, candidateTitle(c))), on ? h('span', { class: 'pp-tick', 'aria-hidden': 'true' }, icon('check', { size: 16 })) : null);
+        const tick = h('span', { class: 'pp-tick', 'aria-hidden': 'true', hidden: !on }, icon('check', { size: 16 }));
+        const option = h('div', { class: `pp-option${on ? ' is-on' : ''}` }, playBtn, radio, h('label', { for: id, class: 'pp-text' }, h('span', { class: 'pp-sound' }, sound), h('span', { class: 'pp-title' }, candidateTitle(c))), tick);
+        option._candidate = c;
+        return option;
       }),
     );
   }
 
+  /** Show the choice without rebuilding the list, so arrow keys keep focus on the radios. */
+  function markSelected() {
+    for (const option of list.querySelectorAll('.pp-option')) {
+      const on = option._candidate === selected;
+      option.classList.toggle('is-on', on);
+      option.querySelector('.pp-radio').checked = on;
+      const tick = option.querySelector('.pp-tick');
+      if (tick) tick.hidden = !on;
+    }
+  }
+
   function choose(c) {
     selected = c;
-    render();
+    markSelected();
     onChange?.(value());
   }
 

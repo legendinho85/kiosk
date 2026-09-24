@@ -7,10 +7,14 @@
 //     real page by hand (drag to move, pinch or the slider to resize, a
 //     rotate nudge, a translucent "ghost" of the whole page to aim with). The
 //     fit is remembered per book and per phone orientation.
-//   - Experimental: when books/<id>/targets.mind exists, MindAR image
-//     tracking is loaded lazily from jsDelivr and pins the overlay to the
-//     detected page. It never blocks the manual mode, and any failure simply
-//     leaves the manual fit in place.
+//   - Experimental: when a book declares tracking targets (book.json
+//     `"targets": "targets.mind"`), MindAR image tracking is loaded lazily
+//     and pins the overlay to the detected page. Nothing is fetched for books
+//     without targets. The library comes from jsDelivr pinned to one version
+//     and every file is checked against its SHA-384 hash before it runs (a
+//     changed or tampered file is refused), since it would run with access
+//     to this site's stored names and recordings. It never blocks the manual
+//     mode, and any failure simply leaves the manual fit in place.
 //
 // Privacy: the video never leaves the <video> element. Nothing is recorded,
 // stored or uploaded; the camera stops on destroy and when the page is
@@ -30,8 +34,20 @@ const possessive = (name) => `${name}’s`;
 export const SCENE_ASPECT = 1600 / 1000;
 export const ALIGN_LIMITS = Object.freeze({ minScale: 0.25, maxScale: 4, maxShift: 0.8, maxRotate: 45 });
 export const DEFAULT_ALIGN = Object.freeze({ x: 0, y: 0, scale: 1, rotate: 0 });
-/** Lazily loaded only when a book ships targets.mind (MindAR's image build: no three.js, uses our own video). */
-export const MINDAR_URL = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js';
+/** Lazily loaded only when a book declares tracking targets (MindAR's image build: no three.js, uses our own video). */
+export const MINDAR_BASE = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/';
+export const MINDAR_URL = `${MINDAR_BASE}mindar-image.prod.js`;
+/**
+ * Every file of MindAR's module graph, dependencies first, with its Subresource
+ * Integrity hash (sha384 of the files in the mind-ar@1.2.5 npm package, which
+ * jsDelivr serves unchanged). To update: npm pack mind-ar@<v>, then
+ * `openssl dgst -sha384 -binary <file> | openssl base64 -A` for each dist file.
+ */
+export const MINDAR_FILES = Object.freeze([
+  ['ui-fBadYuor.js', 'sha384-Oyn7cnP7WvbPO8Q88Ok9Yyuk59CMzTDz/dDOvQrYdyPmHdIOk6OsWdeIW7km99jg'],
+  ['controller-mGt1s8dJ.js', 'sha384-W3Rzopa38tOxYsa61y7j6iuTp2lQqVd5yyUDDqsH4HAq4VFn0jkYID1XxaZN2z+b'],
+  ['mindar-image.prod.js', 'sha384-hWwJbySAF+K3yQuqupwebOlSqX/EqF48nEWrP0b07KI4dPCptfGG63ldC2IgjRRg'],
+]);
 export const CAMERA_CONSTRAINTS = Object.freeze({
   audio: false,
   video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -260,19 +276,66 @@ export function matrix3dCss(m) {
   return `matrix3d(${m.map((v) => (Math.abs(v) < 1e-12 ? 0 : Number(v.toPrecision(8)))).join(',')})`;
 }
 
-// Whether a book ships tracking targets, asked once per session (a missing
-// file is the normal case, so we don't keep asking the server).
-const targetsProbe = new Map();
-function targetsExist(url) {
-  if (!targetsProbe.has(url)) {
-    targetsProbe.set(
-      url,
-      fetch(url, { method: 'HEAD', cache: 'no-store' })
-        .then((res) => res.ok && !/text\/html/i.test(res.headers.get('content-type') ?? ''))
-        .catch(() => false),
-    );
-  }
-  return targetsProbe.get(url);
+/**
+ * Where a book's tracking targets are, or null when it has none. Only a book
+ * that says so in book.json (`"targets": "targets.mind"`, or `true` for that
+ * name) is tracked: we never go looking for the file.
+ */
+export function targetsPath(book) {
+  const t = book?.targets;
+  if (t === true) return 'targets.mind';
+  if (typeof t === 'string' && /^[\w./-]+\.mind$/.test(t) && !t.includes('..') && !t.startsWith('/')) return t;
+  return null;
+}
+
+/**
+ * Point a module's relative imports ("./controller-x.js") at the URLs we
+ * already made for them (blob: URLs of checked files). Throws if a relative
+ * import has no URL, so nothing unchecked is ever pulled in.
+ * @param {string} code
+ * @param {Record<string, string>} urls file name -> URL
+ */
+export function rewriteImports(code, urls) {
+  const swap = (spec) => {
+    const name = spec.replace(/^\.\//, '');
+    if (!Object.prototype.hasOwnProperty.call(urls, name)) throw new Error(`MindAR: unexpected import ${spec}`);
+    return urls[name];
+  };
+  return String(code).replace(/(\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)(['"])(\.{1,2}\/[^'"]+)\2/g, (_, lead, q, spec) => {
+    if (spec.startsWith('../')) throw new Error(`MindAR: unexpected import ${spec}`);
+    return `${lead}${q}${swap(spec)}${q}`;
+  });
+}
+
+let mindArModule = null;
+/**
+ * Load MindAR with every file checked against its hash (fetch's `integrity`),
+ * then import it from blob: URLs, so what runs is exactly what was checked.
+ * Cached; a failure is not (the next open tries again).
+ */
+export function loadMindAr({ base = MINDAR_BASE, files = MINDAR_FILES, fetchImpl = globalThis.fetch } = {}) {
+  mindArModule ??= (async () => {
+    const urls = {};
+    const made = [];
+    try {
+      let last = null;
+      for (const [name, integrity] of files) {
+        const res = await fetchImpl(new URL(name, base).href, { integrity, credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'force-cache' });
+        if (!res.ok) throw new Error(`MindAR: ${name} (${res.status})`);
+        const code = rewriteImports(await res.text(), urls);
+        last = urls[name] = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+        made.push(last);
+      }
+      return await import(/* webpackIgnore: true */ last);
+    } finally {
+      // The module graph is loaded (or failed): the blob: URLs aren't needed any more.
+      for (const u of made) URL.revokeObjectURL(u);
+    }
+  })();
+  mindArModule.catch(() => {
+    mindArModule = null;
+  });
+  return mindArModule;
 }
 
 // ---- DOM helpers ----------------------------------------------------------------------------------
@@ -449,6 +512,9 @@ export async function mountMagicWindow(root, opts = {}) {
   if (person?.count > 1) who.count = person.count;
   const artWho = { display: String(person?.art ?? person?.display ?? '').trim() };
   const hasName = Boolean(who.display);
+  // "Ava’s name" / "Amara and Zak’s names" (siblings reading together).
+  const nameWord = (who.count ?? 1) > 1 ? 'names' : 'name';
+  const whose = hasName ? `${possessive(who.display)} ${nameWord}` : null;
   const clampPage = (n) => Math.min(Math.max(1, Math.round(Number(n)) || 1), Math.max(1, pages.length));
 
   let current = clampPage(opts.page ?? 1);
@@ -587,8 +653,8 @@ export async function mountMagicWindow(root, opts = {}) {
   const CARDS = {
     explain: () => ({
       eyebrow: 'Magic window',
-      title: hasName ? `See ${possessive(who.display)} name on the real page` : 'See the name on the real page',
-      body: [`We use the camera only on this phone to draw ${hasName ? possessive(who.display) : 'your child’s'} name onto your book. Nothing is recorded or sent anywhere.`],
+      title: whose ? `See ${whose} on the real page` : 'See the name on the real page',
+      body: [`We use the camera only on this phone to draw ${whose ?? 'your child’s name'} onto your book. Nothing is recorded or sent anywhere.`],
       steps: [`Open the book at page ${current}.`, 'Hold the phone above the page.', 'Line the picture up — then tap Magic!'],
       primary: { text: 'Turn on the camera', icon: 'camera', testid: 'mw-allow', run: () => allow() },
       note: 'Your browser will ask if the camera can be used.',
@@ -598,7 +664,7 @@ export async function mountMagicWindow(root, opts = {}) {
       eyebrow: 'Camera switched off',
       title: 'The camera isn’t allowed for this site',
       body: [
-        `To see ${hasName ? possessive(who.display) : 'the'} name on your book, allow the camera, then tap Try again.`,
+        `To see ${whose ?? 'the name'} on your book, allow the camera, then tap Try again.`,
         'iPhone: tap “aA” in the address bar › Website Settings › Camera › Allow.',
         'Android (Chrome): tap the icon beside the address › Permissions › Camera › Allow.',
       ],
@@ -1526,19 +1592,18 @@ export async function mountMagicWindow(root, opts = {}) {
   }
 
   async function maybeStartTracking() {
-    if (tracking.state !== 'off' || destroyed || book?.targets === false) return;
+    if (tracking.state !== 'off' || destroyed) return;
+    const path = targetsPath(book);
+    if (!path) return; // no targets: nothing to load, nothing to ask the server
     let url;
     try {
-      const path = typeof book?.targets === 'string' ? book.targets : 'targets.mind';
       url = new URL(path, new URL(String(baseUrl).replace(/\/?$/, '/'), location.href)).href;
     } catch {
       return;
     }
-    const exists = typeof book?.targets === 'string' ? true : await targetsExist(url);
-    if (!exists || destroyed || tracking.state !== 'off') return;
     setTracking('loading', 'Auto line-up: getting ready…');
     try {
-      const mod = await import(/* webpackIgnore: true */ MINDAR_URL);
+      const mod = await loadMindAr();
       const Controller = mod.Controller ?? globalThis.MINDAR?.IMAGE?.Controller;
       if (!Controller) throw new Error('MindAR did not load');
       await waitForFrames();

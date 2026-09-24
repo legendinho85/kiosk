@@ -273,7 +273,10 @@ export async function loadScene(book, page, baseUrl) {
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.classList.add('sb-scene');
   svg.dataset.page = String(page.n);
-  // Artists' <title>s would pop up as hover tooltips over a child's picture.
+  // Artists' <title>s would pop up as hover tooltips over a child's picture;
+  // the scene's own title is kept as a fallback description for screen readers.
+  const title = [...svg.children].find((c) => c.localName === 'title')?.textContent?.replace(/\s+/g, ' ').trim();
+  if (title) svg.dataset.title = title;
   for (const t of [...svg.querySelectorAll('title, desc')]) t.remove();
   hoistAnimations(svg);
   return svg;

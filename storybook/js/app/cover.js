@@ -11,6 +11,27 @@ import { bookUrl } from '../core/book.js';
 import { parseTemplate, person as makePerson } from '../core/personalise.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+/** What a screen reader hears in place of the blank name spot. */
+export const BLANK_NAME = 'your child’s name';
+
+/**
+ * The cover's accessible name: "Book cover: Goal, Siobhan!", or with no name
+ * yet "Book cover: Goal, your child’s name!" (never "Goal, !").
+ * @param {string} template e.g. "Goal, {name}!"
+ * @param {string} display
+ */
+export function coverLabel(template, display) {
+  const name = display || BLANK_NAME;
+  const text = parseTemplate(String(template ?? ''))
+    .map((c) => {
+      if (c.kind === 'text') return c.text;
+      if (c.kind === 'say') return c.display;
+      if (c.form === 'upper' && display) return name.toLocaleUpperCase('en-GB');
+      return c.form === 'poss' ? `${name}'s` : name;
+    })
+    .join('');
+  return `Book cover: ${text.replace(/\s+/g, ' ').trim()}`;
+}
 
 let libs = null;
 function loadLibs() {
@@ -36,7 +57,8 @@ export function titleNodes(template, display) {
   return parseTemplate(String(template ?? '')).map((c) => {
     if (c.kind === 'text') return document.createTextNode(c.text);
     if (c.kind === 'say') return document.createTextNode(c.display);
-    if (!display) return h('span', { class: 'cover-name is-blank', 'aria-label': 'your child’s name' }, '   ');
+    // The blank line is drawn for eyes only; screen readers hear "your child’s name" (an aria-label on a plain span is ignored).
+    if (!display) return h('span', { class: 'cover-name is-blank' }, h('span', { 'aria-hidden': 'true' }, '   '), h('span', { class: 'sr-only' }, BLANK_NAME));
     const text = c.form === 'upper' ? p.display.toLocaleUpperCase('en-GB') : c.form === 'poss' ? `${p.display}'s` : p.display;
     return h('span', { class: 'cover-name' }, text);
   });
@@ -102,7 +124,7 @@ export function createCover({ book, bookId = book?.id, baseUrl, display = '', ar
     title.replaceChildren(...titleNodes(book?.title ?? 'Goal, {name}!', current));
     // One accessible name for the picture, e.g. "Book cover: Goal, Siobhan!"
     art.setAttribute('role', 'img');
-    art.setAttribute('aria-label', `Book cover: ${title.textContent.replace(/\s+/g, ' ').trim()}`);
+    art.setAttribute('aria-label', coverLabel(book?.title ?? 'Goal, {name}!', current));
   };
 
   const fill = ({ pop = false } = {}) => {

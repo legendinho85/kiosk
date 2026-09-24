@@ -8,8 +8,9 @@
 import { h, icon, button, toast, setBusy, respellNode } from '../ui.js';
 import { screen, privacyLine } from '../chrome.js';
 import { readPack, importPack, PACK_ACCEPT, PACK_EXTENSION } from '../../family/pack.js';
-import { storyTitle } from '../../family/family.js';
+import { storyTitle, selectChild, chooseReading } from '../../family/family.js';
 import { activeProfile, upsertProfile, newId } from '../../core/storage.js';
+import { nameKey } from '../../core/personalise.js';
 import { loadBookList, loadBook, bookUrl } from '../../core/book.js';
 import { createCover } from '../cover.js';
 import { defaultPronunciation } from './name.js';
@@ -110,6 +111,8 @@ export function render(root, ctx) {
       const pages = p.pageCount === 1 ? '1 page' : `${p.pageCount} pages`;
       details.push(isGift ? `Plus a reading of ${pages} of the book by ${p.readerName || p.message?.from || 'them'}` : `${pages} read aloud${p.language ? ` in ${p.language}` : ''}`);
     }
+    // A reading for a child who isn't on this phone yet: they're added with it (it says their name).
+    if (!isGift && p.child && !ctx.state.profiles.some((x) => x.key === p.child.key || (x.fullName && nameKey(x.fullName) === p.child.key))) details.push(`${p.child.display} will be added to this phone`);
     const firstPart = Object.values(p.parts)[0];
     const sample = firstPart?.main ?? firstPart?.after ?? null;
 
@@ -172,10 +175,19 @@ export function render(root, ctx) {
     }
     if (life.signal.aborted) return;
     let next = result.state;
-    // A reading for a child this phone doesn't know yet: set them up so the story can start.
-    if (p.kind === 'reading' && p.child && !next.profiles.length) {
-      const lexicon = ctx.lexicon ?? (await ctx.getLexicon?.().catch(() => null)) ?? null;
-      next = upsertProfile(next, { id: newId('child'), display: p.child.display, key: p.child.key, pronunciation: defaultPronunciation(lexicon, p.child.display) });
+    const s0 = result.summary;
+    // A reading says one child's name: it's theirs, and they're the one we read for next.
+    if (p.kind === 'reading' && p.child) {
+      if (s0.childId) next = selectChild(next, s0.childId);
+      else {
+        // Not on this phone yet: set them up so the story can start (and the reading plays for them).
+        const lexicon = ctx.lexicon ?? (await Promise.resolve(ctx.getLexicon?.(2500)).catch(() => null)) ?? null;
+        if (life.signal.aborted) return;
+        const id = newId('child');
+        next = upsertProfile(next, { id, display: p.child.display, key: p.child.key, pronunciation: defaultPronunciation(lexicon, p.child.display), ...(p.child.fullName ? { fullName: p.child.fullName } : {}) });
+        next = { ...next, together: [], readings: (next.readings ?? []).map((r) => (r.id === s0.readingId ? { ...r, childId: id } : r)) };
+        if (s0.readingId) next = chooseReading(next, p.bookId, id, s0.readingId);
+      }
     }
     ctx.setState({ ...next, lastBook: p.bookId });
     const s = result.summary;
