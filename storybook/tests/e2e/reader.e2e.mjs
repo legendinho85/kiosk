@@ -44,9 +44,25 @@ function eq(a, b, msg) {
 }
 
 // ---- server ---------------------------------------------------------------------
+// npx starts http-server as a child of its own, so killing npx alone would
+// leave the server running. It gets its own process group (detached) and the
+// whole group is stopped at the end, however the test ends.
+function stopServer(proc) {
+  if (!proc || proc.__stopped) return;
+  proc.__stopped = true;
+  try {
+    if (process.platform === 'win32') proc.kill();
+    else process.kill(-proc.pid, 'SIGTERM');
+  } catch {
+    /* already gone */
+  }
+}
 async function startServer() {
   const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  const proc = spawn(npx, ['--yes', 'http-server', ROOT, '-p', String(PORT), '-a', '127.0.0.1', '-c-1', '-s'], { stdio: 'ignore' });
+  const proc = spawn(npx, ['--yes', 'http-server', ROOT, '-p', String(PORT), '-a', '127.0.0.1', '-c-1', '-s'], { stdio: 'ignore', detached: process.platform !== 'win32' });
+  const bail = () => stopServer(proc);
+  process.once('exit', bail);
+  for (const sig of ['SIGINT', 'SIGTERM']) process.once(sig, () => (bail(), process.exit(130)));
   for (let i = 0; i < 100; i++) {
     try {
       const r = await fetch(`${BASE}/package.json`);
@@ -56,7 +72,7 @@ async function startServer() {
     }
     await new Promise((r) => setTimeout(r, 150));
   }
-  proc.kill();
+  stopServer(proc);
   throw new Error(`http-server did not start on ${PORT}`);
 }
 
@@ -75,14 +91,17 @@ async function openHarness(browser, query, { viewport = { width: 390, height: 84
   // No network in tests: web fonts resolve to nothing (the fallback fonts are fine).
   await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
   await page.addInitScript(() => {
-    // Remember every word that was highlighted, per page.
+    // Remember every word that was highlighted, per page (and when, and in which part).
     window.__seen = {};
+    window.__hl = [];
     new MutationObserver((muts) => {
       for (const m of muts) {
         const t = m.target;
         if (t.classList?.contains('is-current') && t.classList.contains('sb-word')) {
           const n = document.querySelector('[data-testid=reader]')?.dataset.page;
           (window.__seen[n] ??= []).push(t.textContent);
+          const part = document.querySelector('[data-testid=page-text]')?.dataset.part;
+          window.__hl.push({ t: Math.round(performance.now()), page: n, part, unit: t.dataset.unit, text: t.textContent });
         }
       }
     }).observe(document, { subtree: true, attributes: true, attributeFilter: ['class'] });
@@ -144,7 +163,8 @@ function noErrors(errors, where) {
 
 // ---- tests ------------------------------------------------------------------------
 const server = await startServer();
-const browser = await chromium.launch({ args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] });
+// Fake microphone for the recorded-reading clips; autoplay allowed so the clips play without a tap.
+const browser = await chromium.launch({ args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required'] });
 console.log(`reader e2e on ${BASE}`);
 
 try {
@@ -507,7 +527,16 @@ try {
         return {
           scrollW: document.scrollingElement.scrollWidth,
           w: innerWidth,
-          buttons: ['next-page', 'prev-page', 'replay', 'exit-reader'].map((id) => Math.min(r(id).width, r(id).height)),
+          buttons: ['next-page', 'prev-page', 'replay', 'exit-reader', 'pause'].map((id) => Math.min(r(id).width, r(id).height)),
+          topRows: (() => {
+            // The page dots stay on one line beside the four round buttons.
+            const dots = [...document.querySelectorAll('.sb-r-dot')].map((d) => Math.round(d.getBoundingClientRect().top));
+            return new Set(dots).size;
+          })(),
+          pauseInView: (() => {
+            const b = r('pause');
+            return b.left >= 0 && b.right <= innerWidth && b.top >= 0 && b.bottom <= innerHeight;
+          })(),
           frame: [frame.left, frame.right, frame.top, frame.bottom],
           hitH: Number(hitLine.getAttribute('stroke-width')) * scale,
           text: r('page-text').height,
@@ -517,6 +546,8 @@ try {
       assert(m.buttons.every((s) => s >= 56), `${label}: buttons >= 56px (${m.buttons})`);
       assert(m.frame[0] >= -1 && m.frame[1] <= viewport.width + 1, `${label}: the book fits across`);
       assert(m.hitH >= 56, `${label}: slider hit area >= 56px (${m.hitH})`);
+      eq(m.topRows, 1, `${label}: page dots on one line`);
+      assert(m.pauseInView, `${label}: pause button on screen`);
       noErrors(errors, `layout ${label}`);
       await context.close();
     }
@@ -548,6 +579,325 @@ try {
     // A 404 is logged by the browser itself; nothing else may be.
     noErrors(errors.filter((e) => !/404|Failed to load resource/.test(e)), 'fallback');
     await context.close();
+  });
+
+  // ---- Round 2: family features (docs/architecture.md section 11) -----------------
+
+  const played = (page) => page.evaluate(() => window.__log.play.map((p) => p.text.join(' ')));
+  const realClips = (page) => page.evaluate(() => window.__log.clips.filter((c) => c.end == null || c.end - c.start > 300));
+
+  await step('recorded reading: fake-mic clips play instead of the voice, words lit across each clip', async () => {
+    const MAIN = 2400;
+    const AFTER = 1300;
+    const { page, context, errors } = await openHarness(browser, `test=1&reading=mic&mainMs=${MAIN}&afterMs=${AFTER}&page=2`);
+    eq(await page.evaluate(() => window.__log.reading.source), 'mic', 'clips recorded from the fake microphone');
+    // The badge is up as soon as the page's parts are known.
+    await page.getByTestId('reading-badge-band').waitFor({ state: 'visible' });
+    eq(await page.getByTestId('reading-badge-band').textContent(), 'Read by Grandma Rose', 'badge text');
+    eq(await page.getByTestId('reading-badge').isVisible(), false, 'portrait shows the badge above the words, not on the picture');
+    await waitState(page, 2, 'waiting', 10000);
+    await page.waitForFunction(() => window.__log.clips.some((c) => c.end != null && c.end - c.start > 300), null, { timeout: 8000 });
+    const [main] = await realClips(page);
+    assert(Math.abs(main.end - main.start - MAIN) < 350, `main clip played its whole length (${main.end - main.start} ms)`);
+    const hl = await page.evaluate(() => window.__hl.filter((h) => h.page === '2'));
+    eq(hl.filter((h) => h.part === 'text').map((h) => h.text), ['Where', 'is', "Ava's", 'shirt?'], 'text words lit in order');
+    eq(hl.filter((h) => h.part === 'prompt').map((h) => h.text), ['Lift', 'the', 'flap', 'on', 'the', 'bag!'], 'then the prompt words');
+    // Stretched across the clip: the first word near the start, the last well into it.
+    const first = hl[0].t - main.start;
+    const last = hl[hl.length - 1].t - main.start;
+    assert(first >= 0 && first < 450, `first word at the start of the clip (${first} ms)`);
+    assert(last > MAIN * 0.6 && last < MAIN, `last word near the end of the clip (${last} ms of ${MAIN})`);
+    eq((await played(page)).filter((t) => /shirt|flap/.test(t)), [], 'the computer voice did not read the page');
+    await shot(page, 'reading-p2-waiting');
+
+    // Done: the "after" part is Grandma's too.
+    await control(page).focus();
+    await page.keyboard.press('Enter');
+    await waitState(page, 2, 'done', 10000);
+    const clips = await realClips(page);
+    eq(clips.length, 2, 'main + after clips');
+    assert(Math.abs(clips[1].end - clips[1].start - AFTER) < 350, `after clip (${clips[1].end - clips[1].start} ms)`);
+    const after = await page.evaluate(() => window.__hl.filter((h) => h.part === 'after').map((h) => h.text));
+    eq(after, ['Here', 'it', 'is!'], 'after words lit');
+    eq((await played(page)).filter((t) => /Here it is/.test(t)), [], 'no voice for the after lines');
+
+    // A different layout puts the badge on the corner of the book.
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.waitForTimeout(100);
+    assert(await page.getByTestId('reading-badge').isVisible(), 'tablet: badge on the picture');
+    await shot(page, 'reading-p2-tablet');
+    noErrors(errors, 'recorded reading');
+    await context.close();
+  });
+
+  await step('recorded reading: missing parts use the voice; the badge only shows on recorded pages', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&reading=tone&mainMs=900&afterMs=900&parts=2:main&page=2');
+    await waitState(page, 2, 'waiting', 10000);
+    await page.waitForFunction(() => window.__log.clips.some((c) => c.end != null), null, { timeout: 8000 });
+    await control(page).focus();
+    await page.keyboard.press('Enter');
+    await waitState(page, 2, 'done', 10000);
+    assert((await played(page)).includes('Here it is!'), 'after lines fell back to the voice');
+    eq((await realClips(page)).length, 1, 'only the recorded part played');
+    await next(page, 3);
+    await waitState(page, 3, 'waiting', 10000);
+    assert((await played(page)).includes('Warm up, Ava!'), 'page 3 has no recording: the voice reads it');
+    eq(await page.getByTestId('reading-badge-band').isVisible(), false, 'no badge without a recording');
+    eq(await page.evaluate(() => window.__log.parts.filter((p) => p.startsWith('3:')).sort()), ['3:after', '3:main'], 'both parts were asked for');
+    noErrors(errors, 'reading fallback');
+    await context.close();
+  });
+
+  await step('recorded reading: pause stops the clip, play starts the part again; other languages play without word lighting', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&reading=tone&mainMs=3000&afterMs=900&lang=Urdu');
+    await page.waitForFunction(() => window.__log.clips.some((c) => c.end == null), null, { timeout: 8000 });
+    await page.waitForTimeout(500);
+    eq(await page.getByTestId('reading-badge-band').textContent(), 'Read by Grandma Rose in Urdu', 'badge names the language');
+    eq(await page.evaluate(() => window.__hl.length), 0, 'no word-by-word lighting for another language');
+    await page.getByTestId('pause').click();
+    await page.waitForFunction(() => window.__log.clips.every((c) => c.end != null), null, { timeout: 1000 });
+    const stopped = await page.evaluate(() => window.__log.clips[window.__log.clips.length - 1]);
+    assert(stopped.end - stopped.start < 1500, `clip stopped at once (${stopped.end - stopped.start} ms)`);
+    await page.waitForTimeout(800);
+    const n = (await realClips(page)).length;
+    eq(await page.evaluate(() => window.__log.clips.filter((c) => c.end == null).length), 0, 'nothing plays while paused');
+    await page.getByTestId('pause').click();
+    await page.waitForFunction((n) => window.__log.clips.filter((c) => c.end == null || c.end - c.start > 300).length > n, n, { timeout: 3000 });
+    await waitState(page, 1, 'done', 8000);
+    const last = (await realClips(page)).pop();
+    assert(last.end - last.start > 2600, `the part played again from the start (${last.end - last.start} ms)`);
+    noErrors(errors, 'reading pause');
+    await context.close();
+  });
+
+  await step('pause/play: the button, Space and K hold the story; play re-reads the sentence', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&scale=1&name=Ava');
+    await page.waitForFunction(() => window.__hl.some((h) => h.text === 'Starring'), null, { timeout: 8000 });
+    const pause = page.getByTestId('pause');
+    eq(await pause.getAttribute('aria-label'), 'Pause the story', 'label before');
+    await pause.click();
+    eq(await pause.getAttribute('aria-label'), 'Carry on reading', 'label while paused');
+    eq(await reader(page).getAttribute('data-paused'), '1', 'reader marked paused');
+    assert(await page.getByTestId('paused').isVisible(), '"Paused" shows over the picture');
+    const n = await page.evaluate(() => window.__hl.length);
+    await page.waitForTimeout(1500);
+    eq(await page.evaluate(() => window.__hl.length), n, 'no more words while paused');
+    await shot(page, 'pause-portrait');
+    // K carries on: the sentence starts again from "Starring".
+    await page.keyboard.press('k');
+    await page.waitForFunction((n) => window.__hl.length > n, n, { timeout: 3000 });
+    eq(await page.evaluate((n) => window.__hl[n].text, n), 'Starring', 'the sentence is read again');
+    eq(await page.getByTestId('paused').isVisible(), false, 'chip gone');
+    // Space pauses (when focus isn't on a button).
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.keyboard.press(' ');
+    eq(await reader(page).getAttribute('data-paused'), '1', 'Space pauses');
+    await page.keyboard.press(' ');
+    eq(await reader(page).getAttribute('data-paused'), null, 'Space plays');
+    // Turning the page carries on reading.
+    await page.keyboard.press('k');
+    await page.getByTestId('next-page').click();
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '2');
+    eq(await reader(page).getAttribute('data-paused'), null, 'a new page is not paused');
+    noErrors(errors, 'pause');
+    await context.close();
+  });
+
+  await step('pause holds the re-prompt and the automatic page turn', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&page=2&idle=400');
+    await waitState(page, 2, 'waiting');
+    await page.getByTestId('pause').click();
+    const prompts = () => page.evaluate(() => window.__log.play.filter((p) => p.text[0] === 'Lift the flap on the bag!').length);
+    await page.waitForTimeout(1000);
+    eq(await prompts(), 1, 'no re-prompt while paused');
+    await page.getByTestId('pause').click();
+    await page.waitForFunction(() => window.__log.play.filter((p) => p.text[0] === 'Lift the flap on the bag!').length === 2, null, { timeout: 3000 });
+    await context.close();
+
+    const b = await openHarness(browser, 'test=1&autoTurn=1');
+    await waitState(b.page, 1, 'done');
+    await b.page.getByTestId('pause').click();
+    await b.page.waitForTimeout(2200);
+    eq(await reader(b.page).getAttribute('data-page'), '1', 'no auto-turn while paused');
+    await b.page.getByTestId('pause').click();
+    await b.page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '2', null, { timeout: 4000 });
+    noErrors([...errors, ...b.errors], 'pause timers');
+    await b.context.close();
+  });
+
+  await step('name spotting: tap the name in the picture to hear "That says ..."', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&name=Niamh&say=Neeve');
+    await waitState(page, 1, 'done');
+    await page.waitForTimeout(300);
+    const box = await page.locator('[data-testid=scene] #p1-name').boundingBox();
+    // A little below the letters still counts (small fingers).
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height + 10);
+    await page.waitForFunction(() => window.__log.speakText.length === 1, null, { timeout: 3000 });
+    eq(await page.evaluate(() => window.__log.speakText), ['That says Neeve!'], 'said the way the parent chose');
+    assert(await page.evaluate(() => {
+      const t = document.querySelector('[data-testid=scene] #p1-name');
+      return (t.classList.contains('sb-name-spot') || t.parentNode.classList.contains('sb-name-spot')) && document.querySelectorAll('.sb-spot-star').length > 3;
+    }), 'the name bounces and sparkles');
+    eq(await page.locator('.sb-spot-word').textContent(), 'Niamh', 'the name shown big, as written');
+    assert((await page.evaluate(() => window.__log.sfx)).includes('sparkle'), 'sparkle sound');
+    await shot(page, 'spot-p1');
+    eq(await page.getByTestId('scene').evaluate((s) => getComputedStyle(s.querySelector('#p1-name')).cursor), 'pointer', 'pointer cursor on the name');
+    // Far from the name: nothing.
+    const frame = await page.locator('.sb-r-frame').boundingBox();
+    await page.mouse.click(frame.x + 8, frame.y + frame.height - 8);
+    await page.waitForTimeout(300);
+    eq(await reader(page).getAttribute('data-spotted'), '1', 'a tap elsewhere is not a name');
+
+    // Bunting: the letters jump in a wave; a tap on the moving part is still "show me".
+    await page.evaluate(() => window.__reader.goTo(3));
+    await waitState(page, 3, 'waiting');
+    await page.waitForTimeout(400);
+    const flags = await page.locator('[data-testid=scene] #p3-flags').boundingBox();
+    await page.mouse.click(flags.x + flags.width / 2, flags.y + flags.height * 0.35);
+    await page.waitForFunction(() => window.__log.speakText.length === 2, null, { timeout: 3000 });
+    const wave = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] .sb-letter')].filter((t) => t.textContent).map((t) => {
+      const el = t.classList.contains('sb-name-spot') ? t : t.parentNode;
+      return el.classList.contains('sb-name-spot') ? el.style.animationDelay : null;
+    }));
+    eq(wave, ['0ms', '70ms', '140ms', '210ms', '280ms'].map((x, i) => (i ? x : '')), 'each letter jumps in turn');
+    const [wx, wy] = await toScreen(page, 800, 580 + 230);
+    await page.mouse.click(wx, wy);
+    await waitState(page, 3, 'done');
+    eq(await reader(page).getAttribute('data-spotted'), '2', 'the wheel tap was not a name tap');
+    noErrors(errors, 'name spotting');
+    await context.close();
+
+    // While the story is being read: sparkles, but the voice doesn't talk over it.
+    const b = await openHarness(browser, 'test=1&scale=1&name=Ava');
+    await b.page.waitForFunction(() => document.querySelector('#p1-name')?.textContent === 'Ava' && !document.querySelector('#p1-name').classList.contains('is-pending'), null, { timeout: 8000 });
+    await b.page.waitForFunction(() => window.__hl.length > 0);
+    const nb = await b.page.locator('[data-testid=scene] #p1-name').boundingBox();
+    await b.page.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
+    await b.page.waitForTimeout(300);
+    eq(await reader(b.page).getAttribute('data-spotted'), '1', 'spotted mid-story');
+    eq(await b.page.evaluate(() => window.__log.speakText), [], 'no talking over the story');
+    noErrors(b.errors, 'name spotting while reading');
+    await b.context.close();
+  });
+
+  await step('bedtime: night styling, soft sounds, slower voice; the story carries on by itself', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&bedtime=1&name=Ava');
+    assert(await reader(page).evaluate((r) => r.classList.contains('is-bedtime')), 'bedtime class');
+    const bg = await reader(page).evaluate((r) => getComputedStyle(r).color);
+    eq(bg, 'rgb(230, 221, 200)', 'soft cream text');
+    await waitState(page, 1, 'done');
+    await shot(page, 'bedtime-p1-done');
+    // Page 2: nobody touches the flap; it lifts itself.
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '2', null, { timeout: 5000 });
+    await waitState(page, 2, 'waiting');
+    await shot(page, 'bedtime-p2-waiting');
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.autoplayed === '2', null, { timeout: 5000 });
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '3', null, { timeout: 8000 });
+    const log = await page.evaluate(() => window.__log);
+    const chimes = log.sfxOpts.filter((x) => x.name === 'ding' && x.volume === 0.28);
+    assert(chimes.length >= 2, `a soft chime before each turn (${chimes.length})`);
+    assert(log.sfxOpts.every((x) => x.volume != null && x.volume <= 0.3), `every sound is soft (${JSON.stringify(log.sfxOpts)})`);
+    assert(log.play.length && log.play.every((p) => Math.abs(p.rateScale - 0.9) < 1e-9), 'the voice is a little slower');
+    // Page 6 would throw confetti: not at bedtime.
+    await page.evaluate(() => window.__reader.goTo(6));
+    await waitState(page, 6, 'done', 10000);
+    eq(await page.evaluate(() => document.querySelectorAll('.sb-confetti-piece').length), 0, 'no confetti');
+    // The end page reads, lingers, then the lights go down (and stay down).
+    await page.evaluate(() => window.__reader.goTo(8));
+    await page.getByTestId('night').waitFor({ state: 'visible', timeout: 8000 });
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').classList.contains('is-lights-out'));
+    await page.waitForTimeout(2600);
+    await shot(page, 'bedtime-lights-out');
+    eq(await page.evaluate(() => window.__log.exit), 0, 'stays on the dark screen');
+    eq(await page.getByTestId('night').textContent(), 'Night night, Ava.Tap to see the last page again', 'goodnight words');
+    await page.getByTestId('night').click();
+    await page.getByTestId('read-again').waitFor({ state: 'visible' });
+    assert(!(await reader(page).evaluate((r) => r.classList.contains('is-lights-out'))), 'lights back on');
+    noErrors(errors, 'bedtime');
+    await context.close();
+  });
+
+  await step('bedtime: touching the moving part holds the show-me; pause holds the turn; tap to turn sooner', async () => {
+    // scale=0.4: show-me after 2 s, the turn 1.2 s after the chime.
+    const { page, context, errors } = await openHarness(browser, 'test=1&scale=0.4&bedtime=1&page=4');
+    await waitState(page, 4, 'waiting', 10000);
+    const from = await toScreen(page, 420, 860);
+    const to = await toScreen(page, 700, 870);
+    const t0 = Date.now();
+    await page.mouse.move(from[0], from[1]);
+    await page.mouse.down();
+    for (let i = 1; i <= 10; i++) {
+      await page.mouse.move(from[0] + ((to[0] - from[0]) * i) / 10, from[1] + ((to[1] - from[1]) * i) / 10);
+      await page.waitForTimeout(150);
+    }
+    await page.mouse.up();
+    // Still the child's turn a while after they let go.
+    await page.waitForTimeout(1200);
+    eq(await reader(page).getAttribute('data-autoplayed'), null, `no show-me while busy (${Date.now() - t0} ms)`);
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.autoplayed === '4', null, { timeout: 5000 });
+    await waitState(page, 4, 'done', 10000);
+    // Counting down to the turn: pause holds it...
+    await page.waitForFunction(() => document.querySelector('.sb-r-next-wrap').classList.contains('is-counting'));
+    await shot(page, 'bedtime-counting');
+    await page.getByTestId('pause').click();
+    eq(await page.evaluate(() => document.querySelector('.sb-r-next-wrap').classList.contains('is-counting')), false, 'countdown stopped');
+    await page.waitForTimeout(1800);
+    eq(await reader(page).getAttribute('data-page'), '4', 'no turn while paused');
+    await page.getByTestId('pause').click();
+    // ...and the arrow turns it sooner.
+    await page.getByTestId('next-page').click();
+    await page.waitForFunction(() => document.querySelector('[data-testid=reader]').dataset.page === '5');
+    noErrors(errors, 'bedtime timers');
+    await context.close();
+  });
+
+  await step('siblings: "AMARA & ZAK" in the pictures, plural text, no recordings', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&sibs=Amara,Zak&reading=tone&page=2');
+    await waitState(page, 2, 'waiting');
+    eq(await page.getByTestId('page-text').evaluate(() => window.__log.play[0].text[0]), "Where are Amara and Zak's shirts?", 'plural text');
+    await control(page).focus();
+    await page.keyboard.press('Enter');
+    await waitState(page, 2, 'done');
+    await page.waitForTimeout(500);
+    eq(await page.locator('[data-testid=scene] #p2-name > tspan').allTextContents(), ['AMARA', '& ZAK'], 'shirt: upper-case art form on two lines');
+    await shot(page, 'siblings-p2');
+    await page.evaluate(() => window.__reader.goTo(3));
+    await waitState(page, 3, 'waiting');
+    eq((await page.locator('[data-testid=scene] .sb-letter').allTextContents()).join(''), '', 'no letters on the bunting');
+    eq(await shown(page, '#p3-banner'), true, 'the banner instead');
+    eq(await text(page, '#p3-banner'), 'AMARA & ZAK', 'banner text');
+    await page.evaluate(() => window.__reader.goTo(6));
+    await waitState(page, 6, 'waiting');
+    eq(await text(page, '#p6-name'), "Amara & Zak's", 'possessive art form');
+    eq(await page.evaluate(() => window.__log.parts), [], 'a recorded reading is not used for siblings');
+    eq(await page.getByTestId('reading-badge-band').isVisible(), false, 'no badge');
+    eq(await page.evaluate(() => window.__log.clips.length), 0, 'no clips');
+    const b = await page.locator('[data-testid=scene] #p6-name').boundingBox();
+    await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2);
+    await page.waitForFunction(() => window.__log.speakText.length === 1);
+    eq(await page.evaluate(() => window.__log.speakText), ['That says Amara and Zak!'], 'name spotting says both');
+    noErrors(errors, 'siblings');
+    await context.close();
+  });
+
+  await step('new layouts: bedtime, paused and recorded pages at phone, landscape and tablet sizes', async () => {
+    for (const [label, viewport] of [['portrait', { width: 390, height: 844 }], ['landscape', { width: 844, height: 390 }], ['tablet', { width: 1024, height: 768 }]]) {
+      const { page, context, errors } = await openHarness(browser, 'test=1&bedtime=1&reading=tone&mainMs=800&afterMs=800&page=4&name=Maximilian', { viewport });
+      await waitState(page, 4, 'waiting', 10000);
+      await page.getByTestId('pause').click();
+      await page.waitForTimeout(450);
+      await shot(page, `layout-bedtime-paused-${label}`);
+      const m = await page.evaluate(() => ({
+        scrollW: document.scrollingElement.scrollWidth,
+        w: innerWidth,
+        chip: document.querySelector('[data-testid=paused]').getBoundingClientRect().toJSON(),
+        frame: document.querySelector('.sb-r-frame').getBoundingClientRect().toJSON(),
+      }));
+      assert(m.scrollW <= m.w, `${label}: no horizontal scroll`);
+      assert(m.chip.left >= m.frame.left && m.chip.right <= m.frame.right, `${label}: "Paused" sits on the picture`);
+      noErrors(errors, `new layouts ${label}`);
+      await context.close();
+    }
   });
 
   // Smoke test of the real book: every page whose scene the illustrators have
@@ -635,8 +985,8 @@ try {
     console.log('  skip real book smoke test (no scenes yet or REAL_BOOK=0)');
   }
 } finally {
-  await browser.close();
-  server.kill();
+  await browser.close().catch(() => {});
+  stopServer(server);
 }
 
 const failed = results.filter((r) => !r.ok);

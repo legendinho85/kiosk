@@ -1,0 +1,482 @@
+/* Activities after the story (js/activities/*.js). Loaded by the modules
+   themselves (a <link data-sb-activities> added once), so index.html doesn't
+   need to know about it. Everything is scoped under .sb-lt.
+
+   "Find your first letter" (js/activities/letter-trace.js): bright and bold
+   like the reader, big targets (>= 56 px), calm when reduced motion or
+   bedtime is on. Colours used by the canvas (--lt-glyph*, --lt-line) are read
+   from here by the script, so the bedtime palette lives in one place. */
+
+.sb-lt {
+  --lt-ink: #2B2A33;
+  --lt-text: #2B2A33;
+  --lt-line: #2B2A33;
+  --lt-paper: #FFF8EC;
+  --lt-sun: #FFC83D;
+  --lt-sky: #7EC8F0;
+  --lt-grass: #6CC24A;
+  --lt-berry: #E8505B;
+  --lt-focus: #1D6FE0;
+  --lt-name: #C0264B;          /* 5.4:1 on paper */
+  --lt-bg-top: #DDF1FC;
+  --lt-bg-bottom: #FFF8EC;
+  --lt-dots: rgba(255, 200, 61, .26);
+  --lt-card: #FFFDF8;
+  --lt-glyph: #FFFFFF;
+  --lt-glyph-edge: #8FC6E6;
+  --lt-glyph-shadow: #E9E6DF;   /* opaque: it is stamped several times */
+  --lt-guide: rgba(43, 42, 51, .62);
+  --lt-dot-first: #2E9E48;
+  --lt-dot-first-text: #FFFFFF;
+  --lt-dot: #FFC83D;
+  --lt-dot-text: #2B2A33;
+  --lt-sparkle: #FFC83D;
+  --lt-chip: rgba(255, 255, 255, .8);
+  --lt-pill: #FFC83D;
+  --lt-pill-text: #2B2A33;
+  --lt-say: clamp(22px, 1.5vh + 3vw, 36px);
+  --lt-btn: 60px;
+
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: "top" "say" "main" "bar";
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  color: var(--lt-text);
+  background:
+    radial-gradient(circle at 14px 14px, var(--lt-dots) 2.5px, transparent 3px) 0 0 / 30px 30px,
+    linear-gradient(180deg, var(--lt-bg-top) 0, var(--lt-bg-bottom) 62%);
+  font-family: Andika, "Andika New Basic", ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.sb-lt.is-inline { position: relative; inset: auto; z-index: auto; width: 100%; height: 100%; min-height: 480px; }
+.sb-lt *, .sb-lt *::before, .sb-lt *::after { box-sizing: border-box; }
+.sb-lt [hidden] { display: none !important; }
+.sb-lt button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+.sb-lt :focus { outline: none; }
+.sb-lt :focus-visible { outline: 4px solid var(--lt-focus); outline-offset: 3px; }
+.sb-lt-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Top: whose letter + Skip (for grown-ups, always there) -------------------- */
+.sb-lt-top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 2px 16px;
+}
+.sb-lt-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 7px 14px 7px 9px;
+  border-radius: 999px;
+  background: var(--lt-chip);
+  font: 600 18px/1.2 Fredoka, Andika, ui-rounded, system-ui, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sb-lt-kicker-icon { display: inline-grid; flex: none; width: 26px; height: 26px; }
+.sb-lt-kicker-icon svg, .sb-lt-skip-icon svg, .sb-lt-pill-icon svg { width: 100%; height: 100%; display: block; }
+.sb-lt-count {
+  margin-left: 2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--lt-sun);
+  color: #2B2A33;
+  font-size: 15px;
+}
+.sb-lt-skip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 56px;
+  min-width: 96px;
+  padding: 0 14px 0 20px;
+  border: 2px solid rgba(43, 42, 51, .28);
+  border-radius: 999px;
+  background: var(--lt-chip);
+  color: var(--lt-text);
+  font: 600 18px/1 Fredoka, Andika, ui-rounded, system-ui, sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.sb-lt-skip-icon { display: inline-grid; width: 22px; height: 22px; opacity: .8; }
+.sb-lt-skip:hover { background: #FFFFFF; }
+
+/* ---- What the voice says (real text for screen readers) -------------------------- */
+.sb-lt-say {
+  grid-area: say;
+  margin: 0;
+  padding: 6px 20px 12px;
+  text-align: center;
+  font: 700 var(--lt-say)/1.3 Andika, "Andika New Basic", ui-rounded, system-ui, sans-serif;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.sb-lt-say-letter {
+  display: inline-block;
+  min-width: 1.25em;
+  margin: 0 .05em;
+  padding: 0 .2em;
+  border-radius: .32em;
+  background: var(--lt-sun);
+  box-shadow: inset 0 0 0 3px var(--lt-line);
+  color: #2B2A33;
+  font-family: Fredoka, Andika, ui-rounded, system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+.sb-lt-say-name { color: var(--lt-name); }
+
+/* ---- Main area ----------------------------------------------------------------------- */
+.sb-lt-main {
+  grid-area: main;
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  padding: 0 16px 12px;
+}
+.sb-lt-fieldwrap, .sb-lt-trace { grid-area: 1 / 1; position: relative; min-height: 0; min-width: 0; }
+
+/* ---- 1. Find it: floating tiles ---------------------------------------------------- */
+.sb-lt-field {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), var(--tile, 120px));
+  grid-auto-rows: var(--tile, 120px);
+  gap: var(--gap, 18px);
+  place-content: center;
+}
+.sb-lt-sparkle {
+  position: absolute;
+  width: var(--s, 18px);
+  height: var(--s, 18px);
+  color: var(--lt-sparkle);
+  opacity: .7;
+  pointer-events: none;
+  animation: sb-lt-twinkle 2.8s ease-in-out var(--d, 0ms) infinite;
+}
+.sb-lt-sparkle svg { width: 100%; height: 100%; display: block; }
+.sb-lt-tile {
+  position: relative;
+  z-index: 1;
+  width: var(--tile);
+  height: var(--tile);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #2B2A33;
+  cursor: pointer;
+  touch-action: manipulation;
+  transform: translate(calc(var(--jx, 0) * var(--tile)), calc(var(--jy, 0) * var(--tile))) rotate(var(--tilt, 0deg));
+  transition: opacity .35s ease, scale .35s cubic-bezier(.3, 1.5, .5, 1), filter .35s ease;
+}
+.sb-lt-tile:focus-visible { outline: none; }
+.sb-lt-tile:focus-visible .sb-lt-tile-face { outline: 5px solid var(--lt-focus); outline-offset: 5px; }
+.sb-lt-tile-bob { display: block; width: 100%; height: 100%; animation: sb-lt-bob 3.8s ease-in-out var(--bob, 0ms) infinite; }
+.sb-lt-tile-face {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border: 4px solid var(--lt-line);
+  border-radius: 46% 54% 50% 50% / 52% 46% 54% 48%;
+  background: var(--c, #FFD866);
+  box-shadow: 0 5px 0 var(--lt-line), inset 0 -9px 0 rgba(0, 0, 0, .07), inset 0 9px 0 rgba(255, 255, 255, .35);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.sb-lt-tile:active .sb-lt-tile-face { transform: translateY(3px); box-shadow: 0 2px 0 var(--lt-line), inset 0 -9px 0 rgba(0, 0, 0, .07), inset 0 9px 0 rgba(255, 255, 255, .35); }
+.sb-lt-tile-glyph {
+  display: block;
+  font: 600 calc(var(--tile) * .6)/1 Fredoka, Andika, ui-rounded, system-ui, sans-serif;
+  transform: translateY(.03em);
+}
+.sb-lt-tile-shape { display: grid; place-items: center; width: 62%; height: 62%; }
+.sb-lt-tile-shape svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.sb-lt-tile.is-wobble { animation: sb-lt-wobble .6s ease-in-out; }
+.sb-lt-tile.is-hint .sb-lt-tile-face { animation: sb-lt-glow 1.8s ease-in-out infinite; }
+.sb-lt-tile.is-found { z-index: 2; scale: 1.16; }
+.sb-lt-tile.is-found .sb-lt-tile-face { box-shadow: 0 5px 0 var(--lt-line), 0 0 0 10px rgba(255, 216, 79, .9), 0 0 36px 16px rgba(255, 216, 79, .55); }
+.sb-lt-tile.is-faded { opacity: .25; scale: .88; filter: saturate(.4); }
+.sb-lt-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  color: var(--lt-sun);
+  pointer-events: none;
+  filter: drop-shadow(0 1px 0 rgba(43, 42, 51, .45));
+  animation: sb-lt-burst .85s cubic-bezier(.2, .7, .4, 1) forwards;
+}
+.sb-lt-burst svg { width: 100%; height: 100%; display: block; }
+
+/* ---- 2. Trace it ------------------------------------------------------------------- */
+.sb-lt-trace { display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); animation: sb-lt-in .35s ease-out both; }
+.sb-lt-stage {
+  position: relative;
+  justify-self: center;
+  align-self: center;
+  width: 100%;
+  max-width: 880px;
+  height: 100%;
+  max-height: max(300px, 125vw); /* tall phones: a card around the letter, not a long empty page */
+  min-height: 0;
+  border: 4px solid var(--lt-line);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(126, 200, 240, .10), transparent 70%),
+    var(--lt-card);
+  box-shadow: 0 6px 0 var(--lt-line);
+  overflow: hidden;
+}
+.sb-lt-stage canvas, .sb-lt-guide { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.sb-lt-ink { touch-action: none; cursor: crosshair; }
+.sb-lt-guide { pointer-events: none; overflow: visible; transition: opacity .4s ease; }
+.sb-lt-guide-line { fill: none; stroke: var(--lt-guide); stroke-linecap: round; stroke-linejoin: round; transition: opacity .3s ease; }
+.sb-lt-arrow-halo { fill: none; stroke: var(--lt-card); stroke-linecap: round; stroke-linejoin: round; }
+.sb-lt-arrow-mark { fill: none; stroke: var(--lt-ink); stroke-linecap: round; stroke-linejoin: round; }
+.sb-lt.has-ink .sb-lt-guide-line { opacity: .6; }
+.sb-lt-dot-face { fill: var(--lt-dot); stroke: var(--lt-line); }
+.sb-lt-dot-n {
+  fill: var(--lt-dot-text);
+  font-family: Fredoka, Andika, ui-rounded, system-ui, sans-serif;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.sb-lt-dot.is-first .sb-lt-dot-face { fill: var(--lt-dot-first); }
+.sb-lt-dot.is-first .sb-lt-dot-n { fill: var(--lt-dot-first-text); }
+.sb-lt-dot-ring {
+  fill: none;
+  stroke: var(--lt-dot-first);
+  stroke-width: 4;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sb-lt-ring 1.8s ease-out infinite;
+}
+.sb-lt.has-ink .sb-lt-dot-ring { animation: none; opacity: 0; }
+.sb-lt-stage.is-complete { animation: sb-lt-pop .6s cubic-bezier(.3, 1.6, .5, 1); }
+.sb-lt-stage.is-complete .sb-lt-guide { opacity: 0; }
+.sb-lt-pen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 4px solid var(--lt-line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 0 0 7px rgba(255, 200, 61, .55);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ---- Buttons ------------------------------------------------------------------------ */
+.sb-lt-bar {
+  grid-area: bar;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 16px 18px;
+}
+.sb-lt-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--lt-btn);
+  min-width: 56px;
+  padding: 8px 24px 8px 14px;
+  border: 3px solid var(--lt-line);
+  border-radius: 999px;
+  background: var(--lt-pill);
+  color: var(--lt-pill-text);
+  box-shadow: 0 4px 0 var(--lt-line);
+  font: 600 21px/1 Fredoka, Andika, ui-rounded, system-ui, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  animation: sb-lt-pop-in .45s cubic-bezier(.3, 1.6, .5, 1) both;
+}
+.sb-lt-pill:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--lt-line); }
+.sb-lt-pill[aria-disabled="true"] { opacity: .55; cursor: default; }
+.sb-lt-pill-icon { display: inline-grid; flex: none; width: 32px; height: 32px; }
+.sb-lt-pill.is-rub, .sb-lt-pill.is-again { background: #FFFFFF; }
+.sb-lt-pill.is-show { background: #BFE6FA; }
+.sb-lt-pill.is-next { background: var(--lt-sun); }
+.sb-lt-pill.is-done { background: var(--lt-grass); }
+.sb-lt-pill.is-nudge { animation: sb-lt-nudge 1.4s ease-in-out 3; }
+
+/* ---- Confetti-lite --------------------------------------------------------------------- */
+.sb-lt-confetti { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
+.sb-lt-confetti-piece {
+  position: absolute;
+  width: 12px;
+  height: 18px;
+  margin: -9px 0 0 -6px;
+  border-radius: 3px;
+  background: var(--c);
+  box-shadow: inset 0 0 0 1.5px rgba(43, 42, 51, .35);
+  opacity: 0;
+  animation: sb-lt-confetti 2.3s cubic-bezier(.2, .7, .4, 1) var(--d, 0ms) forwards;
+}
+.sb-lt-confetti-piece.is-round { width: 13px; height: 13px; border-radius: 50%; }
+
+/* ---- Keyframes (all slow and gentle: nothing flashes faster than 3 Hz) ------------------ */
+@keyframes sb-lt-bob { 0%, 100% { transform: translateY(-3%); } 50% { transform: translateY(3%); } }
+@keyframes sb-lt-twinkle { 0%, 100% { opacity: .25; transform: scale(.75); } 50% { opacity: .9; transform: scale(1.1); } }
+@keyframes sb-lt-wobble { 0%, 100% { rotate: 0deg; } 20% { rotate: -10deg; } 45% { rotate: 8deg; } 70% { rotate: -4deg; } }
+@keyframes sb-lt-glow {
+  0%, 100% { box-shadow: 0 5px 0 var(--lt-line), 0 0 0 0 rgba(255, 200, 61, .0); }
+  50% { box-shadow: 0 5px 0 var(--lt-line), 0 0 0 10px rgba(255, 200, 61, .8); }
+}
+@keyframes sb-lt-burst {
+  0% { transform: rotate(var(--a)) translateX(0) scale(.4); opacity: 1; }
+  100% { transform: rotate(var(--a)) translateX(calc(var(--tile, 120px) * .85)) scale(1); opacity: 0; }
+}
+@keyframes sb-lt-ring { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes sb-lt-pop { 0% { transform: scale(1); } 40% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@keyframes sb-lt-pop-in { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sb-lt-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes sb-lt-nudge {
+  0%, 100% { box-shadow: 0 4px 0 var(--lt-line), 0 0 0 0 rgba(126, 200, 240, 0); }
+  50% { box-shadow: 0 4px 0 var(--lt-line), 0 0 0 9px rgba(126, 200, 240, .75); }
+}
+@keyframes sb-lt-confetti {
+  0% { transform: translate(0, 0) rotate(0) scale(.6); opacity: 1; }
+  30% { transform: translate(calc(var(--x) * .75), var(--up)) rotate(calc(var(--r) * .4)) scale(1); opacity: 1; }
+  100% { transform: translate(var(--x), calc(var(--up) + var(--fall))) rotate(var(--r)) scale(1); opacity: 0; }
+}
+@keyframes sb-lt-fade { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---- Landscape phones: words and buttons on the left, the game on the right ------------ */
+@media (orientation: landscape) and (max-height: 560px) {
+  .sb-lt {
+    --lt-say: clamp(19px, 2.2vh + 1.6vw, 28px);
+    --lt-btn: 56px;
+    grid-template-columns: minmax(210px, 36%) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "top top" "say main" "bar main";
+  }
+  .sb-lt-top { padding: 6px 12px 2px 16px; }
+  .sb-lt-skip { min-height: 56px; }
+  .sb-lt-say { align-self: center; padding: 4px 8px 8px 20px; }
+  .sb-lt-bar { flex-direction: column; align-items: stretch; gap: 10px; padding: 0 8px 14px 20px; }
+  .sb-lt-pill { font-size: 19px; padding: 6px 18px 6px 10px; }
+  .sb-lt-main { padding: 4px 16px 14px 8px; }
+}
+
+/* ---- Small portrait phones -------------------------------------------------------------- */
+@media (max-width: 400px) {
+  .sb-lt-top { padding-left: 12px; }
+  .sb-lt-kicker { font-size: 16px; }
+  .sb-lt-skip { min-width: 88px; padding: 0 10px 0 16px; font-size: 17px; }
+  .sb-lt-bar { gap: 10px; padding: 4px 12px 16px; }
+  .sb-lt-pill { font-size: 19px; padding: 6px 18px 6px 10px; gap: 8px; }
+  .sb-lt-pill-icon { width: 28px; height: 28px; }
+  .sb-lt-main { padding: 0 12px 10px; }
+}
+
+/* ---- Bedtime: dim, calm, cosy ------------------------------------------------------------ */
+.sb-lt[data-bedtime] {
+  --lt-text: #FFF4D6;
+  --lt-line: #0F1330;
+  --lt-ink: #FFF4D6;
+  --lt-name: #FFC7A8;
+  --lt-sun: #E8C46A;
+  --lt-bg-top: #1B2146;
+  --lt-bg-bottom: #2A3263;
+  --lt-dots: rgba(255, 233, 168, .10);
+  --lt-card: #222A55;
+  --lt-glyph: #333E7A;
+  --lt-glyph-edge: #7883C8;
+  --lt-glyph-shadow: #181D3E;
+  --lt-guide: rgba(255, 244, 214, .62);
+  --lt-dot-first: #5DAA66;
+  --lt-dot: #E8C46A;
+  --lt-dot-text: #1B2146;
+  --lt-sparkle: #FFE9A8;
+  --lt-chip: rgba(255, 244, 214, .12);
+  --lt-pill: #3B4679;
+  --lt-pill-text: #FFF4D6;
+  --lt-focus: #8EC5FF;
+}
+.sb-lt[data-bedtime] .sb-lt-skip { border-color: rgba(255, 244, 214, .3); }
+.sb-lt[data-bedtime] .sb-lt-skip:hover { background: rgba(255, 244, 214, .2); }
+.sb-lt[data-bedtime] .sb-lt-tile { color: #FFE9A8; }
+.sb-lt[data-bedtime] .sb-lt-tile-face { box-shadow: 0 5px 0 var(--lt-line), inset 0 -9px 0 rgba(0, 0, 0, .12), inset 0 9px 0 rgba(255, 255, 255, .08); }
+.sb-lt[data-bedtime] .sb-lt-tile-shape svg { filter: saturate(.6) brightness(.85); }
+.sb-lt[data-bedtime] .sb-lt-tile.is-found .sb-lt-tile-face { box-shadow: 0 5px 0 var(--lt-line), 0 0 0 8px rgba(232, 196, 106, .55); }
+.sb-lt[data-bedtime] .sb-lt-sparkle { animation: none; opacity: .35; }
+.sb-lt[data-bedtime] .sb-lt-stage { background: var(--lt-card); }
+.sb-lt[data-bedtime] .sb-lt-pill.is-rub,
+.sb-lt[data-bedtime] .sb-lt-pill.is-again,
+.sb-lt[data-bedtime] .sb-lt-pill.is-show { background: #2F3A66; }
+.sb-lt[data-bedtime] .sb-lt-pill.is-next { background: #E8C46A; color: #1B2146; }
+.sb-lt[data-bedtime] .sb-lt-pill.is-done { background: #5DAA66; color: #10152E; }
+.sb-lt[data-bedtime] .sb-lt-pen { background: rgba(255, 244, 214, .9); box-shadow: 0 0 0 6px rgba(232, 196, 106, .35); }
+.sb-lt[data-bedtime] .sb-lt-count { background: #E8C46A; color: #1B2146; }
+
+/* ---- Reduced motion: keep it clear, keep it still ------------------------------------------ */
+.sb-lt[data-reduced] .sb-lt-tile-bob,
+.sb-lt[data-reduced] .sb-lt-tile.is-hint .sb-lt-tile-face,
+.sb-lt[data-reduced] .sb-lt-trace,
+.sb-lt[data-reduced] .sb-lt-stage.is-complete,
+.sb-lt[data-reduced] .sb-lt-pill,
+.sb-lt[data-reduced] .sb-lt-dot-ring { animation: none !important; }
+.sb-lt[data-reduced] .sb-lt-sparkle { animation: none; opacity: .55; }
+.sb-lt[data-reduced] .sb-lt-dot-ring { opacity: 0; }
+.sb-lt[data-reduced] .sb-lt-tile { transition: opacity .2s linear; }
+.sb-lt[data-reduced] .sb-lt-tile.is-found { scale: 1; }
+.sb-lt[data-reduced] .sb-lt-tile.is-faded { scale: 1; }
+/* A wrong tap dims for a moment instead of wobbling. */
+.sb-lt[data-reduced] .sb-lt-tile.is-wobble { animation: none; opacity: .55; }
+/* Still shows where the right one is, without pulsing. */
+.sb-lt[data-reduced] .sb-lt-tile.is-hint .sb-lt-tile-face { box-shadow: 0 5px 0 var(--lt-line), 0 0 0 8px rgba(255, 200, 61, .8); }
+.sb-lt[data-reduced] .sb-lt-pill.is-nudge { animation: none; box-shadow: 0 4px 0 var(--lt-line), 0 0 0 7px rgba(126, 200, 240, .75); }
+.sb-lt[data-reduced] .sb-lt-confetti-piece {
+  animation: sb-lt-fade 1.6s ease-out var(--d, 0ms) forwards;
+  transform: translate(calc(var(--x) * .45), calc(var(--up) * .55)) rotate(calc(var(--r) * .2));
+}
+
+/* Windows high contrast / forced colours: keep edges visible. */
+@media (forced-colors: active) {
+  .sb-lt-tile-face, .sb-lt-pill, .sb-lt-stage, .sb-lt-skip { border-color: CanvasText; }
+}

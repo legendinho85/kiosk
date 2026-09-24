@@ -254,15 +254,35 @@ export async function concatToWav(parts, { sampleRate = 22050, onProgress, onSki
 
 // ---- Handing files to the parent ----------------------------------------------
 
-/** A filename that every phone and computer will accept. */
+// Letters that don't fall apart into a base letter + accent under NFKD.
+const FOLD = { Ł: 'L', ł: 'l', Ø: 'O', ø: 'o', Đ: 'D', đ: 'd', Ħ: 'H', ħ: 'h', ß: 'ss', Æ: 'AE', æ: 'ae', Œ: 'OE', œ: 'oe', Þ: 'Th', þ: 'th', Ð: 'D', ð: 'd', ı: 'i', '‘': "'", '’': "'", '‚': "'", '“': '', '”': '', '„': '', '–': '-', '—': '-', '…': '...' };
+
+/**
+ * A filename every phone, computer and download manager accepts. Plain ASCII:
+ * Chromium ignores a download name with any other character and saves the
+ * file as "download" (no extension), so "Siobhán’s story.wav" becomes
+ * "Siobhan's story.wav". Letters that can't be spelled in ASCII are dropped;
+ * if nothing is left of the name, `fallback` is used (keeping the extension).
+ */
 export function safeFilename(name, fallback = 'download') {
-  const s = String(name ?? '')
-    .normalize('NFC')
-    .replace(/[\u0000-\u001f\u007f<>:"/\\|?*]+/g, '-')
-    .replace(/\s+/g, ' ')
-    .replace(/^[\s.-]+|[\s.]+$/g, '')
-    .slice(0, 120);
-  return s || fallback;
+  const clean = (x) =>
+    String(x ?? '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\u0000-\u007f]/g, (ch) => FOLD[ch] ?? '')
+      .replace(/[\u0000-\u001f\u007f<>:"/\\|?*]+/g, '-')
+      .replace(/\s+/g, ' ')
+      .replace(/[\s-]+\./g, '.')
+      .replace(/-{2,}/g, '-')
+      .replace(/^[\s.-]+|[\s.-]+$/g, '');
+  const raw = String(name ?? '');
+  const ext = /\.[A-Za-z0-9]{1,8}$/.exec(raw)?.[0] ?? '';
+  let base = clean(ext ? raw.slice(0, -ext.length) : raw);
+  if (!/[A-Za-z0-9]/.test(base)) {
+    const fb = clean(fallback) || 'download';
+    base = ext && fb.toLowerCase().endsWith(ext.toLowerCase()) ? fb.slice(0, -ext.length) : fb;
+  }
+  return `${base.slice(0, 120 - ext.length)}${ext}`;
 }
 
 /**

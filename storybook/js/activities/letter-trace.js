@@ -536,7 +536,7 @@ const GUIDE_DEFS = {
   T: [[[50, 0], [50, 100]], [[0, 0], [100, 0]]],
   U: [[[0, 0], [0, 58], ...arc(50, 58, 50, 42, 180, 0), [100, 0]]],
   V: [[[0, 0], [50, 100], [100, 0]]],
-  W: [[[0, 0], [25, 100], [50, 18], [75, 100], [100, 0]]],
+  W: [[[0, 0], [25, 100], [50, 6], [75, 100], [100, 0]]],
   X: [[[0, 0], [100, 100]], [[100, 0], [0, 100]]],
   Y: [[[0, 0], [50, 52]], [[100, 0], [50, 52], [50, 100]]],
   Z: [[[0, 0], [100, 0], [0, 100], [100, 100]]],
@@ -600,28 +600,122 @@ export function startDots(polys, minGap) {
   polys.forEach((poly, i) => {
     if (!poly.length) return;
     let p = { x: poly[0].x, y: poly[0].y };
-    if (dots.some((d) => Math.hypot(d.x - p.x, d.y - p.y) < minGap)) {
-      const moved = pointAlong(poly, Math.min(minGap, polylineLength(poly) * 0.45));
-      if (moved) p = { x: moved.x, y: moved.y };
+    const crowded = (q) => dots.some((d) => Math.hypot(d.x - q.x, d.y - q.y) < minGap);
+    if (crowded(p)) {
+      // Walk along the stroke until the dot has room (at most ~half way).
+      const len = polylineLength(poly);
+      for (let d = minGap * 0.5; d <= len * 0.5; d += minGap / 6) {
+        const q = pointAlong(poly, d);
+        p = { x: q.x, y: q.y };
+        if (!crowded(p)) break;
+      }
     }
     dots.push({ n: i + 1, x: p.x, y: p.y });
   });
   return dots;
 }
 
-/** Direction arrows: one partway along each stroke, two on long ones. */
-export function arrowMarks(polys, { spacing = 160 } = {}) {
+/**
+ * Direction arrows: one partway along each stroke, two on long ones, moved
+ * along the stroke (or dropped) when they'd sit under a dot or another arrow.
+ */
+export function arrowMarks(polys, { spacing = 160, avoid = [], minDist = 0 } = {}) {
   const marks = [];
+  const clear = (p) => [...avoid, ...marks].every((q) => Math.hypot(q.x - p.x, q.y - p.y) >= minDist);
   polys.forEach((poly, i) => {
     const len = polylineLength(poly);
     if (len < 8) return;
     const at = len > spacing * 2.6 ? [0.36, 0.74] : [0.56];
     for (const t of at) {
-      const p = pointAlong(poly, len * t);
-      if (p) marks.push({ stroke: i, x: p.x, y: p.y, angle: p.angle });
+      for (const dt of [0, -0.12, 0.12, -0.22, 0.22, 0.3]) {
+        const tt = Math.min(0.9, Math.max(0.14, t + dt));
+        const p = pointAlong(poly, len * tt);
+        if (p && clear(p)) {
+          marks.push({ stroke: i, x: p.x, y: p.y, angle: p.angle });
+          break;
+        }
+      }
     }
   });
   return marks;
+}
+
+function densify(poly, gap) {
+  if (poly.length < 2) return poly.map((p) => ({ x: p.x, y: p.y }));
+  const out = [{ x: poly[0].x, y: poly[0].y }];
+  for (let i = 1; i < poly.length; i++) {
+    const a = poly[i - 1];
+    const b = poly[i];
+    const n = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / gap));
+    for (let k = 1; k <= n; k++) out.push({ x: a.x + ((b.x - a.x) * k) / n, y: a.y + ((b.y - a.y) * k) / n });
+  }
+  return out;
+}
+
+/**
+ * Pull guide strokes onto the real centre line of the rendered glyph, so the
+ * dotty line sits in the middle of the letter whatever the font. Each point
+ * moves across its stroke to the middle of the ink run there (never more than
+ * ~0.8 stroke widths); at junctions, where the run is too wide to be one
+ * stroke, it stays put. Returns new, denser polylines.
+ */
+export function snapGuide(polys, imageData, { strokeWidth = 0, threshold = 128 } = {}) {
+  const { width: w, height: h, data } = imageData ?? {};
+  const sw = Number(strokeWidth);
+  if (!w || !h || !data || !(sw > 0)) return polys;
+  const inkAt = (x, y) => {
+    const xi = Math.round(x);
+    const yi = Math.round(y);
+    return xi >= 0 && yi >= 0 && xi < w && yi < h && data[(yi * w + xi) * 4 + 3] >= threshold;
+  };
+  return polys.map((poly) => {
+    const dense = densify(poly, Math.max(3, sw / 3));
+    // How far each point should move across its stroke (null = can't tell here).
+    const shift = dense.map((p, i) => {
+      const a = dense[Math.max(0, i - 1)];
+      const b = dense[Math.min(dense.length - 1, i + 1)];
+      const len = Math.hypot(b.x - a.x, b.y - a.y);
+      if (!len) return null;
+      const nx = -(b.y - a.y) / len;
+      const ny = (b.x - a.x) / len;
+      const at = (d) => inkAt(p.x + nx * d, p.y + ny * d);
+      let t0 = at(0) ? 0 : null;
+      for (let d = 1; t0 === null && d <= sw * 0.9; d++) {
+        if (at(d)) t0 = d;
+        else if (at(-d)) t0 = -d;
+      }
+      if (t0 === null) return null;
+      const lim = sw * 2.6;
+      let lo = t0;
+      let hi = t0;
+      while (hi - t0 < lim && at(hi + 1)) hi++;
+      while (t0 - lo < lim && at(lo - 1)) lo--;
+      if (hi - lo + 1 > sw * 2.2) return null; // a junction, or running along a bar
+      const mid = clamp((lo + hi) / 2, -sw * 0.8, sw * 0.8);
+      return { x: nx * mid, y: ny * mid };
+    });
+    // Junction points borrow the shift of their neighbours (interpolated), so
+    // the line doesn't zigzag where snapped and unsnapped points meet.
+    const known = shift.map((v, i) => (v ? i : -1)).filter((i) => i >= 0);
+    if (!known.length) return dense;
+    const filled = shift.map((v, i) => {
+      if (v) return v;
+      const after = known.find((k) => k > i);
+      const before = [...known].reverse().find((k) => k < i);
+      if (before == null) return shift[after];
+      if (after == null) return shift[before];
+      const t = (i - before) / (after - before);
+      return { x: shift[before].x + (shift[after].x - shift[before].x) * t, y: shift[before].y + (shift[after].y - shift[before].y) * t };
+    });
+    let pts = dense.map((p, i) => ({ x: p.x + filled[i].x, y: p.y + filled[i].y }));
+    // A light smooth so pixel steps don't make the dotty line wobble.
+    for (let pass = 0; pass < 2; pass++) {
+      pts = pts.map((p, i) =>
+        i === 0 || i === pts.length - 1 ? p : { x: (pts[i - 1].x + 2 * p.x + pts[i + 1].x) / 4, y: (pts[i - 1].y + 2 * p.y + pts[i + 1].y) / 4 },
+      );
+    }
+    return pts;
+  });
 }
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -643,7 +737,8 @@ export function glyphModel(imageData, { fontPx = 100, guide = null, guideBounds 
   const inkWidth = clamp(strokeWidth * 0.62, 18, 48);
   const radius = Math.max(strokeWidth * 0.5 + inkWidth * 0.35, fontPx * 0.06);
   const dotR = clamp(strokeWidth * 0.42, 15, 26);
-  const polys = guide ? layoutGuide(guide, insetBox(guideBounds ?? bounds, strokeWidth / 2)) : null;
+  const polys = guide ? snapGuide(layoutGuide(guide, insetBox(guideBounds ?? bounds, strokeWidth / 2)), imageData, { strokeWidth }) : null;
+  const dots = polys ? startDots(polys, dotR * 2.2) : [];
   return {
     bounds,
     strokeWidth,
@@ -653,8 +748,8 @@ export function glyphModel(imageData, { fontPx = 100, guide = null, guideBounds 
     radius,
     dotR,
     polys,
-    dots: polys ? startDots(polys, dotR * 2.2) : [],
-    arrows: polys ? arrowMarks(polys, { spacing: Math.max(80, bounds.height * 0.42) }) : [],
+    dots,
+    arrows: polys ? arrowMarks(polys, { spacing: Math.max(80, bounds.height * 0.42), avoid: dots, minDist: dotR * 1.8 }) : [],
   };
 }
 
@@ -699,6 +794,11 @@ function estimateSpeechMs(text) {
 // ---- Browser helpers ---------------------------------------------------------------------
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function idleMs() {
+  const v = Number(globalThis.SB_TEST?.idleMs);
+  return Number.isFinite(v) && v > 0 ? v : IDLE_MS * testScale();
+}
 
 function testScale() {
   const s = Number(globalThis.SB_TEST?.timeScale);
@@ -1147,7 +1247,7 @@ export function mountLetterTrace(root, opts = {}) {
     let best = { tile: 0, cols: 3 };
     for (const cols of [2, 3, 6]) {
       const rows = Math.ceil(n / cols);
-      const tile = Math.min((w - gap * (cols + 1)) / cols, (hgt - gap * (rows + 1)) / rows) * 0.88;
+      const tile = Math.min((w - gap * (cols + 1)) / cols, (hgt - gap * (rows + 1)) / rows) * 0.84;
       if (tile > best.tile) best = { tile, cols };
     }
     field.style.setProperty('--tile', `${Math.round(clamp(best.tile, 64, 200))}px`);
@@ -1157,10 +1257,10 @@ export function mountLetterTrace(root, opts = {}) {
 
   function armFindIdle() {
     const sig = stepCtl.signal;
-    sleep(T(IDLE_MS + 1500), sig).then((ok) => {
+    sleep(idleMs() * 1.15, sig).then((ok) => {
       if (!ok || step !== 'find') return;
       say(S.find);
-      sleep(T(IDLE_MS + 1500), sig).then((ok2) => {
+      sleep(idleMs() * 1.15, sig).then((ok2) => {
         if (ok2 && step === 'find') field.querySelector('[data-target]')?.classList.add('is-hint');
       });
     });
@@ -1247,7 +1347,7 @@ export function mountLetterTrace(root, opts = {}) {
 
   function armTraceIdle() {
     const sig = stepCtl.signal;
-    sleep(T(IDLE_MS), sig).then((ok) => {
+    sleep(idleMs(), sig).then((ok) => {
       if (!ok || step !== 'trace' || strokes.length) return;
       say(traceMode === 'guided' ? S.idle : S.idleOutline);
       showBtn.classList.add('is-nudge');
@@ -1281,7 +1381,7 @@ export function mountLetterTrace(root, opts = {}) {
     const desc = Number.isFinite(m.actualBoundingBoxDescent) ? m.actualBoundingBoxDescent : 0;
     const inkW = Math.max(1, left + right);
     const inkH = Math.max(1, asc + desc);
-    const fontPx = Math.min(100 * Math.min((H * 0.7) / inkH, (W * 0.74) / inkW), 900);
+    const fontPx = Math.min(100 * Math.min((H * 0.7) / inkH, (W * 0.8) / inkW), 900);
     const k = fontPx / 100;
     const x = W / 2 - ((right - left) / 2) * k;
     const y = H / 2 + ((asc - desc) / 2) * k;
@@ -1366,22 +1466,28 @@ export function mountLetterTrace(root, opts = {}) {
     ctx.textBaseline = 'alphabetic';
     ctx.lineJoin = 'round';
     const letter = round()?.letter ?? '';
+    // Edges are drawn by stamping the letter in a ring (not strokeText): rounded
+    // fonts build letters from overlapping shapes, and strokeText would show
+    // every hidden overlap (the inside of Fredoka's A crossbar, say).
+    const outlined = (fill, edge, ew, dy = 0) => {
+      ctx.fillStyle = edge;
+      for (let i = 0; i < 16; i++) {
+        const a = (i / 16) * Math.PI * 2;
+        ctx.fillText(letter, geo.x + Math.cos(a) * ew, geo.y + dy + Math.sin(a) * ew);
+      }
+      if (fill) {
+        ctx.fillStyle = fill;
+        ctx.fillText(letter, geo.x, geo.y + dy);
+      }
+    };
     if (lit) {
-      ctx.fillStyle = inkColour;
-      ctx.fillText(letter, geo.x, geo.y);
-      ctx.lineWidth = clamp(geo.strokeWidth * 0.1, 3, 7);
-      ctx.strokeStyle = cssVar('--lt-line', '#2B2A33');
-      ctx.strokeText(letter, geo.x, geo.y);
+      outlined(inkColour, cssVar('--lt-line', '#2B2A33'), clamp(geo.strokeWidth * 0.08, 3, 6));
       return;
     }
-    // A soft drop shadow, then the pale letter with a clear edge.
-    ctx.fillStyle = cssVar('--lt-glyph-shadow', 'rgba(43,42,51,.10)');
-    ctx.fillText(letter, geo.x, geo.y + clamp(geo.strokeWidth * 0.12, 3, 8));
-    ctx.fillStyle = cssVar('--lt-glyph', '#FFFFFF');
-    ctx.fillText(letter, geo.x, geo.y);
-    ctx.lineWidth = clamp(geo.strokeWidth * 0.08, 3, 6);
-    ctx.strokeStyle = cssVar('--lt-glyph-edge', '#8FC6E6');
-    ctx.strokeText(letter, geo.x, geo.y);
+    // A soft shadow under the pale letter with a clear edge.
+    const ew = clamp(geo.strokeWidth * 0.07, 3, 5);
+    outlined(null, cssVar('--lt-glyph-shadow', '#E9E6DF'), ew, clamp(geo.strokeWidth * 0.12, 3, 8));
+    outlined(cssVar('--lt-glyph', '#FFFFFF'), cssVar('--lt-glyph-edge', '#8FC6E6'), ew);
   }
 
   function drawGuide() {

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Letter trace harness</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+  <!-- No activities.css here on purpose: the module must add its own stylesheet. -->
+  <style>
+    html, body { margin: 0; height: 100%; background: #FFF8EC; font: 16px/1.4 system-ui, sans-serif; }
+    body[data-finished] #app::after { content: attr(data-finished-text); position: fixed; inset: 0; display: grid; place-items: center; font: 600 24px system-ui; }
+  </style>
+</head>
+<body>
+  <!--
+    Mounts js/activities/letter-trace.js outside the app, for development and
+    tests/e2e/activities.e2e.mjs. Query parameters:
+      name=Ava  say=<how to say it>  sibs=Amara,Zak (reading together)
+      lang=cy|nl|tr...  bedtime=1  reduced=1|0 (default: follow the device)
+      test=1 (silent narrator + fast timings)  scale=0.05  idle=<ms> (re-prompt delay)  seed=7 (repeatable layout)
+      stub=1 (logging stub narrator/sfx instead of the real ones)  auto=0 (don't mount; call window.__mount())
+  -->
+  <main id="app"></main>
+  <script type="module" src="./harness.js"></script>
+</body>
+</html>

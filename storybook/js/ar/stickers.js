@@ -87,7 +87,7 @@ const SPOT_WORDS = [
   ['door', /door/],
   ['plan', /(^|[-_])plans?($|[-_])|blueprint/],
   ['hard hat', /hard-?hat|helmet/],
-  ['sign', /sign|placard|board($|[-_])/],
+  ['sign', /(^|[-_])(sign|placard|board)($|[-_])/],
   ['cake', /cake/],
   ['weight', /weight/],
   ['digger', /digger|excavator/],
@@ -428,7 +428,7 @@ export function packStickers(items, { pageW = A4.w, pageH = A4.h, margin = SHEET
     if (it.newRow) breakRow();
     if (x > left + EPS && x + w > right + EPS) breakRow();
     if (!force && y + h > maxY + EPS) return null;
-    const pos = { x: round(x, 3), y: round(y, 3), w, h };
+    const pos = { x, y, w, h };
     rowH = Math.max(rowH, h);
     x += w + gap;
     if (it.fullWidth) breakRow();
@@ -965,7 +965,9 @@ export function ensureStylesheet(doc = globalThis.document) {
  * While the sheets are on screen, printing prints only them: every ancestor
  * of `wrap` is marked, and css/stickers.css hides everything off that path.
  * The page size (A4 portrait) is set here too, since other printable screens
- * use A4 landscape.
+ * use A4 landscape (css/ar.css). Chrome lets a later stylesheet's @page win
+ * even over a named page, so the rule goes last in <head>, and moves back to
+ * the end just before printing in case another stylesheet arrived since.
  */
 function claimPrint(wrap) {
   const marked = [];
@@ -976,9 +978,14 @@ function claimPrint(wrap) {
   document.documentElement.classList.add('st-printing');
   const style = document.createElement('style');
   style.setAttribute('data-sb-stickers-page', '');
-  style.textContent = '@page { size: A4 portrait; margin: 0; }';
+  style.textContent = '@page st-a4 { size: A4 portrait; margin: 0; } @page { size: A4 portrait; margin: 0; }';
   document.head.appendChild(style);
+  const lastInHead = () => {
+    if (style.isConnected && style !== document.head.lastElementChild) document.head.appendChild(style);
+  };
+  globalThis.addEventListener?.('beforeprint', lastInHead);
   return () => {
+    globalThis.removeEventListener?.('beforeprint', lastInHead);
     for (const n of marked) n.classList.remove('st-path');
     if (!document.querySelector('.st[data-testid="sticker-sheets"]:not([data-released])')) document.documentElement.classList.remove('st-printing');
     style.remove();

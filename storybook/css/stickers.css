@@ -69,6 +69,15 @@
   .st-intro { padding: 18px 16px; }
   .st-print-btn { width: 100%; }
 }
+/* Phones on their side: keep the intro short so the sheets show. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .st { padding-top: 12px; gap: 16px; }
+  .st-intro { padding: 14px 18px; gap: 10px 20px; }
+  .st-intro h2 { font-size: 20px; }
+  .st-intro p { margin-top: 4px; font-size: 15px; line-height: 1.4; }
+  .st-tips { margin-top: 6px; font-size: 14px; }
+  .st-intro .st-status { margin-top: 6px; }
+}
 
 /* ---- The sheets -------------------------------------------------------------------------------- */
 
@@ -188,6 +197,8 @@
 
 /* ---- Printing: only the sheets, A4 portrait, actual size ---------------------------------------- */
 
+/* js/ar/stickers.js also adds this rule (and an unnamed one) at the end of <head>
+   while the sheets are shown: Chrome lets a later stylesheet's @page win. */
 @page st-a4 { size: A4 portrait; margin: 0; }
 
 @media print {

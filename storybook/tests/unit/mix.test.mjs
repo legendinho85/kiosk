@@ -277,8 +277,14 @@ test('concatToWav clamps silly sample rates and never clips', async () => {
 
 test('safeFilename keeps names readable and safe', () => {
   assert.equal(safeFilename('tiffin-football-Grandma Rose.wav'), 'tiffin-football-Grandma Rose.wav');
-  assert.equal(safeFilename('Siobhán’s story.wav'), 'Siobhán’s story.wav');
-  assert.equal(safeFilename('a/b\\c:d*?.wav'), 'a-b-c-d-.wav');
+  assert.equal(safeFilename('Siobhán’s story.wav'), "Siobhan's story.wav", 'ASCII: Chromium drops non-ASCII download names');
+  assert.equal(safeFilename('Łucja – Zoë & Søren.wav'), 'Lucja - Zoe & Soren.wav');
+  assert.equal(safeFilename('Goal, Siobhan! – read by Grandma.wav'), 'Goal, Siobhan! - read by Grandma.wav');
+  assert.equal(safeFilename('美玲.wav'), 'download.wav', 'nothing spellable left: fallback, extension kept');
+  assert.equal(safeFilename('美玲.starring.json', 'family-pack'), 'starring.json');
+  assert.equal(safeFilename('tiffin-football-美玲.starring.json'), 'tiffin-football.starring.json');
+  assert.match(safeFilename('Ava.wav'), /^[\x20-\x7e]+$/);
+  assert.equal(safeFilename('a/b\\c:d*?.wav'), 'a-b-c-d.wav');
   assert.equal(safeFilename('  ..hidden  '), 'hidden');
   assert.equal(safeFilename(''), 'download');
   assert.equal(safeFilename(null, 'x.wav'), 'x.wav');

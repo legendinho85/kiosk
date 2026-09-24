@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  graphemes, nameForForm, slotLetters, distributeLetters, splitForWrap, estimateTextWidth, fitText, layoutName, twoLineBaselines, MIN_SCALE,
+  graphemes, nameForForm, slotLetters, distributeLetters, splitForWrap, estimateTextWidth, fitText, layoutName, twoLineBaselines, MIN_SCALE, artName,
 } from '../../js/reader/name-fit.js';
-import { person } from '../../js/core/personalise.js';
+import { person, togetherPerson } from '../../js/core/personalise.js';
 
 const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) <= eps, `${a} ≈ ${b}`);
 
@@ -127,4 +127,30 @@ test('twoLineBaselines centre the pair on the original line', () => {
   // Centred text: the lines sit either side of y.
   const [c, d] = twoLineBaselines(500, 64, 40, true);
   close((c + d) / 2, 500);
+});
+
+test('siblings: pictures use person.art ("Amara & Zak"), in every form', () => {
+  const twins = togetherPerson([{ display: 'Amara' }, { display: 'Zak', say: 'Zack' }]);
+  assert.equal(twins.count, 2);
+  assert.equal(artName(twins), 'Amara & Zak');
+  assert.equal(nameForForm(twins, 'upper'), 'AMARA & ZAK');
+  assert.equal(nameForForm(twins, 'poss'), "Amara & Zak's");
+  assert.equal(nameForForm(twins, 'plain'), 'Amara & Zak');
+  // One child: no art, the display name as before.
+  assert.equal(artName(person('Ava')), 'Ava');
+  assert.equal(artName('Bo'), 'Bo');
+  assert.equal(artName({ display: 'Li', art: 'LI & MO' }), 'LI & MO');
+  assert.equal(artName(null), '');
+});
+
+test('siblings: several names never spell out on bunting (the overflow banner shows them)', () => {
+  assert.equal(slotLetters('Amara & Zak'), null);
+  assert.equal(slotLetters('Bo & Al'), null, 'even when the letters would fit');
+  assert.equal(slotLetters('Bo, Al & Li'), null);
+  assert.equal(slotLetters('Bo+Al'), null);
+  assert.equal(distributeLetters(slotLetters('Bo & Al'), 9), null);
+  // A single name with a space still spells out.
+  assert.deepEqual(slotLetters('Xiao Ming').join(''), 'XIAOMING');
+  // A two-line name slot breaks between the names.
+  assert.deepEqual(splitForWrap('AMARA & ZAK'), ['AMARA', '& ZAK']);
 });

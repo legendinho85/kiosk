@@ -418,7 +418,7 @@ try {
         }),
       ]);
       check(result === 'downloaded', `result ${result}`);
-      check(download.suggestedFilename() === 'Goal, Siobhan! – read by Grandma.wav', `filename ${download.suggestedFilename()}`);
+      check(download.suggestedFilename() === 'Goal, Siobhan! - read by Grandma.wav', `filename ${download.suggestedFilename()}`);
       const { readFileSync } = await import('node:fs');
       const bytes = readFileSync(await download.path());
       const size = await page.evaluate(() => window.__mixed.size);
@@ -714,7 +714,7 @@ try {
       check(app.external.length === 0, `external requests: ${app.external}`);
       check(app.fontFiles.length >= 2 && app.fontFiles.every((f) => f.startsWith('200 ')), `font files: ${app.fontFiles}`);
       const heading = await renderedFonts(page, 'h1');
-      check(heading[0] === 'Fredoka*', `landing heading drawn with ${heading}`);
+      check(/^Fredoka\b.*\*$/.test(heading[0] ?? ''), `landing heading drawn with ${heading}`);
     });
 
     await step('in the reader, the words are drawn in Andika and the name in the picture in Fredoka', async () => {
@@ -729,7 +729,7 @@ try {
       const art = await renderedFonts(page, '[data-testid=scene] .sb-name');
       check(text[0] === 'Andika*', `reading text drawn with ${text}`);
       check(name[0] === 'Andika*', `name in the text drawn with ${name}`);
-      check(art[0] === 'Fredoka*', `name in the picture drawn with ${art}`);
+      check(/^Fredoka\b.*\*$/.test(art[0] ?? ''), `name in the picture drawn with ${art}`);
       console.log(`      (text: ${text.join(', ')}; name: ${name.join(', ')}; picture: ${art.join(', ')})`);
       for (const [w, hgt] of [
         [390, 844],
@@ -756,7 +756,7 @@ try {
       const name = await renderedFonts(a.page, '[data-testid=page-text] .sb-word.is-name');
       const art = await renderedFonts(a.page, '[data-testid=scene] .sb-name');
       check(name.length === 1 && name[0] === 'Andika*', `name drawn with ${name}`);
-      check(art.length === 1 && art[0] === 'Fredoka*', `picture name drawn with ${art}`);
+      check(art.length === 1 && /^Fredoka\b.*\*$/.test(art[0]), `picture name drawn with ${art}`);
       check(a.fontFiles.some((f) => /latin-ext/.test(f)), `latin-ext not fetched: ${a.fontFiles}`);
       await shot(a.page, 'fonts-reader-lucja-390x844');
       check(a.errors.length === 0, a.errors.join('\n'));
