@@ -693,8 +693,11 @@ function subImage(image, rect) {
   return out;
 }
 
-/** Fill in `background` on every spot of a page from snapshots of its art. Never throws. */
-async function sampleBackgrounds(raw, spots, defsXml, { trimMm }) {
+/**
+ * Fill in `background` on every spot of a page from snapshots of its art. Never throws.
+ * `state.blocked` is set (and later calls skip) when the browser won't let pixels be read.
+ */
+async function sampleBackgrounds(raw, spots, defsXml, { trimMm, state = {} }) {
   const sampleOne = async (key, regions) => {
     const all = regions.reduce((a, r) => (a ? { x: Math.min(a.x, r.x), y: Math.min(a.y, r.y), x2: Math.max(a.x2, r.x + r.w), y2: Math.max(a.y2, r.y + r.h) } : { x: r.x, y: r.y, x2: r.x + r.w, y2: r.y + r.h }), null);
     const region = { x: all.x, y: all.y, w: Math.max(1, all.x2 - all.x), h: Math.max(1, all.y2 - all.y) };
@@ -706,6 +709,7 @@ async function sampleBackgrounds(raw, spots, defsXml, { trimMm }) {
     return regions.map((r) => dominantColour(subImage(image, { x: (r.x - region.x) * k, y: (r.y - region.y) * k, w: Math.max(1, r.w * k), h: Math.max(1, r.h * k) })));
   };
   for (const spot of spots) {
+    if (state.blocked) return;
     try {
       if (spot.type === 'name' && spot.matrix) {
         const spec = stickerSpecFromSlot(spot, { trimMm });
@@ -725,7 +729,8 @@ async function sampleBackgrounds(raw, spots, defsXml, { trimMm }) {
         }
       }
     } catch (err) {
-      // A browser that won't let us read the snapshot: fall back to plain colours.
+      // A browser that won't let us read the snapshot: plain colours from the name's own colour.
+      if (err?.name === 'SecurityError') state.blocked = true;
       console.warn('[stickers] could not sample the art under a name spot', err?.message ?? err);
     }
   }
@@ -750,6 +755,7 @@ export async function measureBookSpots(book, { baseUrl, trimMm = DEFAULT_TRIM_MM
   document.body.appendChild(host);
   const pages = [];
   const missing = [];
+  const sampling = { blocked: false };
   try {
     let defsXml = '';
     const holder = await sceneMod.loadDefs?.(book, base).catch(() => null);
@@ -770,7 +776,7 @@ export async function measureBookSpots(book, { baseUrl, trimMm = DEFAULT_TRIM_MM
         svg.setAttribute('height', '1000');
         host.replaceChildren(svg);
         const spots = measureScene(svg);
-        await sampleBackgrounds(raw, spots, defsXml, { trimMm });
+        await sampleBackgrounds(raw, spots, defsXml, { trimMm, state: sampling });
         if (spots.length) pages.push({ n: page.n, kind: page.kind ?? 'spread', spots });
       } catch (err) {
         console.warn(`[stickers] page ${page?.n}: ${err?.message ?? err}`);
@@ -1025,10 +1031,9 @@ export async function renderStickerSheet(root, { book, bookId = book?.id, baseUr
   const cssReady = ensureStylesheet();
   const pages = Array.isArray(book?.pages) ? book.pages : [];
   const children = childNames(person);
-  const who = typeof person === 'string' ? person : person?.display ?? children.join(' and ');
-  let storyTitle = String(who || '');
+  let storyTitle = typeof person === 'string' ? person : String(person?.display ?? children.join(' and '));
   try {
-    storyTitle = book?.title ? fillTemplate(book.title, person) : storyTitle;
+    if (book?.title) storyTitle = fillTemplate(book.title, person);
   } catch {
     /* keep the name */
   }

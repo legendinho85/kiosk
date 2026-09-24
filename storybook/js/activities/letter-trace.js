@@ -1090,14 +1090,16 @@ export function mountLetterTrace(root, opts = {}) {
     if (!a || a === doc.body || el.contains(a) || !a.isConnected) safe(() => target.focus({ preventScroll: true }));
   }
 
+  // Names and letters go in <bdi> so a right-to-left name ("مريم") doesn't reorder the English around it.
+  const lineNodes = (line, styled = true) =>
+    line.parts.map((p) => {
+      if (!p.key) return p.text;
+      const cls = !styled ? null : p.key === 'letter' ? 'sb-lt-say-letter' : p.key.startsWith('name') ? 'sb-lt-say-name' : 'sb-lt-say-other';
+      return h(doc, 'bdi', { class: cls }, p.text);
+    });
+
   function setPrompt(line) {
-    prompt.replaceChildren(
-      ...line.parts.map((p) => {
-        if (!p.key) return p.text;
-        const cls = p.key === 'letter' ? 'sb-lt-say-letter' : p.key.startsWith('name') ? 'sb-lt-say-name' : 'sb-lt-say-other';
-        return h(doc, 'bdi', { class: cls }, p.text);
-      }),
-    );
+    prompt.replaceChildren(...lineNodes(line));
   }
 
   /** Show a line and say it. Resolves when it has been said (or a sensible time has passed). */
@@ -1161,7 +1163,7 @@ export function mountLetterTrace(root, opts = {}) {
   }
 
   function setKicker(r) {
-    const parts = [h(doc, 'span', { class: 'sb-lt-kicker-icon', html: ICONS.star }), h(doc, 'span', {}, fillLine(S.kicker, vars(r)).display)];
+    const parts = [h(doc, 'span', { class: 'sb-lt-kicker-icon', html: ICONS.star }), h(doc, 'span', {}, ...lineNodes(fillLine(S.kicker, vars(r)), false))];
     if (rounds.length > 1) parts.push(h(doc, 'span', { class: 'sb-lt-count' }, `${idx + 1}/${rounds.length}`));
     kicker.replaceChildren(...parts);
   }
@@ -1695,6 +1697,7 @@ export function mountLetterTrace(root, opts = {}) {
         }
         let done = 0;
         let prev = poly[0];
+        pen.style.transform = `translate(${prev.x.toFixed(1)}px, ${prev.y.toFixed(1)}px)`;
         pen.hidden = false;
         drawDot(prev, width);
         const ok = await animate(T(Math.max(450, len / speed)), (t) => {

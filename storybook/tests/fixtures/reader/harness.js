@@ -177,6 +177,8 @@ async function makeReading() {
   };
   const spec = params.get('parts') ?? 'all';
   const has = (n, part) => spec === 'all' || spec.split(',').includes(`${n}:${part}`);
+  // broken=3:main: that part is a file that isn't audio at all.
+  const broken = (params.get('broken') ?? '').split(',').filter(Boolean);
   const ms = { main: Number(params.get('mainMs') ?? 2000), after: Number(params.get('afterMs') ?? 1200) };
   window.__clipMs = [ms.main, ms.after];
   const clips = new Map();
@@ -186,8 +188,9 @@ async function makeReading() {
     language: params.get('lang') ?? undefined,
     async getPart(n, part) {
       log.parts.push(`${n}:${part}`);
-      if (!has(n, part)) return null;
       const key = `${n}:${part}`;
+      if (broken.includes(key)) return new Blob([new TextEncoder().encode('not a recording '.repeat(40))], { type: 'audio/wav' });
+      if (!has(n, part)) return null;
       if (!clips.has(key)) clips.set(key, make(ms[part]));
       return clips.get(key);
     },

@@ -630,8 +630,8 @@ try {
     await context.close();
   });
 
-  await step('recorded reading: missing parts use the voice; the badge only shows on recorded pages', async () => {
-    const { page, context, errors } = await openHarness(browser, 'test=1&reading=tone&mainMs=900&afterMs=900&parts=2:main&page=2');
+  await step('recorded reading: missing or broken parts use the voice; the badge only shows on recorded pages', async () => {
+    const { page, context, errors } = await openHarness(browser, 'test=1&reading=tone&mainMs=900&afterMs=900&parts=2:main&broken=4:main&page=2');
     await waitState(page, 2, 'waiting', 10000);
     await page.waitForFunction(() => window.__log.clips.some((c) => c.end != null), null, { timeout: 8000 });
     await control(page).focus();
@@ -644,7 +644,12 @@ try {
     assert((await played(page)).includes('Warm up, Ava!'), 'page 3 has no recording: the voice reads it');
     eq(await page.getByTestId('reading-badge-band').isVisible(), false, 'no badge without a recording');
     eq(await page.evaluate(() => window.__log.parts.filter((p) => p.startsWith('3:')).sort()), ['3:after', '3:main'], 'both parts were asked for');
-    noErrors(errors, 'reading fallback');
+    // A part that isn't audio: the voice reads the page, and no badge.
+    await page.evaluate(() => window.__reader.goTo(4));
+    await waitState(page, 4, 'waiting', 10000);
+    assert((await played(page)).includes('Tiffin to Ava... thud!'), 'a broken recording falls back to the voice');
+    eq(await page.getByTestId('reading-badge-band').isVisible(), false, 'no badge when the recording could not play');
+    noErrors(errors.filter((e) => !/could not play the recorded reading/.test(e)), 'reading fallback');
     await context.close();
   });
 
@@ -872,6 +877,9 @@ try {
     eq(await page.evaluate(() => window.__log.parts), [], 'a recorded reading is not used for siblings');
     eq(await page.getByTestId('reading-badge-band').isVisible(), false, 'no badge');
     eq(await page.evaluate(() => window.__log.clips.length), 0, 'no clips');
+    // "waiting" starts as the prompt is read; spotting speaks once that's said.
+    await page.waitForFunction(() => window.__log.play.some((p) => p.text[0] === 'Press the button three times!'));
+    await page.waitForTimeout(500);
     const b = await page.locator('[data-testid=scene] #p6-name').boundingBox();
     await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2);
     await page.waitForFunction(() => window.__log.speakText.length === 1);

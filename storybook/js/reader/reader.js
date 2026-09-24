@@ -550,8 +550,9 @@ export async function mountReader(root, opts) {
   /**
    * Play one recorded part, lighting up the words on the estimated timeline
    * stretched to the clip's length. `blocks` are the parts of the page the
-   * clip covers, in order ([text, prompt] or [after]); onPart(part, cut) runs
-   * as the reading reaches each block (cut() ends the clip there).
+   * clip covers, in order ([text, prompt] or [after]); each block's words are
+   * shown as the reading reaches it, and onPart(part, cut) runs then too
+   * (cut() ends the clip there).
    * Resolves 'done' | 'stopped' | 'failed' (couldn't play: use the voice).
    * A pause stops the clip; play starts the part again from its beginning.
    */
@@ -573,6 +574,9 @@ export async function mountReader(root, opts) {
           if (ctl.signal.aborted) return;
           if (step.part !== part) {
             part = step.part;
+            // After a pause the part starts again, so the words may need showing again too.
+            const block = blocks.find((b) => b.part === part);
+            if (block && textEl.dataset.part !== part) showPart(part, block.lines);
             onPart?.(part, cut);
             if (ctl.signal.aborted) return;
           }
@@ -939,7 +943,7 @@ export async function mountReader(root, opts) {
     setState('waiting');
     state.waiting = true;
     const prompt = state.page.prompt || '';
-    if (prompt) showPart('prompt', planLines([prompt], person, recording).lines);
+    if (prompt && textEl.dataset.part !== 'prompt') showPart('prompt', planLines([prompt], person, recording).lines);
     state.control?.hint(true);
   }
 
@@ -1031,9 +1035,11 @@ export async function mountReader(root, opts) {
       state.cutClip = null;
       if (signal.aborted) return;
       if (r === 'failed') {
+        // Couldn't play it (an unsupported format, say): the computer voice reads instead.
         state.clipPrompt = false;
+        if (!parts.after) showBadge(false);
         await speak(page.text ?? [], 'text', signal, { show: textEl.dataset.part !== 'text' });
-      }
+      } else state.clipPlayed = true;
     } else {
       await speak(page.text ?? [], 'text', signal, { show: false });
     }
@@ -1073,7 +1079,10 @@ export async function mountReader(root, opts) {
     const tokenized = planLines(lines, person, recording).lines;
     showPart('after', tokenized);
     const r = await playClip(clip, [{ part: 'after', lines: tokenized }], signal);
-    if (r === 'failed' && !signal.aborted) return speak(lines, 'after', signal, { show: false });
+    if (r === 'failed' && !signal.aborted) {
+      if (!state.clipPlayed) showBadge(false);
+      return speak(lines, 'after', signal, { show: false });
+    }
     return r;
   }
 
