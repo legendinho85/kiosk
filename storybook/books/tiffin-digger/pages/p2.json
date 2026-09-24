@@ -1,0 +1,133 @@
+{
+  "sfx": {
+    "open": "pop"
+  },
+  "mechanic": {
+    "type": "flap",
+    "control": {
+      "flap": "#dg-p2-lid",
+      "hinge": "top"
+    },
+    "drives": [
+      {
+        "target": "#dg-p2-hat-in",
+        "visible": [
+          0,
+          0.5
+        ]
+      },
+      {
+        "target": "#dg-p2-hat-up",
+        "visible": [
+          0.5,
+          1
+        ]
+      },
+      {
+        "target": "#dg-p2-hat-up",
+        "translate": [
+          [
+            0,
+            0
+          ],
+          [
+            50,
+            -330
+          ]
+        ],
+        "range": [
+          0.5,
+          0.82
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#dg-p2-hat-up",
+        "translate": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            76
+          ]
+        ],
+        "range": [
+          0.82,
+          1
+        ],
+        "ease": "bounce"
+      },
+      {
+        "target": "#dg-p2-hat-up",
+        "scale": [
+          [
+            1,
+            1
+          ],
+          [
+            1.24,
+            1.24
+          ]
+        ],
+        "origin": [
+          1150,
+          730
+        ],
+        "range": [
+          0.5,
+          0.82
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#dg-p2-hat-up",
+        "rotate": [
+          0,
+          -12
+        ],
+        "origin": [
+          1150,
+          730
+        ],
+        "range": [
+          0.5,
+          0.72
+        ]
+      },
+      {
+        "target": "#dg-p2-hat-up",
+        "rotate": [
+          0,
+          12
+        ],
+        "origin": [
+          1150,
+          730
+        ],
+        "range": [
+          0.72,
+          0.94
+        ]
+      }
+    ],
+    "complete": {
+      "at": 0.95,
+      "show": [
+        "#dg-p2-sparkles"
+      ],
+      "addClass": [
+        [
+          "#dg-p2-tiffin",
+          "sb-wiggle"
+        ]
+      ],
+      "sfx": [
+        "pop",
+        "boing",
+        "sparkle"
+      ]
+    }
+  }
+}

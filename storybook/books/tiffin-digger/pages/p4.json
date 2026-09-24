@@ -1,0 +1,175 @@
+{
+  "sfx": {
+    "open": "drum"
+  },
+  "mechanic": {
+    "type": "pull-tab",
+    "control": {
+      "from": [
+        250,
+        930
+      ],
+      "to": [
+        60,
+        930
+      ],
+      "knob": "#dg-p4-tab",
+      "springBack": true
+    },
+    "drives": [
+      {
+        "target": "#dg-p4-boom",
+        "rotate": [
+          0,
+          -24
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "range": [
+          0,
+          0.45
+        ]
+      },
+      {
+        "target": "#dg-p4-boom2",
+        "rotate": [
+          0,
+          15
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "range": [
+          0.45,
+          0.8
+        ]
+      },
+      {
+        "target": "#dg-p4-stick",
+        "rotate": [
+          0,
+          -54
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "range": [
+          0,
+          0.8
+        ]
+      },
+      {
+        "target": "#dg-p4-curl",
+        "rotate": [
+          0,
+          -35
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "range": [
+          0,
+          0.8
+        ]
+      },
+      {
+        "target": "#dg-p4-tip",
+        "rotate": [
+          0,
+          80
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "range": [
+          0.8,
+          1
+        ]
+      },
+      {
+        "target": "#dg-p4-mud",
+        "visible": [
+          0.05,
+          0.88
+        ]
+      },
+      {
+        "target": "#dg-p4-clods",
+        "visible": [
+          0.42,
+          0.8
+        ]
+      },
+      {
+        "target": "#dg-p4-clods",
+        "translate": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            150
+          ]
+        ],
+        "range": [
+          0.42,
+          0.8
+        ],
+        "ease": "easeIn"
+      },
+      {
+        "target": "#dg-p4-plop",
+        "visible": [
+          0.88,
+          1
+        ]
+      },
+      {
+        "target": "#dg-p4-plop",
+        "translate": [
+          [
+            0,
+            0
+          ],
+          [
+            47.1,
+            136.13
+          ]
+        ],
+        "range": [
+          0.88,
+          1
+        ],
+        "ease": "easeIn"
+      }
+    ],
+    "complete": {
+      "at": 0.95,
+      "show": [
+        "#dg-p4-goose-honk",
+        "#dg-p4-sparkles"
+      ],
+      "hide": [
+        "#dg-p4-goose"
+      ],
+      "addClass": [
+        [
+          "#dg-p4-skip",
+          "sb-bulge"
+        ]
+      ],
+      "sfx": [
+        "swoosh",
+        "pop",
+        "drum"
+      ]
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "sfx": {
+    "open": "ding"
+  },
+  "mechanic": {
+    "type": "push-button",
+    "control": {
+      "center": [
+        1000,
+        560
+      ],
+      "radius": 71,
+      "presses": 1,
+      "knob": "#dg-p3-horn"
+    },
+    "drives": [
+      {
+        "target": "#dg-p3-boom",
+        "rotate": [
+          0,
+          -18
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#dg-p3-stick",
+        "rotate": [
+          0,
+          -20
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#dg-p3-bucket",
+        "rotate": [
+          0,
+          -30
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "ease": "easeOut"
+      }
+    ],
+    "complete": {
+      "at": 0.95,
+      "show": [
+        "#dg-p3-lights",
+        "#dg-p3-beacon",
+        "#dg-p3-puffs",
+        "#dg-p3-sparkles"
+      ],
+      "hide": [
+        "#dg-p3-zzz",
+        "#dg-p3-ring"
+      ],
+      "addClass": [
+        [
+          "#dg-p3-digger",
+          "sb-cheer"
+        ]
+      ],
+      "sfx": [
+        "click",
+        "whistle",
+        "drum"
+      ]
+    }
+  }
+}
