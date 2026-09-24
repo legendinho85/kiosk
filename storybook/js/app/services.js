@@ -143,8 +143,9 @@ export async function createServices({ getSettings, getRecording }) {
  * Unlock speech and Web Audio on the first real user gesture. iOS and Chrome
  * only let a page make sound after a tap, and on touch screens the
  * activation arrives with the finger lifting, so we listen for several
- * events and stop once the browser reports the page as activated.
- * @param {{narrator: object, sfx: object}} services
+ * events and stop once the browser reports the page as activated (and the
+ * real services, which may still be loading, have had their turn).
+ * @param {{narrator: object, sfx: object, real?: boolean}} services read at event time
  * @returns {() => void} stop listening
  */
 export function armAudioUnlock(services) {
@@ -164,7 +165,7 @@ export function armAudioUnlock(services) {
     }
     const ua = navigator.userActivation;
     const activated = ua ? ua.hasBeenActive : e.type !== 'pointerdown';
-    if (activated) stop();
+    if (activated && services.real !== false) stop();
   }
   events.forEach((t) => window.addEventListener(t, handler, opts));
   return stop;

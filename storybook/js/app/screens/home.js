@@ -22,7 +22,7 @@ export function render(root, ctx) {
 
   const body = [
     h('section', { class: 'home-head' },
-      h('p', { class: 'eyebrow' }, child ? `Hello again${child ? `, ${child.display}’s grown-up` : ''}` : 'Personalised read-along stories'),
+      h('p', { class: 'eyebrow' }, child ? `Hello again, ${child.display}’s grown-up` : 'Personalised read-along stories'),
       h('h1', {}, 'Tiffin & Me books'),
       h('p', { class: 'lead' }, 'Board books with flaps, wheels and sliders — and a story that knows your child’s name.')),
     shelf,
@@ -53,7 +53,7 @@ export function render(root, ctx) {
       h('div', { class: 'shelf-text' },
         h('p', { class: 'eyebrow' }, entry.series ?? 'Tiffin & Me'),
         h('h2', {}, String(entry.title ?? '').replace(/\{name\}/g, child?.display ?? 'you')),
-        h('p', { class: 'shelf-sub' }, [entry.subtitle, entry.ages ? `Ages ${entry.ages}` : ''].filter(Boolean).join(' · ')),
+        h('p', { class: 'shelf-sub' }, entry.subtitle ?? '', entry.subtitle && entry.ages ? ' · ' : '', entry.ages ? h('span', { class: 'nowrap' }, `Ages ${entry.ages}`) : null),
         linkButton({ text: 'Open', href: `#/b/${entry.id}`, icon: 'book', variant: 'primary', size: 'md', testid: 'open-book' })),
     );
     // The live cover needs the full book (for its scene); fine to fail quietly.

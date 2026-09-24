@@ -109,7 +109,7 @@ export function render(root, ctx) {
   renderChildren();
 
   // ---- Voice ---------------------------------------------------------------------------------
-  const voiceSelect = h('select', { id: 'voice', class: 'select', 'data-testid': 'voice-select' }, h('option', { value: '' }, 'Automatic — the best British English voice'));
+  const voiceSelect = h('select', { id: 'voice', class: 'select', 'data-testid': 'voice-select' }, h('option', { value: '' }, 'Automatic (best available)'));
   const voiceNote = h('p', { class: 'field-hint', id: 'voice-note' });
   const previewBtn = button({ text: 'Preview', icon: 'play', variant: 'secondary', size: 'md', testid: 'voice-preview', attrs: { 'aria-pressed': 'false' } });
   const active = ctx.state.profiles.find((p) => p.id === ctx.state.activeProfileId);
@@ -145,7 +145,7 @@ export function render(root, ctx) {
       for (const v of voices) voiceSelect.append(h('option', { value: v.uri }, voiceLabel(v)));
       voiceSelect.value = voices.some((v) => v.uri === settings().voiceURI) ? settings().voiceURI : '';
       voiceNote.textContent = voices.length
-        ? 'Voices come with your phone or browser. On-device voices work offline.'
+        ? 'The story is read by a computer voice that comes with your phone or browser. Voices marked “online” send the words they read (including the name) to Google or Microsoft; the others stay on this device.'
         : 'No reading voices were found on this device, so the story shows the words without sound. Trying another browser (Chrome or Safari) often helps.';
       voiceSelect.disabled = !voices.length;
     });
@@ -187,7 +187,7 @@ export function render(root, ctx) {
       });
       if (!ok) return;
       await forgetEverything();
-      ctx.setState(loadState());
+      ctx.setState({ ...loadState(), lastBook: bookId }, { persist: false });
       toast('Done — nothing about your family is stored on this device now.', { kind: 'success' });
       ctx.navigate(`#/b/${bookId}`);
     },

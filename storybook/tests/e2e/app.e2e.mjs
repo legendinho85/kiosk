@@ -270,6 +270,7 @@ try {
     await page.getByTestId('record-stop').click();
     await page.getByTestId('use-recording').waitFor({ timeout: 8000 });
     assert(await page.getByTestId('use-recording').isChecked(), 'recording is used by default once made');
+    assert(await page.getByTestId('record-name').isVisible(), '"record again" offered');
     await page.getByTestId('record-play').click();
     await shot(page, 'say-recorded');
     // Keep the typed pronunciation for the rest of the journey.
@@ -304,6 +305,15 @@ try {
     eq(await page.evaluate(() => document.querySelector('[data-testid=reader]')?.__e2eMark), 'same', 'reader not re-mounted');
     await page.waitForFunction(() => document.querySelector('[data-testid=reader]')?.dataset.page === '2');
     await shot(page, 'reader');
+    // The camera needs a grown-up: the reader's magic-window button asks for the hold first.
+    if (await page.getByTestId('magic-window').count()) {
+      await page.getByTestId('magic-window').click();
+      await page.getByTestId('parent-gate').waitFor();
+      assert(/camera/.test(await page.locator('.dialog-title').innerText()), 'camera gate title');
+      await page.keyboard.press('Escape');
+      await page.getByTestId('parent-gate').waitFor({ state: 'detached' });
+      eq(await hashOf(page), `#/b/${BOOK}/read/2`, 'still reading');
+    }
     await page.getByTestId('exit-reader').click();
     await waitHash(page, `#/b/${BOOK}`);
     await page.getByTestId('start-reading').waitFor();
@@ -403,8 +413,7 @@ try {
     await page.getByTestId('forget-everything').click();
     await page.getByTestId('confirm-forget-yes').click();
     await page.getByTestId('name-input').waitFor();
-    const st = await stateOf(page);
-    eq(st?.profiles?.length ?? 0, 0, 'no children left');
+    eq(await stateOf(page), null, 'nothing left on the device');
     await noErrors(errors, 'forget everything');
   });
   await context.close();
@@ -527,6 +536,29 @@ try {
     await c.close();
   });
 
+  await step('offline: the service worker serves the app after one visit (?sw=1 on localhost)', async () => {
+    const { page: p, errors: errs, context: c } = await openPage(browser);
+    await p.goto(`${BASE}/?sw=1#/b/${BOOK}`);
+    await p.getByTestId('name-input').waitFor();
+    await p.evaluate(() => navigator.serviceWorker.ready.then(() => true));
+    await p.reload(); // now controlled: everything the page loads is cached
+    await p.getByTestId('cover-art').locator('svg').first().waitFor();
+    await p.waitForTimeout(500);
+    await c.setOffline(true);
+    await p.reload();
+    await p.getByTestId('name-input').waitFor({ timeout: 8000 });
+    await p.getByTestId('cover-art').locator('svg').first().waitFor();
+    await p.getByTestId('name-input').fill('Ava');
+    await p.waitForFunction(() => document.querySelector('[data-testid=cover-title]')?.textContent.includes('Ava'));
+    await c.setOffline(false);
+    await p.evaluate(async () => {
+      for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+      for (const k of await caches.keys()) await caches.delete(k);
+    });
+    await noErrors(errs, 'offline');
+    await c.close();
+  });
+
   // ---- Screenshots of every screen at three sizes ------------------------------------------
   if (SHOTS) {
     for (const viewport of [PHONE, { width: 844, height: 390 }, { width: 1024, height: 768 }]) {
@@ -554,15 +586,15 @@ try {
         await visit('#/', 'home', '[data-testid=shelf-book] svg');
         await visit(`#/qr/${BOOK}`, 'qr', '[data-testid=qr-url]');
         await visit('#/b/nope', 'unknown-book', '[data-testid=unknown-book]');
-        await visit('#/settings', 'settings-gate', '[data-testid=gate-screen]');
-        await holdGate(p, 400);
-        await p.getByTestId('settings-child').first().waitFor();
-        await shot(p, 'settings');
         await p.goto(url(`#/b/${BOOK}`));
         await p.getByTestId('open-settings').click();
         await p.getByTestId('parent-gate').waitFor();
         await shot(p, 'gate-dialog');
         await p.keyboard.press('Escape');
+        await visit('#/settings', 'settings-gate', '[data-testid=gate-screen]');
+        await holdGate(p, 400);
+        await p.getByTestId('settings-child').first().waitFor();
+        await shot(p, 'settings');
         if (readerExists) await visit(`#/b/${BOOK}/read/2`, 'reader', '[data-testid=reader]');
         await visit(`#/print/${BOOK}`, 'print', '[data-testid=print-pages], [data-testid=print-missing]');
         await noErrors(errs, `screens at ${viewport.width}x${viewport.height}`);

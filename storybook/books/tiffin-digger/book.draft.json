@@ -1,0 +1,192 @@
+{
+  "id": "tiffin-digger",
+  "version": 1,
+  "lang": "en-GB",
+  "title": "Beep beep, {name}!",
+  "subtitle": "A Tiffin & Me digger story",
+  "series": "Tiffin & Me",
+  "ages": "1–4",
+  "character": {
+    "name": "Tiffin",
+    "species": "otter"
+  },
+  "palette": {
+    "sky": "#9FDCF7",
+    "grass": "#74C655",
+    "accent": "#FFCB3D",
+    "character_main": "#B0703F",
+    "character_detail": "#F7E6CC",
+    "kit": "#FF8A1F",
+    "kit_detail": "#E9EEF2",
+    "hivis_yellow": "#FFE14D",
+    "digger": "#E4483A",
+    "machine_dark": "#3B3F46",
+    "mud": "#6E5243",
+    "concrete": "#B8BEC6",
+    "sand": "#F2D8A0"
+  },
+  "defs": "defs.svg",
+  "pages": [
+    {
+      "n": 1,
+      "kind": "cover",
+      "scene": "scenes/p1.svg",
+      "text": [
+        "Beep beep, {name}!",
+        "Starring Tiffin the otter... and {name}!"
+      ],
+      "prompt": "",
+      "after": [],
+      "sfx": {
+        "open": "drum"
+      },
+      "mechanic": {
+        "type": "none"
+      }
+    },
+    {
+      "n": 2,
+      "kind": "spread",
+      "scene": "scenes/p2.svg",
+      "text": [
+        "It's digger day!",
+        "Hard hat on, Tiffin!",
+        "Where {is|are} {name's} {hat|hats}?"
+      ],
+      "prompt": "Lift the lid on the hat box!",
+      "after": [
+        "Hard {hat|hats} on, {name}!",
+        "Rumble, rumble, beep, beep, beep!"
+      ],
+      "sfx": {
+        "open": "pop"
+      },
+      "mechanic": {
+        "type": "flap"
+      }
+    },
+    {
+      "n": 3,
+      "kind": "spread",
+      "scene": "scenes/p3.svg",
+      "text": [
+        "Look! A big red digger!",
+        "Tiffin drives. {name} {beeps|beep}!"
+      ],
+      "prompt": "Press the horn, {name}!",
+      "after": [
+        "The digger wakes up!",
+        "Rumble, rumble, beep, beep, beep!"
+      ],
+      "sfx": {
+        "open": "ding"
+      },
+      "mechanic": {
+        "type": "push-button"
+      }
+    },
+    {
+      "n": 4,
+      "kind": "spread",
+      "scene": "scenes/p4.svg",
+      "text": [
+        "Let's build a park, {name}!",
+        "Scoop, digger, scoop!"
+      ],
+      "prompt": "Pull the tab to scoop the mud!",
+      "after": [
+        "Up, up... plop! Into Goose's dumper.",
+        "Rumble, rumble, beep, beep, beep!"
+      ],
+      "sfx": {
+        "open": "drum"
+      },
+      "mechanic": {
+        "type": "pull-tab"
+      }
+    },
+    {
+      "n": 5,
+      "kind": "spread",
+      "scene": "scenes/p5.svg",
+      "text": [
+        "Here comes Frog with the mixer.",
+        "Uh-oh! The mixer is stuck."
+      ],
+      "prompt": "Turn the wheel to mix it up!",
+      "after": [
+        "Swoosh, swoosh! Thank you, {name}!",
+        "Rumble, rumble, beep, beep, beep!"
+      ],
+      "sfx": {
+        "open": "click"
+      },
+      "mechanic": {
+        "type": "wheel"
+      }
+    },
+    {
+      "n": 6,
+      "kind": "spread",
+      "scene": "scenes/p6.svg",
+      "text": [
+        "One last job... the big slide!",
+        "Ready... steady..."
+      ],
+      "prompt": "Push the slide into place, {name}!",
+      "after": [
+        "Down it goes... clunk!",
+        "Beep beep, {name}! Beep, beep, beep!"
+      ],
+      "sfx": {
+        "open": "swoosh"
+      },
+      "mechanic": {
+        "type": "slider"
+      }
+    },
+    {
+      "n": 7,
+      "kind": "spread",
+      "scene": "scenes/p7.svg",
+      "text": [
+        "The park is ready!",
+        "Here come all our friends!"
+      ],
+      "prompt": "Lift the cloth off the sign!",
+      "after": [
+        "{name's} Park is open!",
+        "Rumble, rumble, hooray!"
+      ],
+      "sfx": {
+        "open": "cheer"
+      },
+      "mechanic": {
+        "type": "flap"
+      }
+    },
+    {
+      "n": 8,
+      "kind": "end",
+      "scene": "scenes/p8.svg",
+      "text": [
+        "The digger sleeps. Hats off. Lights low.",
+        "Rumble... rumble... beep... sleep.",
+        "Paw in hand, side by side.",
+        "Night night, Tiffin. Night night, {name}."
+      ],
+      "prompt": "",
+      "after": [],
+      "sfx": {
+        "open": "ding"
+      },
+      "mechanic": {
+        "type": "none"
+      },
+      "voice": {
+        "rate": 0.85,
+        "pitch": 0.95
+      }
+    }
+  ]
+}

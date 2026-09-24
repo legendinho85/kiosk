@@ -6,7 +6,7 @@ import { testHookFromSearch, entryRedirect, shouldRegisterSw, isInIframe, APP_VE
 import { startRouter } from './app/router.js';
 import { toast } from './app/ui.js';
 import { bookErrorScreen, messageScreen } from './app/chrome.js';
-import { createServices, armAudioUnlock } from './app/services.js';
+import { createServices, armAudioUnlock, createQuietNarrator, createQuietSfx } from './app/services.js';
 import { loadState, saveState, blobs } from './core/storage.js';
 import { loadBook, bookUrl } from './core/book.js';
 import { loadLexicon } from './pronounce/index.js';
@@ -37,9 +37,13 @@ try {
 let state = loadState();
 const getSettings = () => state.settings;
 
-function setState(next) {
+/**
+ * Replace the app state (a new state or an updater function) and save it.
+ * `persist: false` keeps it in memory only (e.g. straight after "forget everything").
+ */
+function setState(next, { persist = true } = {}) {
   state = typeof next === 'function' ? next(state) : next;
-  saveState(state);
+  if (persist) saveState(state);
   return state;
 }
 
@@ -63,13 +67,19 @@ function getBook(id) {
 
 async function prepareBook(match) {
   const book = await getBook(match.params.book);
-  if (state.lastBook !== book.id) setState((s) => ({ ...s, lastBook: book.id }));
+  // Remember the book for settings; nothing is written to the device until a child is added.
+  if (state.lastBook !== book.id) setState((s) => ({ ...s, lastBook: book.id }), { persist: state.profiles.length > 0 });
   return { book, bookId: book.id, baseUrl: bookUrl(book.id) };
 }
 
 // ---- 5. Services -------------------------------------------------------------------------
-const { narrator, sfx } = await createServices({ getSettings, getRecording: (id) => blobs.get(id) });
-armAudioUnlock({ narrator, sfx });
+// Speech and sound load in the background so the first screen (the name box)
+// never waits for them. Until they arrive, quiet stand-ins answer; screens
+// that talk (pronunciation, reader, settings...) wait for the real ones in
+// their route's prepare step.
+const services = { narrator: createQuietNarrator({ getSettings }), sfx: createQuietSfx(), real: false };
+const servicesReady = createServices({ getSettings, getRecording: (id) => blobs.get(id) }).then((s) => Object.assign(services, s, { real: true }));
+armAudioUnlock(services);
 
 // ---- 6. Router ---------------------------------------------------------------------------
 const withBook = (screen, extra = null) => ({
@@ -77,16 +87,18 @@ const withBook = (screen, extra = null) => ({
   prepare: async (match, signal) => ({ ...(await prepareBook(match, signal)), ...(extra ? await extra(match, signal) : {}) }),
 });
 const withLexicon = async () => ({ lexicon: await lexiconReady });
+const withServices = async () => (await servicesReady, {});
+const both = (...fns) => async (match, signal) => Object.assign({}, ...(await Promise.all(fns.map((f) => f(match, signal)))));
 
 const routes = [
   { path: '/', name: 'home', render: home.render },
   { path: '/b/:book', name: 'landing', ...withBook(landing) },
   { path: '/b/:book/name', name: 'name', ...withBook(nameScreen) },
-  { path: '/b/:book/say', name: 'say', ...withBook(say, withLexicon) },
-  { path: '/b/:book/read/:page', name: 'read', ...withBook(read) },
-  { path: '/b/:book/read', name: 'read', ...withBook(read) },
-  { path: '/b/:book/magic/:page', name: 'magic', ...withBook(magic) },
-  { path: '/settings', name: 'settings', render: settings.render },
+  { path: '/b/:book/say', name: 'say', ...withBook(say, both(withLexicon, withServices)) },
+  { path: '/b/:book/read/:page', name: 'read', ...withBook(read, withServices) },
+  { path: '/b/:book/read', name: 'read', ...withBook(read, withServices) },
+  { path: '/b/:book/magic/:page', name: 'magic', ...withBook(magic, withServices) },
+  { path: '/settings', name: 'settings', render: settings.render, prepare: withServices },
   { path: '/qr/:book', name: 'qr', ...withBook(qr) },
   { path: '/print/:book', name: 'print', ...withBook(print) },
 ];
@@ -101,8 +113,12 @@ function makeContext(match, extras) {
     },
     setState,
     navigate: (hash, opts) => router?.navigate(hash, opts),
-    narrator,
-    sfx,
+    get narrator() {
+      return services.narrator;
+    },
+    get sfx() {
+      return services.sfx;
+    },
     get lexicon() {
       return extras.lexicon ?? lexicon;
     },
@@ -158,4 +174,4 @@ try {
 }
 
 // Handy when debugging on a phone: window.__tiffin.state
-globalThis.__tiffin = { get state() { return state; }, router, narrator, sfx, version: APP_VERSION };
+globalThis.__tiffin = { get state() { return state; }, router, services, version: APP_VERSION };

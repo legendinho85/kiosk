@@ -535,6 +535,7 @@ export async function mountReader(root, opts) {
           if (signal.aborted) return;
           if (!unlocked) unlockAudio();
           state.touched = true;
+          el.dataset.interacting = '1'; // phone landscape tucks the prompt away
           rearmIdle();
         },
         onProgress: (p, info) => {
@@ -659,6 +660,7 @@ export async function mountReader(root, opts) {
     idleTimer = setTimeout(async () => {
       if (cur !== state || state.completed || state.reprompted || destroyed) return;
       state.reprompted = true;
+      delete el.dataset.interacting;
       state.control?.hint(true);
       if (setting('readPrompts', true) !== false && state.page.prompt) {
         state.promptCtl = childSignal(state.signal);
@@ -697,6 +699,7 @@ export async function mountReader(root, opts) {
       resolveCompletion = r;
     });
     cur = { n: num, page, signal, completed: false, resolveCompletion, waiting: false, reprompted: false, celebration: null };
+    delete el.dataset.interacting;
     const state = cur;
     setState('reading');
     updateChrome(num);
@@ -755,6 +758,7 @@ export async function mountReader(root, opts) {
         if (signal.aborted) return;
       }
       setState('reading');
+      delete el.dataset.interacting;
       await untilAbort(state.celebration, signal);
       if (signal.aborted) return;
       await speak(page.after ?? [], 'after', signal);

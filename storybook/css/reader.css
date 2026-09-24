@@ -356,7 +356,7 @@
 @keyframes sb-text-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .sb-r-line { margin: 0 0 .15em; }
 .sb-r-line:last-child { margin-bottom: 0; }
-.sb-word {
+.sb-r-text .sb-word {
   display: inline-block;
   padding: 0 .1em;
   margin: 0 -.1em;
@@ -365,16 +365,16 @@
   transition: background-color .12s, transform .12s, box-shadow .12s;
   pointer-events: auto;
 }
-.sb-word.is-punct { cursor: default; }
-.sb-word.is-current {
+.sb-r-text .sb-word.is-punct { cursor: default; }
+.sb-r-text .sb-word.is-current {
   background: var(--hl);
   box-shadow: 0 .08em 0 rgba(43, 42, 51, .18);
   transform: translateY(-.04em) scale(1.06);
 }
-.sb-word.is-tapped { animation: sb-word-tap .45s ease-out; }
+.sb-r-text .sb-word.is-tapped { animation: sb-word-tap .45s ease-out; }
 @keyframes sb-word-tap { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.18) rotate(-3deg); } }
 /* The child's name always looks special: colour, bold and a sparkly underline. */
-.sb-word.is-name {
+.sb-r-text .sb-word.is-name {
   position: relative;
   color: var(--name-ink);
   font-weight: 700;
@@ -383,7 +383,7 @@
   text-underline-offset: .2em;
   text-decoration-skip-ink: none;
 }
-.sb-word.is-name::after {
+.sb-r-text .sb-word.is-name::after {
   content: "";
   position: absolute;
   top: -.28em;
@@ -394,7 +394,7 @@
   animation: sb-twinkle 2.2s ease-in-out infinite;
   pointer-events: none;
 }
-.sb-word.is-name.is-current { background: #FFD9E2; }
+.sb-r-text .sb-word.is-name.is-current { background: #FFD9E2; }
 .sb-r-prompt {
   display: inline-flex;
   flex-wrap: wrap;
@@ -583,9 +583,12 @@
   .sb-r-text .sb-r-line:not(.is-active-line) { display: none; }
   .sb-r-text .sb-r-line.is-active-line { animation: sb-text-in .3s ease-out both; }
   .sb-r-text[data-long] { font-size: var(--r-read); }
-  /* While the child works the mechanism, keep the picture clear. */
-  .sb-reader[data-state="waiting"] .sb-r-band { background: none; padding-bottom: 6px; }
+  /* While the child works the mechanism, keep the picture clear: the prompt
+     lets touches through to the moving part, and steps aside once they start. */
+  .sb-reader[data-state="waiting"] .sb-r-band { background: none; padding-bottom: 6px; transition: opacity .3s; }
+  .sb-reader[data-state="waiting"] .sb-r-band .sb-word { pointer-events: none; }
   .sb-reader[data-state="waiting"] .sb-r-prompt { font-size: .85em; }
+  .sb-reader[data-state="waiting"][data-interacting] .sb-r-band { opacity: 0; }
   .sb-r-prev { grid-area: prev; justify-self: center; margin: 0; }
   .sb-r-next-wrap { grid-area: next; justify-self: center; flex-direction: column; margin: 0; gap: 12px; }
   .sb-r-bubble { white-space: normal; text-align: center; width: 84px; font-size: 15px; padding: 6px 8px; transform-origin: center bottom; transform: scale(.6) translateY(10px); }
@@ -619,7 +622,7 @@
 @media (prefers-reduced-motion: reduce) {
   .sb-bob, .sb-sway, .sb-wiggle, .sb-pulse, .sb-float, .sb-spin-slow, .sb-cheer, .sb-bulge,
   .sb-ghost-slide, .sb-ghost-orbit, .sb-ghost-upright, .sb-ghost-press, .sb-tapped, .sb-name-written, .sb-letter-pop, .sb-pop-in,
-  .sb-control-art, .sb-r-startbtn::before, .sb-r-start-icon svg, .sb-word.is-name::after {
+  .sb-control-art, .sb-r-startbtn::before, .sb-r-start-icon svg, .sb-r-text .sb-word.is-name::after {
     animation: none !important;
   }
   .sb-twinkle { animation: none !important; opacity: .85; }
@@ -630,7 +633,7 @@
   .sb-r-next-wrap.is-ready .sb-r-next::before, .sb-r-next-wrap.is-ready .sb-r-next svg { animation: none; }
   .sb-r-next-wrap.is-ready .sb-r-next { box-shadow: 0 4px 0 var(--ink), 0 0 0 6px rgba(255, 200, 61, .7); }
   .sb-confetti-piece { animation: sb-confetti-calm 1.8s ease-out var(--d, 0ms) forwards; top: auto; bottom: 30%; }
-  .sb-word, .sb-word.is-current { transition: none; transform: none; }
+  .sb-r-text .sb-word, .sb-r-text .sb-word.is-current { transition: none; transform: none; }
   .sb-r-night { transition-duration: .8s; }
 }
 @keyframes sb-hint-calm { 0%, 100% { opacity: .9; } 50% { opacity: .45; } }

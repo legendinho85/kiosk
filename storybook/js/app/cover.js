@@ -88,7 +88,7 @@ export function createCover({ book, bookId = book?.id, baseUrl, display = '', si
   const base = baseUrl ?? bookUrl(bookId);
   const art = h('div', { class: 'cover-art is-loading', 'data-testid': 'cover-art' });
   const title = h('p', { class: 'cover-title', 'data-testid': 'cover-title' });
-  const sub = h('p', { class: 'cover-sub' }, [book?.subtitle, book?.ages ? `Ages ${book.ages}` : ''].filter(Boolean).join(' · '));
+  const sub = h('p', { class: 'cover-sub' }, book?.subtitle ?? '', book?.subtitle && book?.ages ? ' · ' : '', book?.ages ? h('span', { class: 'nowrap' }, `Ages ${book.ages}`) : null);
   const el = h('figure', { class: 'cover is-blank', 'data-testid': 'cover' }, art, caption ? h('figcaption', { class: 'cover-caption' }, title, sub) : null);
   let svg = null;
   let slots = null;

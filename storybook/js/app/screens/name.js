@@ -10,7 +10,8 @@ import { screen, privacyLine } from '../chrome.js';
 import { createCover } from '../cover.js';
 import { normaliseName, NAME_ERRORS, NAME_MAX_LENGTH } from '../../core/personalise.js';
 import { newId, upsertProfile } from '../../core/storage.js';
-import { getCandidates, toPronunciation } from '../../pronounce/index.js';
+import { getCandidates } from '../../pronounce/index.js';
+import { storedPronunciation } from './pronunciation.js';
 
 /** Names longer than this (in letters) get a gentle "what do you call them at home?" hint. */
 export const LONG_NAME_LETTERS = 12;
@@ -38,7 +39,7 @@ export function nameError(raw) {
 /** The best-guess pronunciation for a new name (dictionary first, else as written). */
 export function defaultPronunciation(lexicon, display) {
   const [first] = getCandidates(lexicon, display, { max: 4 });
-  return toPronunciation(first ?? { say: display, label: 'As written', source: 'as-written' });
+  return storedPronunciation(first ?? { say: display, label: 'As written', source: 'as-written' });
 }
 
 /**

@@ -3,7 +3,8 @@
 // (history.replaceState doesn't fire hashchange), so a reload or the back
 // button lands on the right page.
 
-import { h } from '../ui.js';
+import { h, clearToasts } from '../ui.js';
+import { openParentGate, gatePassed } from '../parent-gate.js';
 import { messageScreen } from '../chrome.js';
 import { activeProfile } from '../../core/storage.js';
 import { profilePerson } from './ready.js';
@@ -32,6 +33,8 @@ export function render(root, ctx) {
     return null;
   }
   const startPage = pageParam(ctx.params.page, book.pages.length);
+  // Grown-up messages don't belong on the child's screen.
+  clearToasts();
   const host = h('div', { class: 'reader-host', 'data-testid': 'reader-host' }, h('div', { class: 'reader-loading', role: 'status' }, h('span', { class: 'spinner', 'aria-hidden': 'true' }), 'Opening the book…'));
   root.append(host);
   let reader = null;
@@ -64,7 +67,11 @@ export function render(root, ctx) {
         if (!gone && location.hash.startsWith(`#/b/${bookId}/read`)) replaceHash(readHash(n));
       },
       onExit: () => ctx.navigate(`#/b/${bookId}`),
-      onMagic: (n) => ctx.navigate(`#/b/${bookId}/magic/${n}`),
+      // The camera is a grown-up decision: the child can't open it alone.
+      onMagic: async (n) => {
+        const ok = gatePassed() || (await openParentGate({ title: 'Grown-ups: open the camera?', lead: 'Press and hold for 3 seconds to use the magic window. We look at the page. Nothing is recorded.' }));
+        if (ok && !gone) ctx.navigate(`#/b/${bookId}/magic/${n}`);
+      },
     });
     if (gone) r.destroy();
     else reader = r;

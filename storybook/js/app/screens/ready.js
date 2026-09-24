@@ -49,7 +49,7 @@ export function renderReady(root, ctx, profile) {
 
   const start = linkButton({ text: 'Start reading', href: `#/b/${bookId}/read/1`, icon: 'play', variant: 'primary', size: 'xl', testid: 'start-reading', class: 'start-button' });
   const magicBtn = linkButton({ text: 'Magic window', href: `#/b/${bookId}/magic/1`, icon: 'camera', variant: 'secondary', size: 'lg', testid: 'open-magic', class: 'magic-button' });
-  const magicNote = h('p', { class: 'magic-note' }, icon('sparkle', { size: 18 }), h('span', {}, `Point your camera at the real book and watch ${profile.display}’s name appear on the page.`));
+  const magicNote = h('p', { class: 'magic-note' }, icon('sparkle', { size: 18 }), h('span', {}, `Point your camera at the real book and watch ${profile.display}’s name appear on the page. We look at the page; nothing is recorded.`));
   const magicWrap = h('div', { class: 'magic-wrap', hidden: true }, magicBtn, magicNote);
 
   // Only offer the magic window when this device can do it.

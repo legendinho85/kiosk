@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHold, HOLD_MS } from '../../js/app/parent-gate.js';
 import { letterCount, longNameHint, nameError, defaultPronunciation, LONG_NAME_LETTERS } from '../../js/app/screens/name.js';
-import { storyLines, mergeCandidates, findSaved, candidateTitle, candidateNote, recognitionMessage } from '../../js/app/screens/pronunciation.js';
+import { storyLines, mergeCandidates, findSaved, candidateTitle, candidateNote, recognitionMessage, storedPronunciation } from '../../js/app/screens/pronunciation.js';
 import { pronunciationSummary, profilePerson } from '../../js/app/screens/ready.js';
 import { pageParam } from '../../js/app/screens/read.js';
 import { speedFor, SPEEDS, TOGGLES, voiceLabel } from '../../js/app/screens/settings.js';
@@ -154,6 +154,18 @@ test('candidate titles and notes read naturally', () => {
   assert.equal(candidateTitle({ source: 'suggestion', label: '' }), 'Suggestion');
   assert.match(candidateNote({ source: 'dictionary' }), /dictionary/);
   assert.equal(candidateNote({ source: 'mystery' }), '');
+});
+
+test('stored pronunciations never keep a language/origin guess', () => {
+  const [dict] = getCandidates(lexicon, 'Siobhan');
+  assert.equal(dict.label, 'Irish', 'shown on screen');
+  const saved = storedPronunciation(dict);
+  assert.equal(saved.label, '');
+  assert.equal(saved.say, 'Shi vawn');
+  assert.equal(saved.respell, 'shih-VAWN');
+  assert.equal(storedPronunciation({ say: 'Shiow ming', label: 'Mandarin (pinyin) style', source: 'suggestion' }).label, '');
+  assert.equal(storedPronunciation({ say: 'Shivawn', label: 'Your spelling', source: 'custom' }).label, 'Your spelling');
+  assert.equal(defaultPronunciation(lexicon, 'Siobhan').label, '');
 });
 
 test('recognition failures get helpful messages', () => {

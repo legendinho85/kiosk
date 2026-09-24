@@ -195,6 +195,11 @@ function host() {
   return toastHost;
 }
 
+/** Remove every toast (e.g. before the child-facing reader opens). */
+export function clearToasts() {
+  toastHost?.replaceChildren();
+}
+
 /**
  * Show a short message at the bottom of the screen.
  * @param {string} message

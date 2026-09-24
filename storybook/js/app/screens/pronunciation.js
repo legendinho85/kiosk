@@ -386,11 +386,14 @@ export function render(root, ctx) {
     const playBtn = button({ text: 'Play it back', icon: 'play', variant: 'secondary', size: 'md', testid: 'record-play', attrs: { 'aria-pressed': 'false' } });
     const toggle = h('input', { type: 'checkbox', role: 'switch', id: 'use-recording', class: 'switch-input', 'data-testid': 'use-recording', checked: useRecording });
     const toggleRow = h('label', { class: 'switch-row', for: 'use-recording' }, toggle, h('span', { class: 'switch', 'aria-hidden': 'true' }), h('span', { class: 'switch-text' }, 'Use my recording whenever the story says the name'));
-    const doneRow = h('div', { class: 'rec-done' }, h('div', { class: 'alt-actions' }, playBtn, recordBtn), toggleRow);
+    const doneActions = h('div', { class: 'alt-actions' });
+    const doneRow = h('div', { class: 'rec-done' }, doneActions, toggleRow);
     let ctl = null;
 
     const setStage = (s) => {
       stage.dataset.state = s;
+      // The record button moves between the idle and done layouts.
+      if (s === 'done') doneActions.replaceChildren(playBtn, recordBtn);
       stage.replaceChildren(
         ...(s === 'idle' ? [h('div', { class: 'alt-actions' }, recordBtn)] : []),
         ...(s === 'countdown' ? [count] : []),
@@ -460,7 +463,7 @@ export function render(root, ctx) {
       'div',
       { class: 'alt alt-record' },
       h('div', { class: 'alt-head' }, h('span', { class: 'alt-icon alt-icon-rec', 'aria-hidden': 'true' }, icon('record', { size: 20 })), h('h3', {}, 'Record your voice')),
-      h('p', { class: 'alt-hint' }, 'Say the name yourself, and the story can play your voice each time it comes up. The recording stays on this phone.'),
+      h('p', { class: 'alt-hint' }, 'Grown-ups: record the name in your own voice, and the story will play it each time the name comes up. The recording stays on this phone.'),
       stage,
       status,
     );
@@ -473,7 +476,7 @@ export function render(root, ctx) {
     stopPlaying();
     const chosen = selected ?? candidates[0] ?? { say: display, label: 'As written', source: 'as-written' };
     const keepRecording = Boolean(recording);
-    const pronunciation = { ...toPronunciation(chosen), useRecording: Boolean(useRecording && keepRecording), recordingId: keepRecording ? recordingId : null };
+    const pronunciation = { ...storedPronunciation(chosen), useRecording: Boolean(useRecording && keepRecording), recordingId: keepRecording ? recordingId : null };
     // Don't keep a voice recording we're not going to use.
     if (!keepRecording && saved.recordingId) ctx.blobs.delete(saved.recordingId).catch?.(() => {});
     const latest = ctx.state.profiles.find((p) => p.id === profile.id) ?? profile;
@@ -500,7 +503,8 @@ export function render(root, ctx) {
   );
   const storyCard = h('section', { class: 'card story-check', 'aria-labelledby': 'story-check-title' },
     h('div', { class: 'story-check-head' }, h('h2', { id: 'story-check-title' }, 'Try it in the story'), hearBtn),
-    preview);
+    preview,
+    h('p', { class: 'field-hint story-voice-note' }, 'The story is read by a computer voice on this device.'));
   const alts = h('section', { class: 'alts', 'aria-labelledby': 'alts-title' },
     h('h2', { id: 'alts-title', class: 'alts-title' }, 'None of these?'),
     h('div', { class: 'alt-grid' }, typeBlock, sayBlockHost, recordBlockHost));
@@ -520,6 +524,19 @@ export function render(root, ctx) {
     stopPlaying();
     updateCustomSoon.cancel();
   };
+}
+
+/**
+ * The pronunciation as it is stored on the child's profile. The language
+ * label of a dictionary entry or a spelling-rule guess ("Irish", "Mandarin
+ * style") hints at a family's origin, so it stays on screen and is never
+ * saved (data minimisation; see docs/compliance-checklist.md).
+ * @param {object} candidate
+ */
+export function storedPronunciation(candidate) {
+  const p = toPronunciation(candidate);
+  if (p.source === 'dictionary' || p.source === 'suggestion') p.label = '';
+  return p;
 }
 
 /** Parent-friendly text for why "say it" came back empty. */

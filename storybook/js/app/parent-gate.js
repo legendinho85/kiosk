@@ -81,7 +81,7 @@ function holdMsFromHooks() {
  * @returns {{el: HTMLElement, button: HTMLButtonElement, destroy(): void}}
  */
 export function holdButton({ holdMs = holdMsFromHooks(), onUnlock, label = 'Grown-ups: press and hold for 3 seconds' } = {}) {
-  const seconds = Math.round(holdMs / 1000);
+  const seconds = Math.max(1, Math.round(holdMs / 1000));
   const ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   ring.setAttribute('viewBox', '0 0 100 100');
   ring.setAttribute('class', 'gate-ring');
@@ -89,7 +89,8 @@ export function holdButton({ holdMs = holdMsFromHooks(), onUnlock, label = 'Grow
   ring.innerHTML = `<circle class="gate-ring-track" cx="50" cy="50" r="${RING_R}"/><circle class="gate-ring-fill" cx="50" cy="50" r="${RING_R}" stroke-dasharray="${RING_C.toFixed(2)}" stroke-dashoffset="${RING_C.toFixed(2)}" transform="rotate(-90 50 50)"/>`;
   const fill = ring.querySelector('.gate-ring-fill');
   const live = h('span', { class: 'sr-only', 'aria-live': 'assertive' });
-  const hint = h('span', { class: 'gate-hint', id: `gate-hint-${Math.random().toString(36).slice(2, 7)}` }, `Hold for ${seconds} seconds`);
+  const secondsText = `${seconds} second${seconds === 1 ? '' : 's'}`;
+  const hint = h('span', { class: 'gate-hint', id: `gate-hint-${Math.random().toString(36).slice(2, 7)}` }, `Hold for ${secondsText}`);
   const btn = h(
     'button',
     { type: 'button', class: 'gate-button', 'data-testid': 'parent-gate', 'aria-describedby': hint.id, 'aria-label': label },
@@ -151,7 +152,7 @@ export function holdButton({ holdMs = holdMsFromHooks(), onUnlock, label = 'Grow
     document.removeEventListener('pointerdown', onOtherPointer, true);
     el.classList.remove('is-holding');
     pointerId = null;
-    hint.textContent = `Hold for ${seconds} seconds`;
+    hint.textContent = `Hold for ${secondsText}`;
   };
 
   btn.addEventListener('pointerdown', (e) => {
@@ -193,7 +194,7 @@ export function holdButton({ holdMs = holdMsFromHooks(), onUnlock, label = 'Grow
       el.classList.remove('is-nudged');
       void el.offsetWidth;
       el.classList.add('is-nudged');
-      hint.textContent = `Press and hold for ${seconds} seconds`;
+      hint.textContent = `Press and hold for ${secondsText}`;
     }
   });
 
@@ -211,10 +212,10 @@ export function holdButton({ holdMs = holdMsFromHooks(), onUnlock, label = 'Grow
 /**
  * Show the gate as a dialog. Resolves true once a grown-up has held it,
  * false if they closed it.
- * @param {{holdMs?: number, title?: string}} [opts]
+ * @param {{holdMs?: number, title?: string, lead?: string}} [opts]
  * @returns {Promise<boolean>}
  */
-export function openParentGate({ holdMs, title = 'Grown-ups only' } = {}) {
+export function openParentGate({ holdMs, title = 'Grown-ups only', lead = 'Press and hold the lock for 3 seconds to open the settings.' } = {}) {
   return new Promise((resolve) => {
     let unlocked = false;
     let dlg = null;
@@ -229,7 +230,7 @@ export function openParentGate({ holdMs, title = 'Grown-ups only' } = {}) {
     const body = h(
       'div',
       { class: 'gate-dialog-body' },
-      h('p', { class: 'gate-lead' }, 'Press and hold the lock for 3 seconds to open the settings.'),
+      h('p', { class: 'gate-lead' }, lead),
       gate.el,
       button({ text: 'Not now', variant: 'quiet', testid: 'parent-gate-cancel', onClick: () => dlg?.close() }),
     );
