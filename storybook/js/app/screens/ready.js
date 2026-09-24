@@ -88,7 +88,7 @@ export function renderReady(root, ctx, profile) {
       linkButton({ text: 'Change how we say it', href: `#/b/${bookId}/say`, icon: 'ear', variant: 'link', size: 'sm', testid: 'change-say' }),
       linkButton({ text: 'Add a child', href: `#/b/${bookId}/name`, icon: 'plus', variant: 'link', size: 'sm', testid: 'add-child' })),
     others.length
-      ? h('div', { class: 'switch-row' },
+      ? h('div', { class: 'switch-child-row' },
           h('span', { class: 'switch-label' }, 'Switch to'),
           others.map((p) => button({
             text: p.display,

@@ -56,7 +56,114 @@
         "open": "pop"
       },
       "mechanic": {
-        "type": "flap"
+        "type": "flap",
+        "control": {
+          "flap": "#p2-flap",
+          "hinge": "top"
+        },
+        "drives": [
+          {
+            "target": "#p2-shirt-in",
+            "visible": [
+              0,
+              0.5
+            ]
+          },
+          {
+            "target": "#p2-shirt-up",
+            "visible": [
+              0.5,
+              1
+            ]
+          },
+          {
+            "target": "#p2-shirt-up",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                36,
+                -342
+              ]
+            ],
+            "range": [
+              0.5,
+              1
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p2-shirt-up",
+            "scale": [
+              [
+                1,
+                1
+              ],
+              [
+                2.25,
+                2.25
+              ]
+            ],
+            "origin": [
+              1150,
+              752
+            ],
+            "range": [
+              0.5,
+              1
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p2-shirt-up",
+            "rotate": [
+              0,
+              -12
+            ],
+            "origin": [
+              1150,
+              752
+            ],
+            "range": [
+              0.5,
+              0.75
+            ]
+          },
+          {
+            "target": "#p2-shirt-up",
+            "rotate": [
+              0,
+              12
+            ],
+            "origin": [
+              1150,
+              752
+            ],
+            "range": [
+              0.75,
+              1
+            ]
+          }
+        ],
+        "complete": {
+          "at": 0.95,
+          "show": [
+            "#p2-sparkles"
+          ],
+          "addClass": [
+            [
+              "#p2-tiffin",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "pop",
+            "sparkle",
+            "clap"
+          ]
+        }
       }
     },
     {
@@ -78,7 +185,115 @@
         "open": "boing"
       },
       "mechanic": {
-        "type": "wheel"
+        "type": "wheel",
+        "control": {
+          "center": [
+            800,
+            600
+          ],
+          "radius": 290,
+          "turns": 1,
+          "knob": "#p3-ring"
+        },
+        "drives": [
+          {
+            "target": "#p3-disc",
+            "rotate": [
+              0,
+              360
+            ],
+            "origin": [
+              800,
+              600
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p3-pose-stretch",
+            "visible": [
+              0,
+              0.34
+            ]
+          },
+          {
+            "target": "#p3-pose-bend",
+            "visible": [
+              0.34,
+              0.67
+            ]
+          },
+          {
+            "target": "#p3-pose-bend",
+            "scale": [
+              [
+                1.08,
+                0.8
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            "origin": [
+              790,
+              790
+            ],
+            "range": [
+              0.34,
+              0.44
+            ],
+            "ease": "bounce"
+          },
+          {
+            "target": "#p3-pose-jump",
+            "visible": [
+              0.67,
+              1
+            ]
+          },
+          {
+            "target": "#p3-pose-jump",
+            "scale": [
+              [
+                1.08,
+                0.8
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            "origin": [
+              790,
+              790
+            ],
+            "range": [
+              0.67,
+              0.77
+            ],
+            "ease": "bounce"
+          }
+        ],
+        "complete": {
+          "at": 0.95,
+          "show": [
+            "#p3-sparkles"
+          ],
+          "hide": [
+            "#p3-turn-arrows"
+          ],
+          "addClass": [
+            [
+              "#p3-bunting",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "boing",
+            "boing",
+            "boing"
+          ]
+        }
       }
     },
     {
@@ -99,7 +314,152 @@
         "open": "whistle"
       },
       "mechanic": {
-        "type": "slider"
+        "type": "slider",
+        "control": {
+          "from": [
+            468,
+            797
+          ],
+          "to": [
+            1366,
+            900
+          ],
+          "knob": "#p4-ball",
+          "returnTrip": true
+        },
+        "drives": [
+          {
+            "target": "#p4-ball",
+            "along": "#p4-pass-path",
+            "ease": "linear"
+          },
+          {
+            "target": "#p4-ball",
+            "scale": [
+              [
+                1,
+                1
+              ],
+              [
+                1.36,
+                1.36
+              ]
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p4-ball-spin",
+            "rotate": [
+              0,
+              540
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p4-leg",
+            "rotate": [
+              0,
+              -110
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "range": [
+              0,
+              0.12
+            ],
+            "phase": "out",
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p4-leg",
+            "rotate": [
+              0,
+              110
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "range": [
+              0,
+              0.3
+            ],
+            "phase": "back"
+          },
+          {
+            "target": "#p4-leg",
+            "rotate": [
+              0,
+              -95
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "range": [
+              0.78,
+              1
+            ],
+            "phase": "back",
+            "ease": "easeIn"
+          }
+        ],
+        "midway": {
+          "show": [
+            "#p4-burst-you"
+          ],
+          "hide": [
+            "#p4-target"
+          ],
+          "addClass": [
+            [
+              "#p4-crowd",
+              "sb-cheer"
+            ],
+            [
+              "#p4-banner-team",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "kick",
+            "cheer"
+          ]
+        },
+        "complete": {
+          "at": 0.95,
+          "show": [
+            "#p4-burst-tiffin",
+            "#p4-cheer-sparkles"
+          ],
+          "hide": [
+            "#p4-burst-you"
+          ],
+          "addClass": [
+            [
+              "#p4-crowd",
+              "sb-cheer"
+            ],
+            [
+              "#p4-banner-team",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "kick",
+            "cheer"
+          ]
+        }
       }
     },
     {
@@ -119,7 +479,129 @@
         "open": "kick"
       },
       "mechanic": {
-        "type": "pull-tab"
+        "type": "pull-tab",
+        "control": {
+          "from": [
+            368,
+            700
+          ],
+          "to": [
+            96,
+            700
+          ],
+          "knob": "#p5-tab"
+        },
+        "drives": [
+          {
+            "target": "#p5-keeper",
+            "visible": [
+              0,
+              0.14
+            ]
+          },
+          {
+            "target": "#p5-dive",
+            "visible": [
+              0.14,
+              1
+            ]
+          },
+          {
+            "target": "#p5-dive",
+            "translate": [
+              [
+                70,
+                170
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "range": [
+              0.08,
+              1
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p5-dive",
+            "rotate": [
+              34,
+              0
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "range": [
+              0.08,
+              1
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p5-dshadow",
+            "visible": [
+              0.14,
+              1
+            ]
+          },
+          {
+            "target": "#p5-dshadow",
+            "translate": [
+              [
+                60,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "range": [
+              0.08,
+              1
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p5-ball",
+            "rotate": [
+              0,
+              -320
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "ease": "linear"
+          }
+        ],
+        "complete": {
+          "at": 0.95,
+          "show": [
+            "#p5-boing"
+          ],
+          "hide": [
+            "#p5-ball-lines"
+          ],
+          "addClass": [
+            [
+              "#p5-score-name",
+              "sb-blink"
+            ],
+            [
+              "#p5-crowd",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "boing",
+            "cheer"
+          ],
+          "confetti": false
+        }
       }
     },
     {
@@ -139,7 +621,187 @@
         "open": "kick"
       },
       "mechanic": {
-        "type": "slider"
+        "type": "slider",
+        "control": {
+          "from": [
+            800,
+            846
+          ],
+          "to": [
+            1120,
+            292
+          ],
+          "knob": "#p6-ball"
+        },
+        "drives": [
+          {
+            "target": "#p6-ball",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                320,
+                -554
+              ]
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p6-ball",
+            "scale": [
+              [
+                1.3,
+                1.3
+              ],
+              [
+                0.56,
+                0.56
+              ]
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p6-ball",
+            "rotate": [
+              0,
+              560
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p6-bshadow",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                200,
+                -250
+              ]
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p6-bshadow",
+            "opacity": [
+              1,
+              0
+            ],
+            "range": [
+              0,
+              0.7
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p6-frog",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                -60,
+                -14
+              ]
+            ],
+            "range": [
+              0,
+              0.8
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p6-frog",
+            "rotate": [
+              0,
+              7
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "range": [
+              0,
+              0.8
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p6-fshadow",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                -60,
+                0
+              ]
+            ],
+            "range": [
+              0,
+              0.8
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p6-score-0",
+            "visible": [
+              0,
+              0.92
+            ]
+          },
+          {
+            "target": "#p6-score-1",
+            "visible": [
+              0.92,
+              1
+            ]
+          }
+        ],
+        "complete": {
+          "at": 0.95,
+          "show": [
+            "#p6-goal-burst",
+            "#p6-sparkles"
+          ],
+          "addClass": [
+            [
+              "#p6-net-back",
+              "sb-bulge"
+            ],
+            [
+              "#p6-score-row",
+              "sb-blink"
+            ],
+            [
+              "#p6-crowd",
+              "sb-cheer"
+            ],
+            [
+              "#p6-tiffin",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "kick",
+            "cheer",
+            "clap"
+          ],
+          "confetti": true
+        }
       }
     },
     {
@@ -159,7 +821,80 @@
         "open": "whistle"
       },
       "mechanic": {
-        "type": "flap"
+        "type": "flap",
+        "control": {
+          "flap": "#p7-cloth",
+          "hinge": "top"
+        },
+        "drives": [
+          {
+            "target": "#p7-glow",
+            "opacity": [
+              0,
+              1
+            ],
+            "range": [
+              0.35,
+              1
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p7-cup",
+            "scale": [
+              [
+                0.9,
+                0.9
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            "origin": [
+              800,
+              690
+            ],
+            "range": [
+              0.45,
+              1
+            ],
+            "ease": "bounce"
+          }
+        ],
+        "complete": {
+          "at": 0.9,
+          "show": [
+            "#p7-sparkles"
+          ],
+          "hide": [
+            "#p7-cloth"
+          ],
+          "addClass": [
+            [
+              "#p7-crowd",
+              "sb-cheer"
+            ],
+            [
+              "#p7-tiffin",
+              "sb-cheer"
+            ],
+            [
+              "#p7-goose",
+              "sb-cheer"
+            ],
+            [
+              "#p7-frog",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "pop",
+            "cheer",
+            "clap"
+          ],
+          "confetti": true
+        }
       }
     },
     {

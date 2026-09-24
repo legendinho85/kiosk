@@ -1,0 +1,21 @@
+{
+  "name": "Tiffin & Me — read-along stories",
+  "short_name": "Tiffin & Me",
+  "description": "Personalised read-along companion for Tiffin & Me board books: the story reads aloud with your child's name in it.",
+  "lang": "en-GB",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFF8EC",
+  "theme_color": "#FFF8EC",
+  "categories": ["books", "education", "kids"],
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

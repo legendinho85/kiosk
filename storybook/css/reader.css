@@ -348,6 +348,7 @@
   letter-spacing: .01em;
 }
 .sb-r-text.is-entering { animation: sb-text-in .38s ease-out both; }
+.sb-r-text[data-long] { font-size: calc(var(--r-read) * .86); line-height: 1.42; }
 @keyframes sb-text-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .sb-r-line { margin: 0 0 .15em; }
 .sb-r-line:last-child { margin-bottom: 0; }
@@ -502,7 +503,8 @@
   .sb-reader {
     --r-btn: 60px;
     --r-nav: 76px;
-    grid-template-columns: minmax(96px, 1fr) auto minmax(96px, 1fr);
+    --r-read: clamp(24px, 1.3vh + 2.1vw, 38px);
+    grid-template-columns: 116px minmax(0, 1fr) 116px;
     grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas:
       "top top top"
@@ -510,13 +512,16 @@
       ". band .";
   }
   .sb-r-top { padding: 14px 20px 6px; }
-  .sb-r-stage { padding: 6px 0 4px; }
+  /* The book takes whatever room the words leave (a long bedtime page gets a
+     slightly smaller picture rather than text over the art). */
+  .sb-r-stage { padding: 6px 0 4px; container-type: size; }
   .sb-r-frame {
     width: min(calc(100vw - 230px), calc((100dvh - 330px) * 1.6), 1360px);
+    width: min(100cqw, 100cqh * 1.6, 1360px);
     border-radius: 18px;
     box-shadow: 0 2px 0 rgba(43, 42, 51, .18), 0 22px 44px -12px rgba(43, 42, 51, .35), 0 0 0 1px rgba(43, 42, 51, .08);
   }
-  .sb-r-band { min-height: 190px; padding: 14px 24px 22px; justify-content: flex-start; }
+  .sb-r-band { min-height: 150px; padding: 12px 24px 20px; justify-content: flex-start; overflow: visible; }
   .sb-r-prev { grid-area: prev; justify-self: center; margin: 0; }
   .sb-r-next-wrap {
     grid-area: next;
@@ -569,6 +574,10 @@
   }
   .sb-r-band .sb-word, .sb-r-band button { pointer-events: auto; }
   .sb-r-text { line-height: 1.35; }
+  /* Karaoke: only the line being read, so the words never cover the picture. */
+  .sb-r-text .sb-r-line:not(.is-active-line) { display: none; }
+  .sb-r-text .sb-r-line.is-active-line { animation: sb-text-in .3s ease-out both; }
+  .sb-r-text[data-long] { font-size: var(--r-read); }
   /* While the child works the mechanism, keep the picture clear. */
   .sb-reader[data-state="waiting"] .sb-r-band { background: none; padding-bottom: 6px; }
   .sb-reader[data-state="waiting"] .sb-r-prompt { font-size: .85em; }

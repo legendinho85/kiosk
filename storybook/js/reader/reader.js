@@ -325,15 +325,27 @@ export async function mountReader(root, opts) {
       });
       textEl.append(p);
     });
+    const chars = tokenizedLines.reduce((n, l) => n + l.display.length, 0);
+    textEl.toggleAttribute('data-long', chars > 90 || tokenizedLines.length > 3);
+    textEl.querySelector('.sb-r-line')?.classList.add('is-active-line');
     textEl.classList.remove('is-entering');
     void textEl.offsetWidth;
     textEl.classList.add('is-entering');
+  }
+
+  /** The line being read (phone landscape shows only this one). */
+  function activateLine(line) {
+    const p = line?.closest?.('.sb-r-line');
+    if (!p || p.classList.contains('is-active-line')) return;
+    for (const other of textEl.querySelectorAll('.sb-r-line.is-active-line')) other.classList.remove('is-active-line');
+    p.classList.add('is-active-line');
   }
 
   function highlight(line, u) {
     const unit = typeof u === 'object' && u ? u.u : u;
     const next = textEl.querySelector(`[data-unit="${line}:${unit}"]`);
     if (next === currentWord) return;
+    activateLine(next);
     currentWord?.classList.remove('is-current');
     currentWord = next;
     if (next && setting('highlight', true) !== false) {

@@ -1,0 +1,28 @@
+{
+  "sfx": { "open": "whistle" },
+  "mechanic": {
+    "type": "slider",
+    "control": { "from": [468, 797], "to": [1366, 900], "knob": "#p4-ball", "returnTrip": true },
+    "drives": [
+      { "target": "#p4-ball", "along": "#p4-pass-path", "ease": "linear" },
+      { "target": "#p4-ball", "scale": [[1, 1], [1.36, 1.36]], "origin": [0, 0], "ease": "linear" },
+      { "target": "#p4-ball-spin", "rotate": [0, 540], "origin": [0, 0], "ease": "linear" },
+      { "target": "#p4-leg", "rotate": [0, -110], "origin": [0, 0], "range": [0, 0.12], "phase": "out", "ease": "easeOut" },
+      { "target": "#p4-leg", "rotate": [0, 110], "origin": [0, 0], "range": [0, 0.3], "phase": "back" },
+      { "target": "#p4-leg", "rotate": [0, -95], "origin": [0, 0], "range": [0.78, 1], "phase": "back", "ease": "easeIn" }
+    ],
+    "midway": {
+      "show": ["#p4-burst-you"],
+      "hide": ["#p4-target"],
+      "addClass": [["#p4-crowd", "sb-cheer"], ["#p4-banner-team", "sb-cheer"]],
+      "sfx": ["kick", "cheer"]
+    },
+    "complete": {
+      "at": 0.95,
+      "show": ["#p4-burst-tiffin", "#p4-cheer-sparkles"],
+      "hide": ["#p4-burst-you"],
+      "addClass": [["#p4-crowd", "sb-cheer"], ["#p4-banner-team", "sb-cheer"]],
+      "sfx": ["kick", "cheer"]
+    }
+  }
+}

@@ -191,7 +191,7 @@ browser may send audio to its speech service.
   "title": "Goal, {name}!",               // may use {name}
   "subtitle": "A Tiffin & Me football story",
   "character": { "name": "Tiffin", "species": "otter" },
-  "defs": "defs.svg",                     // shared <symbol>s, inlined once by the reader
+  "defs": "defs.svg",                     // shared <g id="d-…"> items, inlined once by the reader
   "pages": [
     {
       "n": 3,                             // 1-based, sequential
@@ -298,9 +298,10 @@ override the attribute; wrap it in a group instead.
 - Idle animation classes (from `css/reader.css`): `sb-bob`, `sb-sway`,
   `sb-wiggle`, `sb-pulse`, `sb-twinkle`, `sb-float`, `sb-spin-slow`, `sb-cheer`
   (added on completion for crowds). They use `transform-box: fill-box`.
-- Style: flat vector, rounded shapes, 6 px dark outlines (`#2B2A33`,
-  round joins), the book palette, no gradients/filters except subtle ones in
-  `defs.svg`; keep each scene < 80 KB.
+- Style: flat vector, rounded shapes, 5 px outlines in a darker shade of each
+  fill (round joins), the book palette, no filters and only the subtle
+  gradients defined in `defs.svg`; keep each scene < 80 KB. `books/<id>/ART.md`
+  is the illustrator's guide (catalogue, origins, pivots, layering).
 
 ## 7. Reader — `js/reader/*.js`
 ```js

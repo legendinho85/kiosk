@@ -550,39 +550,57 @@ try {
     await context.close();
   });
 
-  // Smoke test of the real book, once the illustrators' scenes exist.
-  const realBook = path.join(ROOT, 'books/tiffin-football/book.json');
-  const book = existsSync(realBook) ? JSON.parse(readFileSync(realBook, 'utf8')) : null;
-  const scenesReady = book?.pages?.every((p) => existsSync(path.join(ROOT, 'books/tiffin-football', p.scene)));
-  if (process.env.REAL_BOOK !== '0' && scenesReady) {
-    await step('real book: every page opens, every mechanism completes by itself', async () => {
+  // Smoke test of the real book: every page whose scene the illustrators have
+  // delivered opens, its mechanism completes, and the name appears in the art.
+  const realDir = path.join(ROOT, 'books/tiffin-football');
+  const draft = existsSync(path.join(realDir, 'book.draft.json')) ? JSON.parse(readFileSync(path.join(realDir, 'book.draft.json'), 'utf8')) : null;
+  const ready = (draft?.pages ?? []).filter((p) => existsSync(path.join(realDir, p.scene)));
+  if (process.env.REAL_BOOK !== '0' && ready.length) {
+    await step(`real book: ${ready.length}/${draft.pages.length} pages open, mechanisms complete, names in the art`, async () => {
       for (const viewport of [{ width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 844, height: 390 }]) {
         // merge=1: the draft plus the illustrators' page fragments, exactly what
         // tools/build-book.mjs produces, so this works before the build step too.
-        const { page, context, errors } = await openHarness(browser, 'test=1&book=tiffin-football&merge=1&name=Siobh%C3%A1n', { viewport });
-        for (const p of book.pages) {
-          if (p.n > 1) await next(page, p.n);
-          const hasMechanic = p.mechanic?.type && p.mechanic.type !== 'none';
-          if (hasMechanic) {
-            await waitState(page, p.n, 'waiting');
-            await page.waitForTimeout(300);
-            await shot(page, `real-${viewport.width}-p${p.n}-before`);
+        const { page, context, errors } = await openHarness(browser, `test=1&book=tiffin-football&merge=1&name=Siobh%C3%A1n&page=${ready[0].n}`, { viewport });
+        for (const p of ready) {
+          if (p.n !== ready[0].n) {
+            await page.evaluate((n) => window.__reader.goTo(n), p.n);
+          }
+          await page.waitForFunction((n) => document.querySelector('[data-testid=scene] svg')?.dataset.page === String(n), p.n);
+          const hasControl = await page.waitForFunction(
+            (n) => {
+              const r = document.querySelector('[data-testid=reader]');
+              return r.dataset.page === String(n) && ['waiting', 'done'].includes(r.dataset.state) && r.dataset.state;
+            },
+            p.n,
+            { timeout: 15000 },
+          ).then((h) => h.jsonValue()).then((s) => s === 'waiting');
+          await page.waitForTimeout(250);
+          await shot(page, `real-${viewport.width}-p${p.n}-before`);
+          if (hasControl) {
             await control(page).focus();
             await page.keyboard.press('Enter');
           }
           await waitState(page, p.n, 'done', 15000);
           await page.waitForTimeout(700);
-          await shot(page, `real-${viewport.width}-p${p.n}${hasMechanic ? '-after' : ''}`);
+          await shot(page, `real-${viewport.width}-p${p.n}-after`);
+          const names = await page.evaluate(() =>
+            [...document.querySelectorAll('[data-testid=scene] text.sb-name')]
+              .filter((t) => t.closest('[display=none]') === null)
+              .map((t) => t.textContent),
+          );
+          for (const t of names) assert(/Siobh[aá]n|SIOBH[AÁ]N/.test(t), `page ${p.n}: name slot shows "${t}"`);
+          const letters = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] .sb-letter')].map((t) => t.textContent).join(''));
+          if (letters) eq(letters, 'SIOBHÁN', `page ${p.n}: bunting letters`);
         }
-        // Pages without a mechanism may have no fragment: those 404s are expected.
-        const unexpected = page.__missing.filter((p) => !/\/pages\/p\d+\.json$/.test(p));
-        eq(unexpected, [], 'no missing files');
+        // Pages without a mechanism may have no fragment, and neighbours may not be drawn yet: those 404s are expected.
+        const unexpected = page.__missing.filter((x) => !/\/pages\/p\d+\.json$|\/scenes\/p\d+\.svg$/.test(x));
+        eq(unexpected, [], 'no other missing files');
         noErrors(errors.filter((e) => !/status of 404/.test(e)), `real book ${viewport.width}x${viewport.height}`);
         await context.close();
       }
     });
   } else {
-    console.log('  skip real book smoke test (scenes not ready or REAL_BOOK=0)');
+    console.log('  skip real book smoke test (no scenes yet or REAL_BOOK=0)');
   }
 } finally {
   await browser.close();

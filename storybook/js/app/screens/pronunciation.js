@@ -159,13 +159,14 @@ export function render(root, ctx) {
       testid: 'candidate-choose',
       class: 'cand-choose',
       attrs: { 'aria-pressed': String(Boolean(isSel)), 'aria-label': isSel ? `${title}: chosen` : `Choose ${title}` },
-      onClick: () => choose_(c),
+      onClick: () => chooseCandidate(c),
     });
     return h(
       'li',
       { class: `cand${isSel ? ' is-selected' : ''}${i === 0 && c.source === 'dictionary' ? ' is-best' : ''}`, 'data-testid': 'candidate', 'data-say': c.say, 'data-source': c.source, 'data-id': c.id },
       play,
       h('div', { class: 'cand-main' },
+        i === 0 && c.source === 'dictionary' ? h('span', { class: 'cand-best' }, 'Best match') : null,
         h('p', { class: 'cand-sound' }, sound),
         h('p', { class: 'cand-label' }, h('strong', {}, title), candidateNote(c) ? h('span', {}, ` · ${candidateNote(c)}`) : null)),
       choose,
@@ -187,7 +188,7 @@ export function render(root, ctx) {
     renderPreview();
   }
 
-  function choose_(c) {
+  function chooseCandidate(c) {
     selected = c;
     renderList();
     live.textContent = `Chosen: ${candidateTitle(c)}.`;
