@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "note": "Placeholder — replaced by the verified dictionary.",
+  "entries": [
+    { "name": "Siobhan", "spellings": ["Siobhán", "Shivaun"], "origin": "Irish", "variants": [{ "ipa": "ʃɪˈvɔːn", "respell": "shih-VAWN", "say": "Shi vawn", "label": "Irish" }], "note": "", "confidence": "high" },
+    { "name": "Niamh", "spellings": ["Neve", "Neamh"], "origin": "Irish", "variants": [{ "ipa": "niːv", "respell": "NEEV", "say": "Neeve", "label": "Irish" }], "note": "", "confidence": "high" },
+    { "name": "Isla", "spellings": [], "origin": "Scottish", "variants": [{ "ipa": "ˈaɪlə", "respell": "EYE-luh", "say": "Eyela", "label": "Most common in UK" }, { "ipa": "ˈɪzlə", "respell": "IZ-luh", "say": "Izla", "label": "As spelt" }], "note": "", "confidence": "high" }
+  ]
+}

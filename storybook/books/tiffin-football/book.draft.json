@@ -1,0 +1,189 @@
+{
+  "id": "tiffin-football",
+  "version": 1,
+  "lang": "en-GB",
+  "title": "Goal, {name}!",
+  "subtitle": "A Tiffin & Me football story",
+  "series": "Tiffin & Me",
+  "ages": "1–4",
+  "character": {
+    "name": "Tiffin",
+    "species": "otter"
+  },
+  "palette": {
+    "sky": "#9FDCF7",
+    "grass": "#74C655",
+    "accent": "#FFCB3D",
+    "character_main": "#B0703F",
+    "character_detail": "#F7E6CC",
+    "kit": "#E4483A",
+    "kit_detail": "#FFFFFF"
+  },
+  "defs": "defs.svg",
+  "pages": [
+    {
+      "n": 1,
+      "kind": "cover",
+      "scene": "scenes/p1.svg",
+      "text": [
+        "Goal, {name}!",
+        "Starring Tiffin the otter... and {name}!"
+      ],
+      "prompt": "",
+      "after": [],
+      "sfx": {
+        "open": "whistle"
+      },
+      "mechanic": {
+        "type": "none"
+      }
+    },
+    {
+      "n": 2,
+      "kind": "spread",
+      "scene": "scenes/p2.svg",
+      "text": [
+        "It's football day!",
+        "Tiffin has boots. Tiffin has a ball.",
+        "Where is {name's} shirt?"
+      ],
+      "prompt": "Lift the flap on the kit bag!",
+      "after": [
+        "Here it is!",
+        "Tip-tap, tip-tap, off we go!"
+      ],
+      "sfx": {
+        "open": "pop"
+      },
+      "mechanic": {
+        "type": "flap"
+      }
+    },
+    {
+      "n": 3,
+      "kind": "spread",
+      "scene": "scenes/p3.svg",
+      "text": [
+        "Onto the pitch!",
+        "Warm up, Tiffin!",
+        "Warm up, {name}!"
+      ],
+      "prompt": "Turn the wheel, round and round!",
+      "after": [
+        "Stretch! Bend! Jump!",
+        "Boing, boing, boing!",
+        "Tip-tap, tip-tap, off we go!"
+      ],
+      "sfx": {
+        "open": "boing"
+      },
+      "mechanic": {
+        "type": "wheel"
+      }
+    },
+    {
+      "n": 4,
+      "kind": "spread",
+      "scene": "scenes/p4.svg",
+      "text": [
+        "Peep! Kick-off!",
+        "Pass, pass, pass!",
+        "Tiffin to {name}... thud!"
+      ],
+      "prompt": "Slide the ball across... and back again!",
+      "after": [
+        "{name} to Tiffin... thud!",
+        "Tip-tap, tip-tap, off we go!"
+      ],
+      "sfx": {
+        "open": "whistle"
+      },
+      "mechanic": {
+        "type": "slider"
+      }
+    },
+    {
+      "n": 5,
+      "kind": "spread",
+      "scene": "scenes/p5.svg",
+      "text": [
+        "Uh-oh! Here comes Goose!",
+        "Goose shoots... whoosh!"
+      ],
+      "prompt": "Pull the tab! Dive, Tiffin, dive!",
+      "after": [
+        "Boing! Big save, Tiffin!",
+        "Tip-tap, tip-tap, off we go!"
+      ],
+      "sfx": {
+        "open": "kick"
+      },
+      "mechanic": {
+        "type": "pull-tab"
+      }
+    },
+    {
+      "n": 6,
+      "kind": "spread",
+      "scene": "scenes/p6.svg",
+      "text": [
+        "One more pass... to {name}!",
+        "Ready... steady..."
+      ],
+      "prompt": "Push the ball into the net, {name}!",
+      "after": [
+        "Goal!",
+        "Goal, {name}! Goal, goal, goal!"
+      ],
+      "sfx": {
+        "open": "kick"
+      },
+      "mechanic": {
+        "type": "slider"
+      }
+    },
+    {
+      "n": 7,
+      "kind": "spread",
+      "scene": "scenes/p7.svg",
+      "text": [
+        "Peep, peep! Full time!",
+        "We win! Hip, hip, hooray!"
+      ],
+      "prompt": "Lift the flap to find the prize!",
+      "after": [
+        "A big gold cup for Tiffin and {name}!",
+        "Tip-tap, tip-tap, hooray!"
+      ],
+      "sfx": {
+        "open": "whistle"
+      },
+      "mechanic": {
+        "type": "flap"
+      }
+    },
+    {
+      "n": 8,
+      "kind": "end",
+      "scene": "scenes/p8.svg",
+      "text": [
+        "Home we go. Boots off. Lights low.",
+        "Tip... tap... off to sleep we go.",
+        "Paw in hand, side by side.",
+        "Night night, Tiffin. Night night, {name}."
+      ],
+      "prompt": "",
+      "after": [],
+      "sfx": {
+        "open": "ding"
+      },
+      "mechanic": {
+        "type": "none"
+      },
+      "voice": {
+        "rate": 0.85,
+        "pitch": 0.95
+      }
+    }
+  ]
+}

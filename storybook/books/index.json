@@ -1,0 +1,12 @@
+{
+  "books": [
+    {
+      "id": "tiffin-football",
+      "title": "Goal, {name}!",
+      "subtitle": "A Tiffin & Me football story",
+      "series": "Tiffin & Me",
+      "cover": "scenes/p1.svg",
+      "ages": "1–4"
+    }
+  ]
+}

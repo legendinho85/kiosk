@@ -1,0 +1,15 @@
+{
+  "name": "starring-storybook",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototype: personalised read-along companion for interactive board books",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/unit/*.test.mjs",
+    "serve": "npx --yes http-server . -p 8080 -c-1",
+    "e2e": "node tests/e2e/run.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
