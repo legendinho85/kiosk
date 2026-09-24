@@ -85,6 +85,23 @@ export function stepAt(steps, t) {
   return best;
 }
 
+/**
+ * Where a paused recording should carry on (ms into the clip): a little
+ * before where it stopped, at the start of a word, so the child hears the
+ * words lead in again; never back across into the previous block (the prompt
+ * doesn't turn back into the page text).
+ * @param {ClipStep[]} steps  a stretched timeline's steps
+ * @param {number} pos  where the clip was stopped (ms)
+ * @param {{backupMs?: number}} [opts]
+ */
+export function clipResumeAt(steps, pos, { backupMs = 800 } = {}) {
+  if (!(pos > 0) || !steps?.length) return 0;
+  const here = stepAt(steps, pos);
+  let back = stepAt(steps, pos - backupMs);
+  if (here >= 0 && back >= 0 && steps[back].part !== steps[here].part) back = steps.findIndex((x) => x.part === steps[here].part);
+  return back >= 0 ? Math.max(0, steps[back].at) : 0;
+}
+
 /** When the reading reaches the first word of `part` (ms), or null if it has none. */
 export function partStart(steps, part) {
   return steps?.find((s) => s.part === part)?.at ?? null;

@@ -349,6 +349,38 @@ try {
       for (const n of ['beep', 'rumble']) check(by[n].peak <= by.cheer.peak * 1.25, `${n} is no louder than the cheer (${by[n].peak.toFixed(3)} vs ${by.cheer.peak.toFixed(3)})`);
     });
 
+    await step('playBlob starts part way in (offsetMs) and says when the sound really starts (onStart)', async () => {
+      const r = await page.evaluate(async () => {
+        const rec = await import('/js/audio/recorder.js');
+        const rate = 22050;
+        const s = new Float32Array(rate * 2);
+        for (let i = 0; i < s.length; i++) s[i] = Math.sin((i / rate) * 2 * Math.PI * 330) * 0.1;
+        const blob = new Blob([rec.encodeWav(s, rate)], { type: 'audio/wav' });
+        const run = async (opts) => {
+          const t0 = performance.now();
+          let info = null;
+          let at = null;
+          await rec.playBlob(blob, { volume: 0, ...opts, onStart: (i) => ((info = i), (at = performance.now() - t0)) });
+          return { ms: Math.round(performance.now() - t0), info, at: at == null ? null : Math.round(at) };
+        };
+        const full = await run({});
+        const part = await run({ offsetMs: 1200 });
+        const past = await run({ offsetMs: 99999 });
+        const ac = new AbortController();
+        setTimeout(() => ac.abort(), 300);
+        const stopped = await run({ signal: ac.signal });
+        let threw = false;
+        await rec.playBlob(blob, { volume: 0, offsetMs: 1900, onStart: () => { throw new Error('a broken highlight hook'); } }).catch(() => (threw = true));
+        return { full, part, past, stopped, threw };
+      });
+      check(r.full.info?.offsetMs === 0 && Math.abs(r.full.info.durationMs - 2000) < 5 && r.full.info.how === 'webaudio', `onStart for the whole clip: ${JSON.stringify(r.full)}`);
+      check(r.full.at != null && r.full.at < 300 && Math.abs(r.full.ms - 2000) < 350, `plays the whole clip (${r.full.ms} ms, started after ${r.full.at} ms)`);
+      check(Math.abs(r.part.info?.offsetMs - 1200) < 5 && Math.abs(r.part.ms - 800) < 350, `from 1.2 s in: plays the last 0.8 s (${JSON.stringify(r.part)})`);
+      check(r.past.ms < 500, `an offset past the end plays at most a moment (${r.past.ms} ms)`);
+      check(r.stopped.ms < 700, `the signal stops it (${r.stopped.ms} ms)`);
+      check(!r.threw, 'a throwing onStart never breaks playback');
+    });
+
     await step('recording with the (fake) microphone gives a trimmed 16-bit mono WAV and a live level meter', async () => {
       await page.click('[data-testid=lab-record]');
       await page.waitForFunction(() => audioLab.recording || audioLab.recordError, null, { timeout: 12000 });
@@ -825,7 +857,9 @@ try {
         const reg = await Promise.race([navigator.serviceWorker.ready, new Promise((res) => setTimeout(() => res(null), 8000))]);
         if (!reg) return { error: 'service worker never became ready' };
         const src = await (await fetch('sw.js')).text();
-        const list = JSON.parse(src.match(/const PRECACHE = (\[[^\]]*\])/)[1].replace(/'/g, '"').replace(/,\s*\]/, ']'));
+        // The list may carry // comments and a trailing comma.
+        const body = src.match(/const PRECACHE = (\[[^\]]*\])/)[1].replace(/\/\/[^\n]*/g, '');
+        const list = JSON.parse(body.replace(/'/g, '"').replace(/,\s*\]/, ']'));
         const status = await Promise.all(list.map(async (u) => [u, (await fetch(u, { cache: 'no-store' })).status]));
         const keys = await caches.keys();
         const cache = await caches.open(keys.find((k) => k.startsWith('tiffin-')));

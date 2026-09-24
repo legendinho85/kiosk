@@ -16,6 +16,10 @@ import { upper, possessive } from '../core/personalise.js';
 import { animationWrapper } from './scene.js';
 
 export const MIN_SCALE = 0.45; // smallest a name may shrink, as a fraction of the drawn size
+// Browsers hint (round) glyph widths for the size text is drawn at on screen, so the same name can
+// measure ~5% wider or narrower as the picture is resized. Unhinted ("geometric precision") text
+// scales exactly, so it is measured and drawn that way.
+const GEOMETRIC = 'geometricPrecision';
 const MAX_SQUEEZE = 0.12; // tightest letter spacing, as a fraction of the font size
 const WRAP_BELOW = 0.7; // consider two lines when one line would shrink below this
 const TWO_LINE_MAX = 0.62; // each of two lines is at most this fraction of the drawn size
@@ -226,37 +230,57 @@ export function isShown(el, root) {
   return true;
 }
 
-/** Measure text in the slot's own font by laying out a hidden twin at the scene root. */
+/**
+ * Measure text in the slot's own font by laying out a hidden twin beside it.
+ * The twin sits in the slot's own group, so it is drawn at the same on-screen
+ * size: at the small sizes a phone draws a scene at, glyph widths are rounded
+ * differently at different scales, and a twin at the scene root can come out
+ * a few per cent narrower than the slot inside a scaled-down group. A slot
+ * whose group isn't drawn (hidden until the mechanism is done) is measured at
+ * the scene root instead, then estimated as a last resort.
+ */
 function makeMeasurer(svgRoot) {
-  let probe = null;
+  const probes = new Map(); // host element -> hidden <text>
+  const probeIn = (host) => {
+    let probe = probes.get(host);
+    if (!probe) {
+      probe = document.createElementNS(SVG_NS, 'text');
+      probe.setAttribute('visibility', 'hidden');
+      probe.setAttribute('aria-hidden', 'true');
+      probe.setAttribute('class', 'sb-measure');
+      probe.setAttribute('text-rendering', GEOMETRIC);
+      host.appendChild(probe);
+      probes.set(host, probe);
+    }
+    return probe;
+  };
   const measure = (slot) => (text, fontSize) => {
-    try {
-      if (!probe) {
-        probe = document.createElementNS(SVG_NS, 'text');
-        probe.setAttribute('x', '0');
-        probe.setAttribute('y', '-500');
-        probe.setAttribute('visibility', 'hidden');
-        probe.setAttribute('aria-hidden', 'true');
-        svgRoot.appendChild(probe);
+    const cs = safeStyle(slot);
+    const hosts = [slot.parentNode, svgRoot].filter((x, i, all) => x && x.namespaceURI === SVG_NS && all.indexOf(x) === i);
+    for (const host of hosts) {
+      try {
+        const probe = probeIn(host);
+        // Same place as the slot (in its own group), so the same scale applies.
+        probe.setAttribute('x', host === svgRoot ? '0' : slot.getAttribute('x') || '0');
+        probe.setAttribute('y', host === svgRoot ? '-500' : slot.getAttribute('y') || '0');
+        probe.setAttribute('font-family', slot.getAttribute('font-family') || cs?.fontFamily || 'Fredoka, Andika, sans-serif');
+        probe.setAttribute('font-weight', slot.getAttribute('font-weight') || cs?.fontWeight || '700');
+        probe.setAttribute('font-style', cs?.fontStyle || 'normal');
+        probe.setAttribute('font-size', String(fontSize));
+        // The artist's own letter spacing counts; ours (from an earlier fit) doesn't.
+        probe.setAttribute('letter-spacing', original.get(slot)?.letterSpacing ?? '0');
+        probe.textContent = text;
+        const w = probe.getComputedTextLength();
+        if (w > 0) return w;
+      } catch {
+        /* not rendered (detached scene, old engine): try the next place */
       }
-      const cs = safeStyle(slot);
-      probe.setAttribute('font-family', slot.getAttribute('font-family') || cs?.fontFamily || 'Fredoka, Andika, sans-serif');
-      probe.setAttribute('font-weight', slot.getAttribute('font-weight') || cs?.fontWeight || '700');
-      probe.setAttribute('font-style', cs?.fontStyle || 'normal');
-      probe.setAttribute('font-size', String(fontSize));
-      // The artist's own letter spacing counts; ours (from an earlier fit) doesn't.
-      probe.setAttribute('letter-spacing', original.get(slot)?.letterSpacing ?? '0');
-      probe.textContent = text;
-      const w = probe.getComputedTextLength();
-      if (w > 0) return w;
-    } catch {
-      /* not rendered (detached scene, old engine) */
     }
     return estimateTextWidth(text, fontSize);
   };
   const done = () => {
-    probe?.remove();
-    probe = null;
+    for (const probe of probes.values()) probe.remove();
+    probes.clear();
   };
   return { measure, done };
 }
@@ -272,6 +296,8 @@ function charSpans(parent, text, hidden) {
 
 function renderSlot(item, measure) {
   const { el, orig } = item;
+  // Unhinted text scales exactly with the picture, so a name that fits at one size fits at every size.
+  el.setAttribute('text-rendering', GEOMETRIC);
   const maxWidth = parseFloat(el.dataset.maxWidth ?? el.getAttribute('data-max-width') ?? '');
   const wrap = el.dataset.wrap === '2';
   const layout = layoutName({ text: item.text, fontSize: orig.fontSize, maxWidth, wrap, measure });

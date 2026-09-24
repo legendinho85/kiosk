@@ -41,3 +41,32 @@ test('silent narrator: a clip segment highlights the name', async () => {
   assert.deepEqual(seen, [0, 1]);
   await n.speakText('Ava');
 });
+
+test('silent narrator: speakText honours rateScale (bedtime is slower) and stops on stop() or its signal', async () => {
+  const saved = globalThis.SB_TEST;
+  globalThis.SB_TEST = { forceSilent: true, timeScale: 0.1 };
+  try {
+    const n = createSilentNarrator();
+    const time = async (opts) => {
+      const t0 = Date.now();
+      await n.speakText('That says Maximilian!', opts);
+      return Date.now() - t0;
+    };
+    const normal = await time({});
+    const slow = await time({ rateScale: 0.6 });
+    assert.ok(slow > normal * 1.3, `slower: ${slow} ms vs ${normal} ms`);
+    // stop() ends it even when the caller passed its own signal.
+    const ctl = new AbortController();
+    const t0 = Date.now();
+    const p = n.speakText('One two three four five six seven eight nine ten', { signal: ctl.signal });
+    setTimeout(() => n.stop(), 10);
+    await p;
+    assert.ok(Date.now() - t0 < 200, 'stopped early');
+    const q = n.speakText('One two three four five six seven eight nine ten', { signal: ctl.signal });
+    ctl.abort();
+    await q;
+    assert.equal(n.speaking, false);
+  } finally {
+    globalThis.SB_TEST = saved;
+  }
+});

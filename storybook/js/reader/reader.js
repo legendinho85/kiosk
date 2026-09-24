@@ -30,7 +30,7 @@ import { loadScene, prefetchScene, parseSvg, animationWrapper, needsAnimationWra
 import { createDriver, pick, applyMatrix } from './drive.js';
 import { createControl } from './controls.js';
 import { fillNameSlots, isShown, nameForForm } from './name-fit.js';
-import { clipTimeline, stretchTimeline, stepAt, resumePlan, testScale } from './timeline.js';
+import { clipTimeline, stretchTimeline, stepAt, clipResumeAt, resumePlan, testScale } from './timeline.js';
 import { clipDurationMs } from './clip.js';
 
 const IDLE_REPROMPT_MS = 8000; // tests may shorten it with SB_TEST.idleMs
@@ -589,19 +589,6 @@ export async function mountReader(root, opts) {
   }
 
   /**
-   * Where a paused recording should carry on: a little before where it
-   * stopped, at the start of a word, and never back across into the previous
-   * part of the page (the prompt doesn't turn back into the page text).
-   */
-  function resumeOffset(steps, pos) {
-    if (!(pos > 0) || !steps.length) return 0;
-    const here = stepAt(steps, pos);
-    let back = stepAt(steps, pos - RESUME_BACKUP_MS);
-    if (here >= 0 && back >= 0 && steps[back].part !== steps[here].part) back = steps.findIndex((x) => x.part === steps[here].part);
-    return back >= 0 ? Math.max(0, steps[back].at) : 0;
-  }
-
-  /**
    * Play one recorded part, lighting up the words on the estimated timeline
    * stretched to the clip's length. `blocks` are the parts of the page the
    * clip covers, in order ([text, prompt] or [after]); each block's words are
@@ -696,9 +683,9 @@ export async function mountReader(root, opts) {
       }
       if (signal.aborted) return 'stopped';
       if (ctl.signal.aborted && paused) {
-        // Carry on from just before where it stopped (or where it would have been).
-        const pos = t0 != null ? performance.now() - t0 : offsetMs;
-        offsetMs = resumeOffset(steps, Math.min(pos, clip.durationMs ?? Infinity));
+        // Carry on from just before where it stopped (paused before it even
+        // started: from the same place as this go).
+        if (t0 != null) offsetMs = clipResumeAt(steps, Math.min(performance.now() - t0, clip.durationMs ?? Infinity), { backupMs: RESUME_BACKUP_MS });
         continue;
       }
       if (result === 'done') {
@@ -1512,11 +1499,13 @@ export async function mountReader(root, opts) {
     }
     // An app that shows the game over the reader and resolves when it closes:
     // the end page carries on as before (at bedtime, the lights still go down).
-    Promise.resolve(back)
-      .catch(() => {})
-      .then(() => {
-        if (!destroyed && back && cur === state && state?.finished) armTurn(state);
-      });
+    if (back && typeof back.then === 'function') {
+      Promise.resolve(back)
+        .catch(() => {})
+        .then(() => {
+          if (!destroyed && cur === state && state?.finished) armTurn(state);
+        });
+    }
   }
 
   // ---- Input ---------------------------------------------------------------------

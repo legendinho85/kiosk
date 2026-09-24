@@ -1190,10 +1190,10 @@ try {
               .filter((t) => t.closest('[display=none]') === null)
               .map((t) => t.textContent),
           );
-          assert(names.length > 0, `page ${p.n}: the name is somewhere in the picture`);
           for (const t of names) assert(/Siobh[aá]n|SIOBH[AÁ]N/.test(t), `page ${p.n}: name slot shows "${t}"`);
           const letters = await page.evaluate(() => [...document.querySelectorAll('[data-testid=scene] .sb-letter')].map((t) => t.textContent).join(''));
           if (letters) eq(letters, 'SIOBHÁN', `page ${p.n}: bunting letters`);
+          assert(names.length > 0 || letters, `page ${p.n}: the name is somewhere in the picture`);
           // The page's sounds are ones the app can make (no silent stand-ins).
           const sounds = [p.sfx?.open, ...(p.mechanic?.complete?.sfx ?? [])].filter(Boolean);
           const known = await page.evaluate(async () => (await import('/js/audio/sfx.js')).SFX_NAMES);

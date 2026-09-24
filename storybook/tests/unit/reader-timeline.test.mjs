@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { clipTimeline, stretchTimeline, stepAt, partStart, resumePlan, testScale } from '../../js/reader/timeline.js';
+import { clipTimeline, stretchTimeline, stepAt, partStart, clipResumeAt, resumePlan, testScale } from '../../js/reader/timeline.js';
 import { clipDurationMs } from '../../js/reader/clip.js';
 import { planLines, estimateUnitMs } from '../../js/narrator/plan.js';
 import { person } from '../../js/core/personalise.js';
@@ -99,6 +99,22 @@ test('stepAt and partStart find the word being said', () => {
   assert.equal(p, tl.steps.find((s) => s.part === 'prompt').at);
   assert.ok(p > tl.steps[2].at);
   assert.equal(partStart(tl.steps, 'after'), null);
+});
+
+test('clipResumeAt carries on a little before the pause, at the start of a word, within the same block', () => {
+  const steps = [
+    { part: 'text', line: 0, u: 0, at: 100, dur: 400 },
+    { part: 'text', line: 0, u: 1, at: 500, dur: 400 },
+    { part: 'text', line: 0, u: 2, at: 900, dur: 400 },
+    { part: 'prompt', line: 0, u: 0, at: 2000, dur: 400 },
+    { part: 'prompt', line: 0, u: 1, at: 2400, dur: 400 },
+  ];
+  assert.equal(clipResumeAt(steps, 0), 0, 'not started: from the start');
+  assert.equal(clipResumeAt(steps, 700), 0, 'backing up past the first word: from the start');
+  assert.equal(clipResumeAt(steps, 1500), 500, '0.8 s back, snapped to the start of that word');
+  assert.equal(clipResumeAt(steps, 1500, { backupMs: 300 }), 900, 'a shorter back-up');
+  assert.equal(clipResumeAt(steps, 2600), 2000, 'paused in the prompt: never back into the page text');
+  assert.equal(clipResumeAt([], 1000), 0);
 });
 
 test('resumePlan restarts the sentence that was being read', () => {
