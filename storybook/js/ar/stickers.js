@@ -43,13 +43,14 @@ export const SHEET = Object.freeze({
   labelH: 3.4, // label line
   labelSize: 2.5, // label type size (about 7 pt)
   letterGap: 2.5, // between bunting letters
-  numberH: 3, // flag number under a bunting letter
+  numberH: 4, // flag number under a bunting letter (clear of the bleed)
   headingH: 8, // "Amara’s stickers" (siblings)
 });
 export const RULER_MM = 50;
 
 // Sticker proportions, as fractions of the spot's font size.
-const PAD_X = 0.12; // breathing room left and right of the widest name
+const PAD_X = 0.16; // breathing room left and right of the widest name
+const PAD_Y = 0.03; // and above and below the font's own line box
 const LETTER_DIAMETER = 1.08; // a round bunting sticker sits inside the flag
 const LETTER_FIT = 0.74; // widest letter, as a fraction of the circle
 const CAP_MIDDLE = 0.35; // an alphabetic baseline sits this far below the capitals' middle
@@ -88,9 +89,12 @@ const SPOT_WORDS = [
   ['hard hat', /hard-?hat|helmet/],
   ['sign', /sign|placard|board($|[-_])/],
   ['cake', /cake/],
+  ['weight', /weight/],
+  ['digger', /digger|excavator/],
+  ['crane', /crane/],
   ['banner', /banner/],
 ];
-const IGNORED_ART = /^d-(star|sparkle|shadow|glow)/;
+const IGNORED_ART = /^d\d*-(star|sparkle|shadow|glow)/;
 
 /**
  * Name a spot from hints such as ids and the <use> hrefs drawn with it,
@@ -235,8 +239,11 @@ export function stickerSpecFromSlot(slot, { trimMm = DEFAULT_TRIM_MM, bleedMm = 
     top = Math.min(top, b0 - (y - top) * k);
     bottom = Math.max(bottom, b1 + (bottom - y) * k);
   }
-  const padX = PAD_X * fs;
-  const box = { x: left - padX, y: top, w: maxWidth + 2 * padX, h: bottom - top };
+  // A visible outline (paint-order="stroke", e.g. the cover's white edge) needs room too.
+  const stroke = slot?.paint?.stroke ? positive(parseFloat(slot.paint.strokeWidth)) / 2 : 0;
+  const padX = PAD_X * fs + stroke;
+  const padY = PAD_Y * fs + stroke;
+  const box = { x: left - padX, y: top - padY, w: maxWidth + 2 * padX, h: bottom - top + 2 * padY };
   const middle = central ? y : y - CAP_MIDDLE * fs;
   return {
     kind: 'name',
@@ -301,7 +308,9 @@ export function planStickers(pages, children, { trimMm = DEFAULT_TRIM_MM, spares
   const several = children.length > 1;
   const specOpts = { trimMm };
   for (const [c, child] of children.entries()) {
-    if (several) entries.push({ type: 'heading', child: c, name: child, text: `${child}’s stickers` });
+    const heading = several ? { type: 'heading', child: c, name: child, text: `${child}’s stickers`, keepWith: 0 } : null;
+    const start = entries.length;
+    if (heading) entries.push(heading);
     const letters = slotLetters(child);
     let spareSource = null;
     for (const page of pages ?? []) {
@@ -316,7 +325,7 @@ export function planStickers(pages, children, { trimMm = DEFAULT_TRIM_MM, spares
           if (dist) {
             const items = [];
             dist.forEach((letter, i) => letter && items.push({ text: letter, flag: i + 1, spec: letterSpecFromSlot({ ...slots[i], index: i }, specOpts) }));
-            entries.push({ type: 'letters', child: c, name: child, page: page.n, label: `${where} · ${spot.label ?? 'bunting'}, one letter per flag (count from the left)`, numbered: true, items });
+            entries.push({ type: 'letters', child: c, name: child, page: page.n, label: `${where} · ${spot.label ?? 'bunting'} flags (count from the left)`, numbered: true, items });
           } else if (spot.overflow) {
             const spec = stickerSpecFromSlot({ ...spot.overflow, page: page.n }, specOpts);
             entries.push({ type: 'name', child: c, name: child, page: page.n, label: `${where} · across the ${spot.label ?? 'bunting'}`, text: nameForForm(child, spec.form), spec });
@@ -336,8 +345,10 @@ export function planStickers(pages, children, { trimMm = DEFAULT_TRIM_MM, spares
         items.push({ text: letters[0], flag: null, spec: letterSpecFromSlot({ ...slot, index: i }, specOpts) });
         if (items.length === 3) break;
       }
-      entries.push({ type: 'letters', child: c, name: child, page: null, label: `Spares · ${letters[0]} for ${child}`, numbered: false, spare: true, items });
+      entries.push({ type: 'letters', child: c, name: child, page: null, label: 'Spare first letters', numbered: false, spare: true, items });
     }
+    // Each child's set stays on one sheet when it can.
+    if (heading) heading.keepWith = entries.length - start - 1;
   }
   return entries;
 }
@@ -346,12 +357,12 @@ export function planStickers(pages, children, { trimMm = DEFAULT_TRIM_MM, spares
  * The size of each entry on the sheet (mm) and where its parts sit inside it.
  * @param {object} entry from planStickers
  * @param {{areaW?: number}} [opts] width of the printable area
- * @returns {{w: number, h: number, newRow?: boolean, keepWithNext?: boolean, fullWidth?: boolean,
+ * @returns {{w: number, h: number, newRow?: boolean, keepWith?: number, fullWidth?: boolean,
  *   parts: Array<{x: number, y: number, w: number, h: number, item?: object, number?: number|null}>, label: {x: number, y: number, w: number}|null}}
  */
 export function sizeEntry(entry, { areaW = A4.w - 2 * SHEET.margin } = {}) {
   const { labelGap, labelH, letterGap, numberH, headingH } = SHEET;
-  if (entry.type === 'heading') return { w: areaW, h: headingH, newRow: true, keepWithNext: true, fullWidth: true, parts: [], label: null };
+  if (entry.type === 'heading') return { w: areaW, h: headingH, newRow: true, fullWidth: true, keepWith: Math.max(1, entry.keepWith ?? 1), parts: [], label: null };
   const labelW = Math.min(areaW, estimateLabelWidth(entry.label));
   if (entry.type === 'name') {
     const { w, h } = entry.spec.mm;
@@ -383,7 +394,10 @@ export function sizeEntry(entry, { areaW = A4.w - 2 * SHEET.margin } = {}) {
 /**
  * Shelf packing onto A4: items keep their order, fill rows left to right,
  * rows top to bottom, and spill onto as many sheets as needed.
- * @param {Array<{w: number, h: number, newRow?: boolean, keepWithNext?: boolean, fullWidth?: boolean}>} items sizes in mm
+ * @param {Array<{w: number, h: number, newRow?: boolean, fullWidth?: boolean, keepWith?: number}>} items sizes in mm.
+ *   newRow: start a new row; fullWidth: nothing else shares its row; keepWith: keep this many
+ *   following items on the same sheet when they would fit together on a fresh one (a heading
+ *   and its set), and never leave the item alone at the bottom of a sheet.
  * @param {{pageW?: number, pageH?: number, margin?: number, gap?: number, top?: number, bottom?: number}} [opts]
  *   top/bottom: space kept free inside the margins (the sheet's header and footer)
  * @returns {{sheets: Array<{items: Array<{index: number, x: number, y: number, w: number, h: number}>}>, oversize: number[],
@@ -395,45 +409,65 @@ export function packStickers(items, { pageW = A4.w, pageH = A4.h, margin = SHEET
   const right = pageW - margin;
   const startY = margin + top;
   const maxY = pageH - margin - bottom;
+  const list = Array.isArray(items) ? items.map((it) => it ?? {}) : [];
+  const dim = (v) => Math.max(0, Number(v) || 0);
+  const fresh = () => ({ x: left, y: startY, rowH: 0 });
+
+  // Where an item goes from `st` without a new sheet: {pos, next}, or null if it won't fit.
+  const tryPlace = (st, it, force = false) => {
+    let { x, y, rowH } = st;
+    const w = dim(it.w);
+    const h = dim(it.h);
+    const breakRow = () => {
+      if (x > left + EPS || rowH > 0) {
+        y += rowH + gap;
+        x = left;
+        rowH = 0;
+      }
+    };
+    if (it.newRow) breakRow();
+    if (x > left + EPS && x + w > right + EPS) breakRow();
+    if (!force && y + h > maxY + EPS) return null;
+    const pos = { x: round(x, 3), y: round(y, 3), w, h };
+    rowH = Math.max(rowH, h);
+    x += w + gap;
+    if (it.fullWidth) breakRow();
+    return { pos, next: { x, y, rowH } };
+  };
+  const fitsAll = (st, from, to) => {
+    let cur = st;
+    for (let k = from; k <= to && k < list.length; k++) {
+      const r = tryPlace(cur, list[k]);
+      if (!r) return false;
+      cur = r.next;
+    }
+    return true;
+  };
+
   const sheets = [];
   const oversize = [];
   let sheet = null;
-  let x = left;
-  let y = startY;
-  let rowH = 0;
-  const newSheet = () => {
-    sheet = { items: [] };
-    sheets.push(sheet);
-    x = left;
-    y = startY;
-    rowH = 0;
-  };
-  const newRow = () => {
-    if (x === left && rowH === 0) return;
-    y += rowH + gap;
-    x = left;
-    rowH = 0;
-  };
-  const list = Array.isArray(items) ? items : [];
+  let st = fresh();
   for (let i = 0; i < list.length; i++) {
-    const it = list[i] ?? {};
-    const w = Math.max(0, Number(it.w) || 0);
-    const h = Math.max(0, Number(it.h) || 0);
-    if (!sheet) newSheet();
-    if (w > right - left + EPS || h > maxY - startY + EPS) oversize.push(i);
-    if (it.newRow) newRow();
-    if (x > left + EPS && x + w > right + EPS) newRow();
-    if (y + h > maxY + EPS && sheet.items.length) newSheet();
-    // A heading goes with what follows it.
-    const next = list[i + 1];
-    if (it.keepWithNext && next && sheet.items.length) {
-      const needed = h + gap + Math.max(0, Number(next.h) || 0);
-      if (y + needed > maxY + EPS) newSheet();
+    const it = list[i];
+    if (dim(it.w) > right - left + EPS || dim(it.h) > maxY - startY + EPS) oversize.push(i);
+    if (!sheet) {
+      sheet = { items: [] };
+      sheets.push(sheet);
+    } else if (sheet.items.length) {
+      const k = Math.max(0, Math.floor(Number(it.keepWith) || 0));
+      let needNew = !tryPlace(st, it);
+      if (!needNew && k && !fitsAll(st, i, i + k)) needNew = fitsAll(fresh(), i, i + k) || !fitsAll(st, i, i + 1);
+      if (needNew) {
+        sheet = { items: [] };
+        sheets.push(sheet);
+        st = fresh();
+      }
     }
-    sheet.items.push({ index: i, x: round(x, 3), y: round(y, 3), w, h });
-    rowH = Math.max(rowH, h);
-    x += w + gap;
-    if (it.fullWidth) newRow();
+    // Too big even for an empty sheet: it goes at the top and is reported in `oversize`.
+    const r = tryPlace(st, it) ?? tryPlace(st, it, true);
+    sheet.items.push({ index: i, ...r.pos });
+    st = r.next;
   }
   return { sheets, oversize, area: { x: left, y: startY, w: right - left, h: maxY - startY } };
 }
@@ -519,7 +553,7 @@ function measureText(el, placeholder) {
   return bbox;
 }
 
-function measureSlot(el, svg) {
+function measureSlot(el, svg, placeholder = 'NAME') {
   const cs = safeStyle(el);
   const m = toScene(svg, el);
   return {
@@ -532,7 +566,7 @@ function measureSlot(el, svg) {
     maxWidth: parseFloat(el.getAttribute('data-max-width') ?? '') || 0,
     wrap: el.getAttribute('data-wrap') === '2',
     form: el.getAttribute('data-form') || 'plain',
-    bbox: measureText(el, 'NAME'),
+    bbox: measureText(el, placeholder),
     scale: m ? Math.hypot(m.a, m.b) || 1 : 1,
     matrix: m,
     paint: paintOf(el),
@@ -551,10 +585,16 @@ function measureScene(svg) {
   for (const el of svg.querySelectorAll('[style]')) if (el.style?.display === 'none') el.style.removeProperty('display');
   const inDigital = (el) => Boolean(el.closest?.('.sb-digital'));
   const groups = [...svg.querySelectorAll('.sb-letters')].filter((g) => !inDigital(g));
+  // data-overflow names the banner shown when the letters don't fit: a name
+  // slot, or a group with one inside.
+  const overflowSlot = (g) => {
+    const o = pickById(svg, g.getAttribute('data-overflow'));
+    return o?.matches?.('text.sb-name') ? o : o?.querySelector?.('text.sb-name') ?? null;
+  };
   const overflowOf = new Map();
   for (const g of groups) {
-    const o = pickById(svg, g.getAttribute('data-overflow'));
-    if (o?.matches?.('text.sb-name')) overflowOf.set(o, g);
+    const o = overflowSlot(g);
+    if (o) overflowOf.set(o, g);
   }
   const spots = [];
   const order = [...svg.querySelectorAll('text.sb-name, .sb-letters')];
@@ -566,10 +606,11 @@ function measureScene(svg) {
     } else {
       const texts = [...el.querySelectorAll('text.sb-letter')];
       if (!texts.length) continue;
-      const letters = texts.map((t, index) => ({ ...measureSlot(t, svg), index, bbox: measureText(t, 'A') }));
-      const o = pickById(svg, el.getAttribute('data-overflow'));
-      const overflow = o?.matches?.('text.sb-name') ? { ...measureSlot(o, svg), label: 'bunting' } : null;
-      spots.push({ type: 'letters', key: el.getAttribute('data-st-key'), label: spotLabel(spotHints(el, svg)) === 'name spot' ? 'bunting' : spotLabel(spotHints(el, svg)), letters, overflow });
+      const letters = texts.map((t, index) => ({ ...measureSlot(t, svg, 'A'), index }));
+      const o = overflowSlot(el);
+      const overflow = o ? measureSlot(o, svg) : null;
+      const label = spotLabel(spotHints(el, svg));
+      spots.push({ type: 'letters', key: el.getAttribute('data-st-key'), label: label === 'name spot' ? 'bunting' : label, letters, overflow });
     }
   }
   return spots;
@@ -690,6 +731,58 @@ async function sampleBackgrounds(raw, spots, defsXml, { trimMm }) {
   }
 }
 
+/**
+ * Measure every name spot in a book: loads each scene into a hidden render,
+ * reads the slots (position, size, font, colour, scale in the scene) and
+ * samples the colour of the art under each one. Also handy for tools and tests.
+ * @param {object} book
+ * @param {{baseUrl?: string, trimMm?: number, signal?: AbortSignal}} [opts]
+ * @returns {Promise<{pages: Array<{n: number, kind: string, spots: object[]}>, missing: number[]}>}
+ *   pages with at least one spot; `missing` lists pages whose picture didn't load
+ */
+export async function measureBookSpots(book, { baseUrl, trimMm = DEFAULT_TRIM_MM, signal } = {}) {
+  const sceneMod = await import('../reader/scene.js');
+  const base = baseUrl ?? bookUrl(book?.id);
+  const host = document.createElement('div');
+  host.className = 'st-hidden-render';
+  host.setAttribute('aria-hidden', 'true');
+  host.style.cssText = 'position:absolute;left:-40000px;top:0;width:1600px;height:1000px;visibility:hidden;pointer-events:none;overflow:hidden;contain:strict';
+  document.body.appendChild(host);
+  const pages = [];
+  const missing = [];
+  try {
+    let defsXml = '';
+    const holder = await sceneMod.loadDefs?.(book, base).catch(() => null);
+    if (holder) {
+      const defs = svgEl('defs');
+      for (const c of holder.childNodes) defs.appendChild(c.cloneNode(true));
+      defsXml = new XMLSerializer().serializeToString(defs);
+    }
+    await fontsSettled();
+    for (const page of Array.isArray(book?.pages) ? book.pages : []) {
+      if (signal?.aborted) break;
+      try {
+        const svg = await sceneMod.loadScene(book, page, base);
+        let k = 0;
+        for (const el of svg.querySelectorAll('text.sb-name, .sb-letters')) el.setAttribute('data-st-key', `k${k++}`);
+        const raw = svg.cloneNode(true);
+        svg.setAttribute('width', '1600');
+        svg.setAttribute('height', '1000');
+        host.replaceChildren(svg);
+        const spots = measureScene(svg);
+        await sampleBackgrounds(raw, spots, defsXml, { trimMm });
+        if (spots.length) pages.push({ n: page.n, kind: page.kind ?? 'spread', spots });
+      } catch (err) {
+        console.warn(`[stickers] page ${page?.n}: ${err?.message ?? err}`);
+        missing.push(page?.n);
+      }
+    }
+  } finally {
+    host.remove();
+  }
+  return { pages, missing };
+}
+
 // ---- DOM: drawing ---------------------------------------------------------------------------------
 
 function svgEl(tag, attrs = {}) {
@@ -799,7 +892,7 @@ function stickerArt(spec, text, { measure, testid = 'sticker', data = {} }) {
     'data-bg': bg,
   });
   for (const [k, v] of Object.entries(data)) if (v != null) svg.setAttribute(`data-${k}`, String(v));
-  svg.style.cssText = place(-SHEET.bleed, -SHEET.bleed, spec.mm.w + 2 * SHEET.bleed, spec.mm.h + 2 * SHEET.bleed).replace(/^left:[^;]+;top:[^;]+;/, `left:${mm(-SHEET.bleed)};top:${mm(-SHEET.bleed)};`);
+  svg.style.cssText = place(-SHEET.bleed, -SHEET.bleed, spec.mm.w + 2 * SHEET.bleed, spec.mm.h + 2 * SHEET.bleed);
   if (spec.shape === 'circle') {
     svg.append(svgEl('circle', { class: 'st-bleed', cx: 0, cy: 0, r: round(spec.radius + bleedU, 3), fill: bg }));
   } else {
@@ -826,13 +919,12 @@ function rulerSvg() {
   for (let i = 0; i < 5; i++) svg.append(svgEl('rect', { x: i * 10, y: 0, width: 10, height: 2.6, fill: i % 2 ? '#FFFFFF' : '#2B2A33' }));
   svg.append(svgEl('rect', { x: 0.06, y: 0.06, width: 49.88, height: 2.48, fill: 'none', stroke: '#2B2A33', 'stroke-width': 0.12 }));
   for (let i = 0; i <= 5; i++) {
-    svg.append(svgEl('rect', { x: i === 5 ? 49.88 : i * 10 - (i ? 0.06 : 0), y: 2.6, width: 0.12, height: 1.1, fill: '#2B2A33' }));
-    const label = svgEl('text', { x: clamp(i * 10, 0.9, 49.1), y: 6.4, 'font-size': 2.4, 'text-anchor': 'middle', fill: '#4A4754', 'font-family': 'Andika, sans-serif' });
-    label.textContent = i === 0 ? '0' : `${i}`;
+    svg.append(svgEl('rect', { x: clamp(i * 10 - 0.06, 0, 49.88), y: 2.6, width: 0.12, height: 1.1, fill: '#2B2A33' }));
+    const anchor = i === 0 ? 'start' : i === 5 ? 'end' : 'middle';
+    const label = svgEl('text', { x: i * 10, y: 6.3, 'font-size': 2.3, 'text-anchor': anchor, fill: '#4A4754', 'font-family': 'Andika, sans-serif' });
+    label.textContent = i === 5 ? '5 cm' : String(i);
     svg.append(label);
   }
-  const cm = svgEl('text', { x: 50, y: 6.4, 'font-size': 2.4, 'text-anchor': 'end', fill: '#4A4754', 'font-family': 'Andika, sans-serif' });
-  cm.textContent = '';
   return svg;
 }
 
@@ -992,54 +1084,18 @@ export async function renderStickerSheet(root, { book, bookId = book?.id, baseUr
   }
 
   // ---- 1. Measure every page in a hidden render ----
-  let sceneMod = null;
+  let measuredBook = null;
   try {
-    sceneMod = await import('../reader/scene.js');
+    measuredBook = await measureBookSpots(book, { baseUrl: base, trimMm: trim, signal: life.signal });
   } catch (err) {
-    console.warn('[stickers] scene loader unavailable', err);
+    console.warn('[stickers] could not measure the book', err);
   }
   if (life.signal.aborted) return cleanup;
-  if (!sceneMod?.loadScene) {
+  if (!measuredBook) {
     fail('The stickers aren’t ready yet. Please try again later.');
     return cleanup;
   }
-
-  const host = h('div', { class: 'st-hidden-render', 'aria-hidden': 'true' });
-  host.style.cssText = 'position:absolute;left:-40000px;top:0;width:1600px;height:1000px;visibility:hidden;pointer-events:none;overflow:hidden;contain:strict';
-  document.body.appendChild(host);
-  const measured = [];
-  const missing = [];
-  let defsXml = '';
-  try {
-    const holder = await sceneMod.loadDefs?.(book, base).catch(() => null);
-    if (holder) {
-      const defs = svgEl('defs');
-      for (const c of holder.childNodes) defs.appendChild(c.cloneNode(true));
-      defsXml = new XMLSerializer().serializeToString(defs);
-    }
-    await fontsSettled();
-    for (const page of pages) {
-      if (life.signal.aborted) break;
-      try {
-        const svg = await sceneMod.loadScene(book, page, base);
-        let k = 0;
-        for (const el of svg.querySelectorAll('text.sb-name, .sb-letters')) el.setAttribute('data-st-key', `k${k++}`);
-        const raw = svg.cloneNode(true);
-        svg.setAttribute('width', '1600');
-        svg.setAttribute('height', '1000');
-        host.replaceChildren(svg);
-        const spots = measureScene(svg);
-        await sampleBackgrounds(raw, spots, defsXml, { trimMm: trim });
-        if (spots.length) measured.push({ n: page.n, kind: page.kind, spots });
-      } catch (err) {
-        console.warn(`[stickers] page ${page?.n}: ${err?.message ?? err}`);
-        missing.push(page?.n);
-      }
-    }
-  } finally {
-    host.remove();
-  }
-  if (life.signal.aborted) return cleanup;
+  const { pages: measured, missing } = measuredBook;
 
   // ---- 2. Plan, size and pack ----
   const entries = planStickers(measured, children, { trimMm: trim });

@@ -618,6 +618,37 @@
   100% { transform: translate(calc(var(--x) * 1.25), calc(var(--y) * 1.25)) scale(.4) rotate(90deg); opacity: 0; }
 }
 @keyframes sb-spot-glow { 0% { transform: scale(.6); opacity: 0; } 25% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0; transform: scale(1.15); } }
+.sb-spot-word {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: 340px;
+  padding: 4px 16px 6px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 4px 0 var(--ink);
+  color: var(--name-ink);
+  font: 700 clamp(22px, 3.4vw, 34px)/1.1 Fredoka, Andika, ui-rounded, system-ui, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: sb-spot-word 1.8s cubic-bezier(.3, 1.4, .5, 1) both;
+}
+@keyframes sb-spot-word {
+  0% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.4); }
+  14% { opacity: 1; transform: translate(calc(-50% + var(--dx)), calc(-100% + var(--dy))) scale(1.08); }
+  24%, 78% { opacity: 1; transform: translate(calc(-50% + var(--dx)), calc(-100% + var(--dy))) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-100% + var(--dy) - 14px)) scale(1); }
+}
+.sb-spot-word.is-below { animation-name: sb-spot-word-below; }
+@keyframes sb-spot-word-below {
+  0% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.4); }
+  14% { opacity: 1; transform: translate(calc(-50% + var(--dx)), var(--dy)) scale(1.08); }
+  24%, 78% { opacity: 1; transform: translate(calc(-50% + var(--dx)), var(--dy)) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(var(--dy) + 14px)) scale(1); }
+}
+.sb-reader.is-bedtime .sb-spot-word { border-color: var(--b-line); background: var(--b-card); box-shadow: 0 4px 0 #080B1C; }
 
 /* A gentle nudge when the child hasn't tried the moving part yet (recorded readings). */
 .sb-r-prompt.is-nudged { animation: sb-nudge .55s ease-in-out 2; }
@@ -639,16 +670,19 @@
     linear-gradient(#0F1430, #1A2148 75%);
 }
 .sb-reader.is-bedtime .sb-r-frame { background: #1A2148; }
-/* Moonlight over the picture: darker and bluer, colours still readable. */
+/* Lamplight over the picture: dimmer and softer, colours still clear, with the
+   edges fading into the night. */
+.sb-reader.is-bedtime .sb-r-book { filter: brightness(.74) saturate(.8); }
+.sb-reader.is-bedtime.is-paused .sb-r-book { filter: brightness(.66) saturate(.45); }
 .sb-reader.is-bedtime .sb-r-frame::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 2;
   border-radius: inherit;
-  background: #6F79B8;
-  mix-blend-mode: multiply;
-  opacity: .72;
+  background:
+    radial-gradient(ellipse 75% 80% at 50% 45%, rgba(20, 26, 66, 0) 55%, rgba(12, 16, 44, .55) 100%),
+    linear-gradient(rgba(40, 50, 120, .16), rgba(40, 50, 120, .16));
   pointer-events: none;
 }
 .sb-reader.is-bedtime .sb-r-confetti { z-index: 3; }
@@ -851,9 +885,12 @@
   .sb-reader .sb-name-spot { animation: sb-spot-calm .9s ease-in-out both; }
   .sb-spot-star { animation: sb-spot-star-calm .9s ease-out var(--d, 0ms) both; transform: translate(var(--x), var(--y)); }
   .sb-spot-glow { animation-name: sb-fade-out; animation-duration: 1.1s; }
+  .sb-spot-word, .sb-spot-word.is-below { animation: sb-spot-word-calm 1.8s ease-in-out both; transform: translate(calc(-50% + var(--dx)), calc(-100% + var(--dy))); }
+  .sb-spot-word.is-below { transform: translate(calc(-50% + var(--dx)), var(--dy)); }
   .sb-r-night.is-sleepy { transition-duration: 1.2s; }
 }
 @keyframes sb-spot-calm { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+@keyframes sb-spot-word-calm { 0%, 100% { opacity: 0; } 15%, 80% { opacity: 1; } }
 @keyframes sb-spot-star-calm { 0%, 100% { opacity: 0; } 30%, 70% { opacity: 1; } }
 @keyframes sb-hint-calm { 0%, 100% { opacity: .9; } 50% { opacity: .45; } }
 @keyframes sb-confetti-calm { 0% { opacity: 0; transform: translate(calc(var(--x) * .4), calc(var(--up) * .3)); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(var(--x) * .4), calc(var(--up) * .3)); } }

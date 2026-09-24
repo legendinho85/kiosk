@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Name sticker harness</title>
+  <style>
+    /* The app's own fonts, served locally so the harness works offline. */
+    @font-face { font-family: Fredoka; font-style: normal; font-weight: 300 700; font-display: swap; src: url(../../../fonts/fredoka-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    @font-face { font-family: Fredoka; font-style: normal; font-weight: 300 700; font-display: swap; src: url(../../../fonts/fredoka-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+    @font-face { font-family: Andika; font-style: normal; font-weight: 400; font-display: swap; src: url(../../../fonts/andika-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    @font-face { font-family: Andika; font-style: normal; font-weight: 400; font-display: swap; src: url(../../../fonts/andika-latin-ext-400-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+    @font-face { font-family: Andika; font-style: normal; font-weight: 700; font-display: swap; src: url(../../../fonts/andika-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    html, body { margin: 0; background: #FFF8EC; font-family: Andika, system-ui, sans-serif; }
+    .harness-bar { display: flex; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid #EADFCB; background: #fff; font: 600 15px/1.2 system-ui, sans-serif; }
+    .harness-bar h1 { margin: 0; font-size: 17px; flex: 1; }
+  </style>
+</head>
+<body>
+  <!--
+    Mounts the name-sticker sheets outside the app shell, for development and
+    tests/e2e/stickers.e2e.mjs. Query parameters:
+      book=tiffin-football (default) | <book id in /books>
+      name=Ava             one child
+      names=Amara,Zak      siblings reading together (each child gets a set)
+      trim=180             printed page width in mm (a spread is two pages)
+      print=0              leave out the module's own Print button
+      bar=0                leave out the stand-in app bar (checks print hides it when shown)
+      mount=0              don't mount (window.__h.mount() / window.__h.measure() by hand)
+  -->
+  <div class="harness-bar" data-testid="harness-bar"><h1>Stand-in app bar (never printed)</h1></div>
+  <main id="app"></main>
+  <script type="module" src="./harness.js"></script>
+</body>
+</html>

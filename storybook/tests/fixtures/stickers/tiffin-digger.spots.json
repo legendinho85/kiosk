@@ -1,0 +1,930 @@
+{
+ "book": "tiffin-digger",
+ "note": "Snapshot of measureBookSpots() for this book (js/ar/stickers.js), taken in Chromium with the local Fredoka font. Used by tests/unit/stickers.test.mjs.",
+ "pages": [
+  {
+   "n": 1,
+   "kind": "cover",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": 800,
+     "y": 332,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 84,
+     "maxWidth": 560,
+     "wrap": true,
+     "form": "plain",
+     "bbox": {
+      "x": 682.5,
+      "y": 250,
+      "width": 235,
+      "height": 102
+     },
+     "scale": 1,
+     "matrix": {
+      "a": 1,
+      "b": 0,
+      "c": 0,
+      "d": 1,
+      "e": 0,
+      "f": 0
+     },
+     "paint": {
+      "fill": "#E4483A",
+      "stroke": "#FFFFFF",
+      "strokeWidth": "12",
+      "paintOrder": "stroke",
+      "strokeLinejoin": "round",
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#ffcb3d",
+     "label": "ribbon"
+    },
+    {
+     "type": "name",
+     "key": "k1",
+     "x": -80,
+     "y": -286,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 40,
+     "maxWidth": 200,
+     "wrap": false,
+     "form": "plain",
+     "bbox": {
+      "x": -136.081,
+      "y": -325.189,
+      "width": 112.162,
+      "height": 48.649
+     },
+     "scale": 0.74,
+     "matrix": {
+      "a": 0.74,
+      "b": 0,
+      "c": 0,
+      "d": 0.74,
+      "e": 660,
+      "f": 916
+     },
+     "paint": {
+      "fill": "#3B3F46",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#ffffff",
+     "label": "door"
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "kind": "spread",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": 0,
+     "y": -60,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 34,
+     "maxWidth": 150,
+     "wrap": false,
+     "form": "plain",
+     "bbox": {
+      "x": -47.345,
+      "y": -92.743,
+      "width": 94.69,
+      "height": 40.708
+     },
+     "scale": 1.13,
+     "matrix": {
+      "a": 1.13,
+      "b": 0,
+      "c": 0,
+      "d": 1.13,
+      "e": 1150,
+      "f": 730
+     },
+     "paint": {
+      "fill": "#E4483A",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#ffffff",
+     "label": "hard hat"
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "kind": "spread",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": -80,
+     "y": -286,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 40,
+     "maxWidth": 200,
+     "wrap": false,
+     "form": "plain",
+     "bbox": {
+      "x": -135.789,
+      "y": -324.947,
+      "width": 111.579,
+      "height": 48.421
+     },
+     "scale": 0.95,
+     "matrix": {
+      "a": 0.95,
+      "b": 0,
+      "c": 0,
+      "d": 0.95,
+      "e": 785.3,
+      "f": 890.6
+     },
+     "paint": {
+      "fill": "#3B3F46",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#ffffff",
+     "label": "door"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "kind": "spread",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": 0,
+     "y": -381,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 40,
+     "maxWidth": 230,
+     "wrap": true,
+     "form": "poss",
+     "bbox": {
+      "x": -56.111,
+      "y": -419.889,
+      "width": 112.222,
+      "height": 47.778
+     },
+     "scale": 0.9,
+     "matrix": {
+      "a": 0.9,
+      "b": 0,
+      "c": 0,
+      "d": 0.9,
+      "e": 1400,
+      "f": 474
+     },
+     "paint": {
+      "fill": "#E4483A",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#fff6d6",
+     "label": "plan"
+    },
+    {
+     "type": "name",
+     "key": "k1",
+     "x": -80,
+     "y": -286,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 40,
+     "maxWidth": 200,
+     "wrap": false,
+     "form": "plain",
+     "bbox": {
+      "x": -135.333,
+      "y": -324.667,
+      "width": 110.667,
+      "height": 48
+     },
+     "scale": 0.75,
+     "matrix": {
+      "a": 0.75,
+      "b": 0,
+      "c": 0,
+      "d": 0.75,
+      "e": 330,
+      "f": 860
+     },
+     "paint": {
+      "fill": "#3B3F46",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#ffffff",
+     "label": "door"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "kind": "spread",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": 244,
+     "y": 834,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 64,
+     "maxWidth": 250,
+     "wrap": true,
+     "form": "plain",
+     "bbox": {
+      "x": 154,
+      "y": 772,
+      "width": 180,
+      "height": 77
+     },
+     "scale": 1,
+     "matrix": {
+      "a": 0.999,
+      "b": -0.044,
+      "c": 0.044,
+      "d": 0.999,
+      "e": -35.274,
+      "f": 11.418
+     },
+     "paint": {
+      "fill": "#7A828C",
+      "stroke": "#E4E8EC",
+      "strokeWidth": "6",
+      "paintOrder": "stroke",
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#b8bec6",
+     "label": "sign"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "kind": "spread",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": -50,
+     "y": -167,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 26,
+     "maxWidth": 110,
+     "wrap": false,
+     "form": "plain",
+     "bbox": {
+      "x": -85.294,
+      "y": -193.471,
+      "width": 73.529,
+      "height": 32.353
+     },
+     "scale": 0.34,
+     "matrix": {
+      "a": 0.34,
+      "b": 0,
+      "c": 0,
+      "d": 0.34,
+      "e": 466,
+      "f": 624
+     },
+     "paint": {
+      "fill": "#3B3F46",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#ffffff",
+     "label": "digger"
+    },
+    {
+     "type": "name",
+     "key": "k1",
+     "x": 118,
+     "y": -264,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 52,
+     "maxWidth": 160,
+     "wrap": true,
+     "form": "upper",
+     "bbox": {
+      "x": 41.5,
+      "y": -315,
+      "width": 153,
+      "height": 63
+     },
+     "scale": 1,
+     "matrix": {
+      "a": 1,
+      "b": 0,
+      "c": 0,
+      "d": 1,
+      "e": 1375,
+      "f": 812
+     },
+     "paint": {
+      "fill": "#3B3F46",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": "2"
+     },
+     "background": "#ffffff",
+     "label": "weight"
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "kind": "spread",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": 0,
+     "y": -14,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 64,
+     "maxWidth": 400,
+     "wrap": true,
+     "form": "poss",
+     "bbox": {
+      "x": -89.674,
+      "y": -75.957,
+      "width": 179.348,
+      "height": 77.174
+     },
+     "scale": 0.92,
+     "matrix": {
+      "a": 0.92,
+      "b": 0,
+      "c": 0,
+      "d": 0.92,
+      "e": 800,
+      "f": 339.2
+     },
+     "paint": {
+      "fill": "#E4483A",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#fffbf2",
+     "label": "sign"
+    },
+    {
+     "type": "letters",
+     "key": "k1",
+     "label": "crane",
+     "letters": [
+      {
+       "key": null,
+       "x": 89,
+       "y": 79.5,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 74.5,
+        "y": 39.5,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#FFFFFF",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#e4483a",
+       "index": 0
+      },
+      {
+       "key": null,
+       "x": 247,
+       "y": 93,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 232.5,
+        "y": 53,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#E4483A",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#ffcb3d",
+       "index": 1
+      },
+      {
+       "key": null,
+       "x": 405,
+       "y": 103.1,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 390.5,
+        "y": 63.1,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#FFFFFF",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#ff8a1f",
+       "index": 2
+      },
+      {
+       "key": null,
+       "x": 563,
+       "y": 109.8,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 548.5,
+        "y": 69.8,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#E4483A",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#ffffff",
+       "index": 3
+      },
+      {
+       "key": null,
+       "x": 721,
+       "y": 113.1,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 706.5,
+        "y": 73.1,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#FFFFFF",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#e4483a",
+       "index": 4
+      },
+      {
+       "key": null,
+       "x": 879,
+       "y": 113.1,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 864.5,
+        "y": 73.1,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#E4483A",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#ffcb3d",
+       "index": 5
+      },
+      {
+       "key": null,
+       "x": 1037,
+       "y": 109.8,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 1022.5,
+        "y": 69.8,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#FFFFFF",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#ff8a1f",
+       "index": 6
+      },
+      {
+       "key": null,
+       "x": 1195,
+       "y": 103.1,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 1180.5,
+        "y": 63.1,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#E4483A",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#ffffff",
+       "index": 7
+      },
+      {
+       "key": null,
+       "x": 1353,
+       "y": 93,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 1338.5,
+        "y": 53,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#FFFFFF",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#e4483a",
+       "index": 8
+      },
+      {
+       "key": null,
+       "x": 1511,
+       "y": 79.5,
+       "anchor": "middle",
+       "baseline": "auto",
+       "fontSize": 41,
+       "maxWidth": 0,
+       "wrap": false,
+       "form": "plain",
+       "bbox": {
+        "x": 1496.5,
+        "y": 39.5,
+        "width": 29,
+        "height": 50
+       },
+       "scale": 1,
+       "matrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 0
+       },
+       "paint": {
+        "fill": "#E4483A",
+        "stroke": null,
+        "strokeWidth": null,
+        "paintOrder": null,
+        "strokeLinejoin": null,
+        "fontFamily": "Fredoka, Andika, sans-serif",
+        "fontWeight": "700",
+        "fontStyle": null,
+        "letterSpacing": null
+       },
+       "background": "#ffcb3d",
+       "index": 9
+      }
+     ],
+     "overflow": {
+      "key": "k2",
+      "x": 800,
+      "y": 160,
+      "anchor": "middle",
+      "baseline": "auto",
+      "fontSize": 54,
+      "maxWidth": 460,
+      "wrap": true,
+      "form": "plain",
+      "bbox": {
+       "x": 724.5,
+       "y": 107,
+       "width": 151,
+       "height": 66
+      },
+      "scale": 1,
+      "matrix": {
+       "a": 1,
+       "b": 0,
+       "c": 0,
+       "d": 1,
+       "e": 0,
+       "f": 0
+      },
+      "paint": {
+       "fill": "#E4483A",
+       "stroke": null,
+       "strokeWidth": null,
+       "paintOrder": null,
+       "strokeLinejoin": null,
+       "fontFamily": "Fredoka, Andika, sans-serif",
+       "fontWeight": "700",
+       "fontStyle": null,
+       "letterSpacing": null
+      },
+      "background": "#ffffff"
+     }
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "kind": "end",
+   "spots": [
+    {
+     "type": "name",
+     "key": "k0",
+     "x": 0,
+     "y": -63,
+     "anchor": "middle",
+     "baseline": "auto",
+     "fontSize": 36,
+     "maxWidth": 158,
+     "wrap": false,
+     "form": "plain",
+     "bbox": {
+      "x": -50.5,
+      "y": -98,
+      "width": 101,
+      "height": 43
+     },
+     "scale": 1,
+     "matrix": {
+      "a": 0.995,
+      "b": -0.105,
+      "c": 0.105,
+      "d": 0.995,
+      "e": 1180,
+      "f": 470
+     },
+     "paint": {
+      "fill": "#E4483A",
+      "stroke": null,
+      "strokeWidth": null,
+      "paintOrder": null,
+      "strokeLinejoin": null,
+      "fontFamily": "Fredoka, Andika, sans-serif",
+      "fontWeight": "700",
+      "fontStyle": null,
+      "letterSpacing": null
+     },
+     "background": "#ffffff",
+     "label": "hard hat"
+    }
+   ]
+  }
+ ],
+ "missing": []
+}

@@ -1172,6 +1172,7 @@ export async function mountReader(root, opts) {
 
   // ---- Name spotting: "That says Ava!" ----------------------------------------------
   const NAME_SLOTS = 'text.sb-name, .sb-letters';
+  const artName = String(person.art ?? person.display);
   let spotCtl = null;
 
   /** A name the child can see right now (written in, not hidden, not the empty bunting). */
@@ -1226,14 +1227,15 @@ export async function mountReader(root, opts) {
     if (!r.width || !frame.width) return;
     const cx = r.left + r.width / 2 - frame.left;
     const cy = r.top + r.height / 2 - frame.top;
+    for (const old of confettiLayer.querySelectorAll('.sb-spot')) old.remove();
     const burst = h('div', { class: 'sb-spot', style: `left:${Math.round(cx)}px;top:${Math.round(cy)}px` });
-    burst.append(h('span', { class: 'sb-spot-glow', style: `--w:${Math.round(r.width + 36)}px;--h:${Math.round(r.height + 28)}px` }));
-    const n = reduced() ? 5 : 8;
-    const rx = r.width / 2 + 22;
-    const ry = r.height / 2 + 18;
+    burst.append(h('span', { class: 'sb-spot-glow', style: `--w:${Math.round(r.width + 44)}px;--h:${Math.round(r.height + 34)}px` }));
+    const n = reduced() ? 5 : 9;
+    const rx = r.width / 2 + 26;
+    const ry = r.height / 2 + 22;
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2 - Math.PI / 2 + 0.3;
-      const size = 14 + ((i * 7) % 3) * 5;
+      const size = 18 + ((i * 7) % 3) * 6;
       burst.append(
         h('span', {
           class: 'sb-spot-star',
@@ -1242,8 +1244,18 @@ export async function mountReader(root, opts) {
         }),
       );
     }
+    // The name itself, big and clear, just above the one in the picture:
+    // this is how it's written, and the voice says it.
+    const word = h('span', { class: 'sb-spot-word' }, artName);
+    const below = r.top - frame.top < 64;
+    const half = Math.min(frame.width / 2 - 8, 170);
+    const shift = Math.max(half - cx, Math.min(frame.width - half - cx, 0));
+    word.style.setProperty('--dx', `${Math.round(shift)}px`);
+    word.style.setProperty('--dy', `${Math.round(below ? r.height / 2 + 12 : -(r.height / 2 + 12))}px`);
+    word.classList.toggle('is-below', below);
+    burst.append(word);
     confettiLayer.append(burst);
-    setTimeout(() => burst.remove(), 1300);
+    setTimeout(() => burst.remove(), 1900);
   }
 
   function spotName(slot) {
