@@ -1,0 +1,22 @@
+{
+  "sfx": { "open": "boing" },
+  "mechanic": {
+    "type": "wheel",
+    "control": { "center": [800, 600], "radius": 290, "turns": 1, "knob": "#p3-ring" },
+    "drives": [
+      { "target": "#p3-disc", "rotate": [0, 360], "origin": [800, 600], "ease": "linear" },
+      { "target": "#p3-pose-stretch", "visible": [0, 0.34] },
+      { "target": "#p3-pose-bend", "visible": [0.34, 0.67] },
+      { "target": "#p3-pose-bend", "scale": [[1.08, 0.8], [1, 1]], "origin": [790, 790], "range": [0.34, 0.44], "ease": "bounce" },
+      { "target": "#p3-pose-jump", "visible": [0.67, 1] },
+      { "target": "#p3-pose-jump", "scale": [[1.08, 0.8], [1, 1]], "origin": [790, 790], "range": [0.67, 0.77], "ease": "bounce" }
+    ],
+    "complete": {
+      "at": 0.95,
+      "show": ["#p3-sparkles"],
+      "hide": ["#p3-turn-arrows"],
+      "addClass": [["#p3-bunting", "sb-cheer"]],
+      "sfx": ["boing", "boing", "boing"]
+    }
+  }
+}

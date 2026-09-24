@@ -1,0 +1,130 @@
+{
+  "sfx": {
+    "open": "kick"
+  },
+  "mechanic": {
+    "type": "pull-tab",
+    "control": {
+      "from": [
+        368,
+        700
+      ],
+      "to": [
+        96,
+        700
+      ],
+      "knob": "#p5-tab"
+    },
+    "drives": [
+      {
+        "target": "#p5-keeper",
+        "visible": [
+          0,
+          0.14
+        ]
+      },
+      {
+        "target": "#p5-dive",
+        "visible": [
+          0.14,
+          1
+        ]
+      },
+      {
+        "target": "#p5-dive",
+        "translate": [
+          [
+            70,
+            170
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "range": [
+          0.08,
+          1
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#p5-dive",
+        "rotate": [
+          34,
+          0
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "range": [
+          0.08,
+          1
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#p5-dshadow",
+        "visible": [
+          0.14,
+          1
+        ]
+      },
+      {
+        "target": "#p5-dshadow",
+        "translate": [
+          [
+            60,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "range": [
+          0.08,
+          1
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#p5-ball",
+        "rotate": [
+          0,
+          -320
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "ease": "linear"
+      }
+    ],
+    "complete": {
+      "at": 0.95,
+      "show": [
+        "#p5-boing"
+      ],
+      "hide": [
+        "#p5-ball-lines"
+      ],
+      "addClass": [
+        [
+          "#p5-score-name",
+          "sb-blink"
+        ],
+        [
+          "#p5-crowd",
+          "sb-cheer"
+        ]
+      ],
+      "sfx": [
+        "boing",
+        "cheer"
+      ],
+      "confetti": false
+    }
+  }
+}

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Reader harness</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../../css/reader.css">
+  <style>
+    html, body { margin: 0; height: 100%; background: #FFF8EC; }
+    body[data-exited] #app::after { content: "Exited the reader"; position: fixed; inset: 0; display: grid; place-items: center; font: 600 24px system-ui; }
+  </style>
+</head>
+<body>
+  <!--
+    Mounts the reader outside the app shell, for development and the e2e test.
+    Query parameters:
+      book=fixture (default, ./book/) | <book id in /books>   merge=1 (draft + pages/pN.json, before build-book)
+      name=Ava  say=<how to say it>  page=1  test=1 (silent + fast)  scale=0.05
+      autoTurn=1  highlight=0  prompts=0  stub=1 (force the stub narrator/sfx)  idle=<ms> (re-prompt delay)  gate=1|0 (force/skip "Tap to start")
+  -->
+  <main id="app"></main>
+  <script type="module" src="./harness.js"></script>
+</body>
+</html>

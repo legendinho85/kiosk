@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- A simple otter, feet at (0,0), about 360 tall. Fixture art only. -->
+    <g id="d-otter" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M40 -40 C 120 -30 150 -110 120 -170" fill="none" stroke="#B0703F" stroke-width="30"/>
+      <path d="M40 -40 C 120 -30 150 -110 120 -170" fill="none" stroke-width="6"/>
+      <ellipse cx="0" cy="-120" rx="78" ry="110" fill="#B0703F"/>
+      <path d="M-70 -150 Q 0 -190 70 -150 L 66 -60 Q 0 -40 -66 -60 Z" fill="#E4483A"/>
+      <text x="0" y="-86" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="54" fill="#fff" stroke="none">7</text>
+      <rect x="-50" y="-26" width="36" height="26" rx="10" fill="#2B2B2B"/>
+      <rect x="14" y="-26" width="36" height="26" rx="10" fill="#2B2B2B"/>
+      <circle cx="-60" cy="-318" r="22" fill="#8A5530"/>
+      <circle cx="60" cy="-318" r="22" fill="#8A5530"/>
+      <ellipse cx="0" cy="-262" rx="86" ry="74" fill="#B0703F"/>
+      <path d="M-44 -236 Q 0 -196 44 -236 Q 40 -206 0 -198 Q -40 -206 -44 -236 Z" fill="#F7E6CC"/>
+      <circle cx="-30" cy="-272" r="11" fill="#2B1E16" stroke="none"/>
+      <circle cx="30" cy="-272" r="11" fill="#2B1E16" stroke="none"/>
+      <circle cx="-26" cy="-276" r="3.5" fill="#fff" stroke="none"/>
+      <circle cx="34" cy="-276" r="3.5" fill="#fff" stroke="none"/>
+      <path d="M-12 -242 L 12 -242 L 0 -228 Z" fill="#3A2A20" stroke-width="4"/>
+      <path d="M-8 -330 q 8 -26 18 -4 q 6 -22 18 0" fill="none" stroke="#8A5530" stroke-width="8"/>
+    </g>
+    <!-- A football centred on (0,0). -->
+    <g id="d-ball" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round">
+      <circle r="52" fill="#FFFFFF"/>
+      <path d="M0 -18 L 17 -6 L 11 15 L -11 15 L -17 -6 Z" fill="#2B2B2B" stroke-width="3"/>
+      <path d="M0 -18 L 0 -48 M17 -6 L 46 -16 M11 15 L 28 40 M-11 15 L -28 40 M-17 -6 L -46 -16" fill="none" stroke-width="4"/>
+    </g>
+    <g id="d-star">
+      <path d="M0 -30 L 8 -9 L 30 -8 L 13 6 L 19 28 L 0 16 L -19 28 L -13 6 L -30 -8 L -8 -9 Z" fill="#FFC83D" stroke="#2B2A33" stroke-width="5" stroke-linejoin="round"/>
+    </g>
+  </defs>
+</svg>

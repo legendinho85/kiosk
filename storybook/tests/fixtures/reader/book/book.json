@@ -1,0 +1,512 @@
+{
+  "id": "reader-fixture",
+  "version": 1,
+  "lang": "en-GB",
+  "title": "Test, {name}!",
+  "subtitle": "A fixture book that exercises every mechanism",
+  "character": {
+    "name": "Tiffin",
+    "species": "otter"
+  },
+  "defs": "defs.svg",
+  "pages": [
+    {
+      "n": 1,
+      "kind": "cover",
+      "scene": "scenes/p1.svg",
+      "text": [
+        "Test, {name}!",
+        "Starring Tiffin... and {name}!"
+      ],
+      "prompt": "",
+      "after": [],
+      "sfx": {
+        "open": "whistle"
+      },
+      "mechanic": {
+        "type": "none"
+      }
+    },
+    {
+      "n": 2,
+      "kind": "spread",
+      "scene": "scenes/p2.svg",
+      "text": [
+        "Where is {name's} shirt?"
+      ],
+      "prompt": "Lift the flap on the bag!",
+      "after": [
+        "Here it is!"
+      ],
+      "sfx": {
+        "open": "pop"
+      },
+      "mechanic": {
+        "type": "flap",
+        "control": {
+          "flap": "#p2-flap",
+          "hinge": "top"
+        },
+        "drives": [
+          {
+            "target": "#p2-shirt",
+            "translate": [
+              [
+                0,
+                60
+              ],
+              [
+                0,
+                -20
+              ]
+            ],
+            "range": [
+              0.3,
+              1
+            ],
+            "ease": "easeOut"
+          }
+        ],
+        "complete": {
+          "show": [
+            "#p2-sparkles"
+          ],
+          "addClass": [
+            [
+              "#p2-otter-cheer",
+              "sb-cheer"
+            ]
+          ],
+          "sfx": [
+            "pop",
+            "ding"
+          ]
+        }
+      }
+    },
+    {
+      "n": 3,
+      "kind": "spread",
+      "scene": "scenes/p3.svg",
+      "text": [
+        "Warm up, {name}!"
+      ],
+      "prompt": "Turn the wheel, round and round!",
+      "after": [
+        "Stretch! Bend! Jump!"
+      ],
+      "sfx": {
+        "open": "boing"
+      },
+      "mechanic": {
+        "type": "wheel",
+        "control": {
+          "center": [
+            800,
+            580
+          ],
+          "radius": 230,
+          "turns": 1
+        },
+        "drives": [
+          {
+            "target": "#p3-f1",
+            "visible": [
+              0,
+              0.34
+            ]
+          },
+          {
+            "target": "#p3-f2",
+            "visible": [
+              0.34,
+              0.67
+            ]
+          },
+          {
+            "target": "#p3-f3",
+            "visible": [
+              0.67,
+              1
+            ]
+          },
+          {
+            "target": "#p3-sun",
+            "rotate": [
+              0,
+              180
+            ],
+            "ease": "linear"
+          }
+        ],
+        "complete": {
+          "sfx": [
+            "boing"
+          ],
+          "addClass": [
+            [
+              "#p3-flags",
+              "sb-sway"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 4,
+      "kind": "spread",
+      "scene": "scenes/p4.svg",
+      "text": [
+        "Tiffin to {name}... thud!"
+      ],
+      "prompt": "Slide the ball across... and back again!",
+      "after": [
+        "{name} to Tiffin... thud!"
+      ],
+      "sfx": {
+        "open": "whistle"
+      },
+      "mechanic": {
+        "type": "slider",
+        "control": {
+          "from": [
+            420,
+            860
+          ],
+          "to": [
+            1340,
+            900
+          ],
+          "knob": "#p4-knob",
+          "returnTrip": true
+        },
+        "drives": [
+          {
+            "target": "#p4-ball",
+            "along": "#p4-path",
+            "ease": "linear"
+          },
+          {
+            "target": "#p4-ball-size",
+            "scale": [
+              [
+                1,
+                1
+              ],
+              [
+                1.45,
+                1.45
+              ]
+            ],
+            "origin": [
+              0,
+              0
+            ],
+            "ease": "linear"
+          },
+          {
+            "target": "#p4-leg",
+            "rotate": [
+              0,
+              -40
+            ],
+            "origin": [
+              380,
+              760
+            ],
+            "range": [
+              0.7,
+              1
+            ],
+            "phase": "back",
+            "ease": "bounce"
+          },
+          {
+            "target": "#p4-arrow-out",
+            "visible": [
+              0,
+              0.9
+            ],
+            "phase": "out"
+          },
+          {
+            "target": "#p4-arrow-back",
+            "opacity": [
+              1,
+              0.35
+            ],
+            "range": [
+              0.5,
+              1
+            ],
+            "phase": "back"
+          }
+        ],
+        "midway": {
+          "show": [
+            "#p4-thud-you",
+            "#p4-arrow-back"
+          ],
+          "sfx": [
+            "kick"
+          ]
+        },
+        "complete": {
+          "show": [
+            "#p4-thud-tiffin"
+          ],
+          "hide": [
+            "#p4-arrow-back"
+          ],
+          "sfx": [
+            "kick",
+            "cheer"
+          ],
+          "addClass": [
+            [
+              "#p4-crowd",
+              "sb-cheer"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 5,
+      "kind": "spread",
+      "scene": "scenes/p5.svg",
+      "text": [
+        "Goose shoots... whoosh!"
+      ],
+      "prompt": "Pull the tab! Dive, Tiffin, dive!",
+      "after": [
+        "Big save, Tiffin!"
+      ],
+      "sfx": {
+        "open": "kick"
+      },
+      "mechanic": {
+        "type": "pull-tab",
+        "control": {
+          "from": [
+            330,
+            560
+          ],
+          "to": [
+            90,
+            560
+          ],
+          "springBack": true
+        },
+        "drives": [
+          {
+            "target": "#p5-keeper",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                -270,
+                -190
+              ]
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p5-keeper-tilt",
+            "rotate": [
+              0,
+              -32
+            ],
+            "ease": "easeOut"
+          }
+        ],
+        "complete": {
+          "at": 0.9,
+          "show": [
+            "#p5-caught"
+          ],
+          "hide": [
+            "#p5-ball"
+          ],
+          "sfx": [
+            "boing",
+            "cheer"
+          ],
+          "addClass": [
+            [
+              "#p5-score",
+              "sb-blink"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 6,
+      "kind": "spread",
+      "scene": "scenes/p6.svg",
+      "text": [
+        "Ready... steady..."
+      ],
+      "prompt": "Press the button three times!",
+      "after": [
+        "Goal, {name}! Goal, goal, goal!"
+      ],
+      "sfx": {
+        "open": "drum"
+      },
+      "mechanic": {
+        "type": "push-button",
+        "control": {
+          "center": [
+            1340,
+            800
+          ],
+          "radius": 70,
+          "presses": 3
+        },
+        "drives": [
+          {
+            "target": "#p6-ball",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                420,
+                -430
+              ]
+            ],
+            "ease": "easeOut"
+          },
+          {
+            "target": "#p6-keeper",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                -240,
+                30
+              ]
+            ],
+            "range": [
+              0.5,
+              1
+            ]
+          }
+        ],
+        "complete": {
+          "show": [
+            "#p6-one"
+          ],
+          "hide": [
+            "#p6-zero"
+          ],
+          "sfx": [
+            "kick",
+            "cheer",
+            "clap"
+          ],
+          "addClass": [
+            [
+              "#p6-net",
+              "sb-bulge"
+            ]
+          ],
+          "confetti": true
+        }
+      }
+    },
+    {
+      "n": 7,
+      "kind": "spread",
+      "scene": "scenes/p7.svg",
+      "text": [
+        "We win! Hip, hip, hooray!"
+      ],
+      "prompt": "Push the cloth up to find the prize!",
+      "after": [
+        "A big gold cup for {name}!"
+      ],
+      "sfx": {
+        "open": "whistle"
+      },
+      "mechanic": {
+        "type": "slider",
+        "control": {
+          "from": [
+            800,
+            900
+          ],
+          "to": [
+            800,
+            470
+          ]
+        },
+        "drives": [
+          {
+            "target": "#p7-cloth",
+            "translate": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                -520
+              ]
+            ],
+            "ease": "easeIn"
+          },
+          {
+            "target": "#p7-cloth",
+            "opacity": [
+              1,
+              0
+            ],
+            "range": [
+              0.55,
+              1
+            ]
+          }
+        ],
+        "complete": {
+          "show": [
+            "#p7-shine"
+          ],
+          "sfx": [
+            "ding",
+            "cheer"
+          ],
+          "confetti": true
+        }
+      }
+    },
+    {
+      "n": 8,
+      "kind": "end",
+      "scene": "scenes/p8.svg",
+      "text": [
+        "Paw in hand, side by side.",
+        "Night night, {name}."
+      ],
+      "prompt": "",
+      "after": [],
+      "sfx": {
+        "open": "ding"
+      },
+      "voice": {
+        "rate": 0.85,
+        "pitch": 0.95
+      },
+      "mechanic": {
+        "type": "none"
+      }
+    }
+  ]
+}

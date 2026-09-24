@@ -1,0 +1,21 @@
+{
+  "sfx": { "open": "pop" },
+  "mechanic": {
+    "type": "flap",
+    "control": { "flap": "#p2-flap", "hinge": "top" },
+    "drives": [
+      { "target": "#p2-shirt-in", "visible": [0, 0.5] },
+      { "target": "#p2-shirt-up", "visible": [0.5, 1] },
+      { "target": "#p2-shirt-up", "translate": [[0, 0], [50, -340]], "range": [0.5, 1], "ease": "easeOut" },
+      { "target": "#p2-shirt-up", "scale": [[1, 1], [2.25, 2.25]], "origin": [1150, 752], "range": [0.5, 1], "ease": "easeOut" },
+      { "target": "#p2-shirt-up", "rotate": [0, -12], "origin": [1150, 752], "range": [0.5, 0.75] },
+      { "target": "#p2-shirt-up", "rotate": [0, 12], "origin": [1150, 752], "range": [0.75, 1] }
+    ],
+    "complete": {
+      "at": 0.95,
+      "show": ["#p2-sparkles"],
+      "addClass": [["#p2-tiffin", "sb-cheer"]],
+      "sfx": ["pop", "sparkle", "clap"]
+    }
+  }
+}

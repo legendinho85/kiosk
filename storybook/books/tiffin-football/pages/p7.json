@@ -1,0 +1,81 @@
+{
+  "sfx": {
+    "open": "whistle"
+  },
+  "mechanic": {
+    "type": "flap",
+    "control": {
+      "flap": "#p7-cloth",
+      "hinge": "top"
+    },
+    "drives": [
+      {
+        "target": "#p7-glow",
+        "opacity": [
+          0,
+          1
+        ],
+        "range": [
+          0.35,
+          1
+        ],
+        "ease": "easeOut"
+      },
+      {
+        "target": "#p7-cup",
+        "scale": [
+          [
+            0.9,
+            0.9
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "origin": [
+          800,
+          690
+        ],
+        "range": [
+          0.45,
+          1
+        ],
+        "ease": "bounce"
+      }
+    ],
+    "complete": {
+      "at": 0.9,
+      "show": [
+        "#p7-sparkles"
+      ],
+      "hide": [
+        "#p7-cloth"
+      ],
+      "addClass": [
+        [
+          "#p7-crowd",
+          "sb-cheer"
+        ],
+        [
+          "#p7-tiffin",
+          "sb-cheer"
+        ],
+        [
+          "#p7-goose",
+          "sb-cheer"
+        ],
+        [
+          "#p7-frog",
+          "sb-cheer"
+        ]
+      ],
+      "sfx": [
+        "pop",
+        "cheer",
+        "clap"
+      ],
+      "confetti": true
+    }
+  }
+}

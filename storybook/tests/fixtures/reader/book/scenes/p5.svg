@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <rect width="1600" height="820" fill="#9FDCF7"/>
+  <rect y="820" width="1600" height="180" fill="#74C655"/>
+  <rect x="300" y="250" width="800" height="570" fill="#C5D7E3" opacity=".6"/>
+  <path d="M300 820 V 250 H 1100 V 820" fill="none" stroke="#fff" stroke-width="22"/>
+  <g id="p5-ball" transform="translate(400 330)"><use href="#d-ball"/></g>
+  <g id="p5-keeper"><g id="p5-keeper-tilt"><g transform="translate(700 820)"><use href="#d-otter" transform="scale(1.3)"/></g></g></g>
+  <g id="p5-caught" transform="translate(440 340)"><use href="#d-ball"/><use href="#d-star" transform="translate(70 -60)"/></g>
+  <g stroke="#2B2A33" stroke-width="6"><rect x="1220" y="40" width="340" height="170" rx="16" fill="#2B2B2B"/></g>
+  <g id="p5-score">
+    <text id="p5-name" class="sb-name" data-form="upper" data-max-width="220" x="1360" y="110" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="54" fill="#FFCB3D">NAME</text>
+    <text x="1520" y="110" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="54" fill="#FFCB3D">0</text>
+    <text x="1390" y="185" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="54" fill="#FFCB3D">BLUES 0</text>
+  </g>
+  <g transform="translate(1340 880)" stroke="#2B2A33" stroke-width="6"><ellipse cy="-120" rx="80" ry="110" fill="#fff"/><rect x="-70" y="-160" width="140" height="80" rx="20" fill="#3E7BDB"/><path d="M40 -330 Q 20 -260 30 -200" fill="none" stroke-width="30" stroke="#fff"/><circle cx="30" cy="-340" r="40" fill="#fff"/><path d="M-10 -340 L -50 -330 L -10 -320 Z" fill="#F59A2B"/></g>
+</svg>

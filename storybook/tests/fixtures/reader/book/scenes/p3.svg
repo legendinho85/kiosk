@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <rect width="1600" height="540" fill="#9FDCF7"/>
+  <rect y="480" width="1600" height="80" fill="#5BAE45"/>
+  <rect y="540" width="1600" height="460" fill="#74C655"/>
+  <g id="p3-sun" transform="translate(1420 300)"><circle r="60" fill="#FFCB3D" stroke="#2B2A33" stroke-width="6"/><path d="M0 -90 V -120 M0 90 V 120 M-90 0 H -120 M90 0 H 120 M64 64 L 85 85 M-64 -64 L -85 -85 M64 -64 L 85 -85 M-64 64 L -85 85" stroke="#2B2A33" stroke-width="8" stroke-linecap="round"/></g>
+  <path d="M60 110 Q 800 200 1540 110" fill="none" stroke="#2B2A33" stroke-width="6"/>
+  <g id="p3-flags" class="sb-letters" data-anim="write" data-overflow="#p3-banner">
+    <path d="M173 118 L 289 118 L 231 258 Z" fill="#E4483A" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="231" y="188" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#FFFFFF" data-max-width="80"></text>
+<path d="M315 132 L 431 132 L 373 272 Z" fill="#FFCB3D" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="373" y="202" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#E4483A" data-max-width="80"></text>
+<path d="M458 142 L 574 142 L 516 282 Z" fill="#FFFFFF" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="516" y="212" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#E4483A" data-max-width="80"></text>
+<path d="M600 148 L 716 148 L 658 288 Z" fill="#E4483A" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="658" y="218" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#FFFFFF" data-max-width="80"></text>
+<path d="M742 150 L 858 150 L 800 290 Z" fill="#FFCB3D" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="800" y="220" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#E4483A" data-max-width="80"></text>
+<path d="M884 148 L 1000 148 L 942 288 Z" fill="#FFFFFF" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="942" y="218" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#E4483A" data-max-width="80"></text>
+<path d="M1026 142 L 1142 142 L 1084 282 Z" fill="#E4483A" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="1084" y="212" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#FFFFFF" data-max-width="80"></text>
+<path d="M1169 132 L 1285 132 L 1227 272 Z" fill="#FFCB3D" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="1227" y="202" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#E4483A" data-max-width="80"></text>
+<path d="M1311 118 L 1427 118 L 1369 258 Z" fill="#FFFFFF" stroke="#2B2A33" stroke-width="6" stroke-linejoin="round"/>
+<text class="sb-letter" x="1369" y="188" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="60" fill="#E4483A" data-max-width="80"></text>
+  </g>
+  <g id="p3-banner-wrap"><text id="p3-banner" class="sb-name" data-form="upper" data-max-width="900" display="none" x="800" y="330" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="80" fill="#E4483A" stroke="#fff" stroke-width="8" paint-order="stroke">NAME</text></g>
+  <circle cx="800" cy="580" r="230" fill="#DFF3FF" stroke="#2B2A33" stroke-width="6"/>
+  <g id="p3-f1"><g transform="translate(800 780)"><use href="#d-otter" transform="scale(1.05 1.15)"/></g><path d="M740 460 L 720 360 M860 460 L 880 360" stroke="#B0703F" stroke-width="30" stroke-linecap="round"/></g>
+  <g id="p3-f2"><g transform="translate(800 790) rotate(40)"><use href="#d-otter" transform="scale(1.05)"/></g></g>
+  <g id="p3-f3"><g transform="translate(800 740)"><use href="#d-otter" transform="scale(1.05)"/></g><path d="M730 520 L 650 440 M870 520 L 950 440 M770 740 L 720 800 M830 740 L 880 800" stroke="#B0703F" stroke-width="30" stroke-linecap="round"/></g>
+  <circle cx="800" cy="580" r="230" fill="none" stroke="#FFCB3D" stroke-width="26"/>
+  <g stroke="#2B2A33" stroke-width="6" fill="#F59A2B"><path d="M150 860 L 180 780 L 210 860 Z"/><path d="M250 860 L 280 780 L 310 860 Z"/><path d="M350 860 L 380 780 L 410 860 Z"/></g>
+  <use href="#d-ball" transform="translate(1300 830)"/>
+</svg>

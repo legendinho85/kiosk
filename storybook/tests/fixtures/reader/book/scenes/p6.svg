@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <rect width="1600" height="640" fill="#9FDCF7"/>
+  <rect y="640" width="1600" height="360" fill="#74C655"/>
+  <g id="p6-net"><rect x="380" y="200" width="840" height="440" fill="#DDEAF2" opacity=".7" stroke="#fff" stroke-width="22"/></g>
+  <g id="p6-keeper" transform="translate(800 640)" stroke="#2B2A33" stroke-width="6"><ellipse cy="-110" rx="90" ry="100" fill="#3DAA5C"/><rect x="-80" y="-140" width="160" height="70" rx="20" fill="#3E7BDB"/><circle cx="-36" cy="-190" r="16" fill="#fff"/><circle cx="36" cy="-190" r="16" fill="#fff"/></g>
+  <g id="p6-ball" transform="translate(700 870)"><use href="#d-ball"/></g>
+  <g transform="translate(170 940)"><use href="#d-otter"/></g>
+  <g stroke="#2B2A33" stroke-width="6"><rect x="1240" y="30" width="340" height="160" rx="16" fill="#2B2B2B"/></g>
+  <text id="p6-name" class="sb-name" data-form="poss" data-max-width="220" x="1370" y="100" text-anchor="middle" font-family="Fredoka, Andika, sans-serif" font-weight="700" font-size="46" fill="#FFCB3D">NAME</text>
+  <text id="p6-zero" x="1530" y="100" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="54" fill="#FFCB3D">0</text>
+  <text id="p6-one" x="1530" y="100" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="54" fill="#FFCB3D">1</text>
+  <text x="1410" y="170" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="46" fill="#FFCB3D">BLUES 0</text>
+</svg>
