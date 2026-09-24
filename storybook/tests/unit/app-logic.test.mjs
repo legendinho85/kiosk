@@ -110,9 +110,10 @@ test('a new child starts with the dictionary pronunciation when there is one', (
   assert.equal(siobhan.source, 'dictionary');
   assert.equal(siobhan.respell, 'shih-VAWN');
   assert.equal(siobhan.useRecording, false);
-  const ava = defaultPronunciation(lexicon, 'Ava');
-  assert.equal(ava.source, 'as-written');
-  assert.equal(ava.say, 'Ava');
+  // A made-up name the dictionary will never contain.
+  const zorvaxa = defaultPronunciation(lexicon, 'Zorvaxa');
+  assert.equal(zorvaxa.source, 'as-written');
+  assert.equal(zorvaxa.say, 'Zorvaxa');
   assert.equal(defaultPronunciation(null, 'Bo').say, 'Bo', 'no dictionary: as written');
 });
 

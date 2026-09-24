@@ -1,9 +1,9187 @@
 {
-  "version": 1,
-  "note": "Placeholder — replaced by the verified dictionary.",
-  "entries": [
-    { "name": "Siobhan", "spellings": ["Siobhán", "Shivaun"], "origin": "Irish", "variants": [{ "ipa": "ʃɪˈvɔːn", "respell": "shih-VAWN", "say": "Shi vawn", "label": "Irish" }], "note": "", "confidence": "high" },
-    { "name": "Niamh", "spellings": ["Neve", "Neamh"], "origin": "Irish", "variants": [{ "ipa": "niːv", "respell": "NEEV", "say": "Neeve", "label": "Irish" }], "note": "", "confidence": "high" },
-    { "name": "Isla", "spellings": [], "origin": "Scottish", "variants": [{ "ipa": "ˈaɪlə", "respell": "EYE-luh", "say": "Eyela", "label": "Most common in UK" }, { "ipa": "ˈɪzlə", "respell": "IZ-luh", "say": "Izla", "label": "As spelt" }], "note": "", "confidence": "high" }
-  ]
+ "version": 1,
+ "generated": "2026-09-24",
+ "note": "Name pronunciations for UK families. Each entry lists pronunciations most-common-first. ipa: British IPA; respell: house respelling (stressed syllable in CAPITALS, see js/pronounce/respell.js); say: plain text tuned so ordinary text-to-speech voices say it right. Authored and cross-checked by two independent passes, adjudicated, and machine-checked with tools/check-lexicon.mjs (espeak-ng). Still needs native-speaker review before launch.",
+ "entries": [
+  {
+   "name": "Aaliyah",
+   "spellings": [
+    "Aliyah",
+    "Aaliya"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ɑːˈliːjə",
+     "respell": "ah-LEE-yuh",
+     "say": "Ah leeya",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɑːlɪjə",
+     "respell": "AH-li-yuh",
+     "say": "Ahleeya",
+     "label": "Arabic"
+    }
+   ],
+   "note": "Stress on LEE, as the singer Aaliyah said it. Some Arabic-speaking families stress the first syllable: AH-li-yuh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aanya",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈɑːnjə",
+     "respell": "AHN-yuh",
+     "say": "Ahnya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The double a means a long 'ah'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aarav",
+   "spellings": [
+    "Arav"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈɑːrəv",
+     "respell": "AH-ruhv",
+     "say": "Ahruv",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'peaceful'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Abdi",
+   "spellings": [],
+   "origin": "Somali",
+   "variants": [
+    {
+     "ipa": "ˈæbdiː",
+     "respell": "AB-dee",
+     "say": "Abdee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'servant (of God)'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ada",
+   "spellings": [],
+   "origin": "Germanic",
+   "variants": [
+    {
+     "ipa": "ˈeɪdə",
+     "respell": "AY-duh",
+     "say": "Ada",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Adaeze",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "ˌɑːdɑːˈeɪzeɪ",
+     "respell": "ah-dah-AY-zay",
+     "say": "Ahdah yayzay",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'princess' (king's daughter). All four vowels are said.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Aditi",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈʌdɪtiː",
+     "respell": "UD-i-tee",
+     "say": "Uddity",
+     "label": "Hindi"
+    },
+    {
+     "ipa": "əˈdiːtiː",
+     "respell": "uh-DEE-tee",
+     "say": "A deetee",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "In Hindi the first a is short, like the u in 'cup'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Advik",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈʌdvɪk",
+     "respell": "UD-vik",
+     "say": "Udvik",
+     "label": "Hindi"
+    },
+    {
+     "ipa": "ˈædvɪk",
+     "respell": "AD-vik",
+     "say": "Addvik",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "Means 'unique'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ahmed",
+   "spellings": [
+    "Ahmad"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈɑːmɛd",
+     "respell": "AH-med",
+     "say": "Ahmedd",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɑːmæd",
+     "respell": "AH-mad",
+     "say": "Ahmad",
+     "label": "Arabic (also spelt Ahmad)"
+    }
+   ],
+   "note": "In Arabic the h is breathy, but in the UK it is usually almost silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ailbhe",
+   "spellings": [
+    "Alva"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈælvə",
+     "respell": "AL-vuh",
+     "say": "Alva",
+     "label": "Irish"
+    }
+   ],
+   "note": "bh = v.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ailsa",
+   "spellings": [],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈeɪlsə",
+     "respell": "AYL-suh",
+     "say": "Ailsa",
+     "label": "Scottish"
+    }
+   ],
+   "note": "After Ailsa Craig.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aisha",
+   "spellings": [
+    "Aishah",
+    "Aysha"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈaɪʃə",
+     "respell": "EYE-shuh",
+     "say": "Eyesha",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɑːiːʃə",
+     "respell": "AH-ee-shuh",
+     "say": "Ah-yeesha",
+     "label": "Arabic/Urdu"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Aisling",
+   "spellings": [
+    "Ashling"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈæʃlɪŋ",
+     "respell": "ASH-ling",
+     "say": "Ashling",
+     "label": "Irish"
+    }
+   ],
+   "note": "Not 'AYZ-ling'. The spelling Aislinn is sometimes said differently.",
+   "confidence": "high"
+  },
+  {
+   "name": "Akosua",
+   "spellings": [],
+   "origin": "Akan (Ghanaian)",
+   "variants": [
+    {
+     "ipa": "ɑːˈkəʊsuːə",
+     "respell": "ah-KOH-soo-uh",
+     "say": "A kohsooah",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Akan day name for a girl born on a Sunday.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Alasdair",
+   "spellings": [
+    "Alastair",
+    "Alistair",
+    "Alisdair"
+   ],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈæləstə",
+     "respell": "AL-uh-stuh",
+     "say": "Alister",
+     "label": "Scottish"
+    }
+   ],
+   "note": "Scottish speakers pronounce the final r.",
+   "confidence": "high"
+  },
+  {
+   "name": "Albert",
+   "spellings": [],
+   "origin": "English (Germanic)",
+   "variants": [
+    {
+     "ipa": "ˈælbət",
+     "respell": "AL-buht",
+     "say": "Albert",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Albie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈælbi",
+     "respell": "AL-bee",
+     "say": "Albie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Aled",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈælɛd",
+     "respell": "AL-ed",
+     "say": "Aled",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Alexander",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˌælɪɡˈzɑːndə",
+     "respell": "al-ig-ZAHN-duh",
+     "say": "Alexander",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Alexandru",
+   "spellings": [],
+   "origin": "Romanian",
+   "variants": [
+    {
+     "ipa": "ˌælɛkˈsændruː",
+     "respell": "al-ek-SAN-droo",
+     "say": "Alek-sandroo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Romanian form of Alexander.",
+   "confidence": "high"
+  },
+  {
+   "name": "Alexis",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "əˈlɛksɪs",
+     "respell": "uh-LEK-sis",
+     "say": "Alexis",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Alfie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈælfi",
+     "respell": "AL-fee",
+     "say": "Alfie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ali",
+   "spellings": [],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "æˈliː",
+     "respell": "a-LEE",
+     "say": "A lee",
+     "label": "Arabic/Urdu"
+    },
+    {
+     "ipa": "ˈæliː",
+     "respell": "AL-ee",
+     "say": "Alli",
+     "label": "English"
+    }
+   ],
+   "note": "Muslim families stress the second syllable (a-LEE). As an English name (short for Alison or Alice) it is AL-ee.",
+   "confidence": "high"
+  },
+  {
+   "name": "Alice",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈælɪs",
+     "respell": "AL-is",
+     "say": "Alice",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Alys",
+   "spellings": [
+    "Alis"
+   ],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈælɪs",
+     "respell": "AL-iss",
+     "say": "Alliss",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ama",
+   "spellings": [],
+   "origin": "Akan (Ghanaian)",
+   "variants": [
+    {
+     "ipa": "ˈɑːmɑː",
+     "respell": "AH-mah",
+     "say": "Ahmaa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Akan day name for a girl born on a Saturday. Both vowels are a full 'ah'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Amani",
+   "spellings": [],
+   "origin": "Swahili",
+   "variants": [
+    {
+     "ipa": "ɑːˈmɑːniː",
+     "respell": "ah-MAH-nee",
+     "say": "Amaarnee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'peace'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Amelia",
+   "spellings": [],
+   "origin": "Germanic",
+   "variants": [
+    {
+     "ipa": "əˈmiːliə",
+     "respell": "uh-MEE-lee-uh",
+     "say": "Amelia",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Amira",
+   "spellings": [
+    "Ameera",
+    "Amirah"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "əˈmɪərə",
+     "respell": "uh-MEER-uh",
+     "say": "Ameera",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'princess'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Anaïs",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˌɑːnɑːˈiːs",
+     "respell": "ah-nah-EES",
+     "say": "Ah nah yeess",
+     "label": "French"
+    }
+   ],
+   "note": "Three syllables with the stress on the end; the s is pronounced.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ananya",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "əˈnʌnjə",
+     "respell": "uh-NUN-yuh",
+     "say": "Annunya",
+     "label": "Hindi"
+    },
+    {
+     "ipa": "əˈnænjə",
+     "respell": "uh-NAN-yuh",
+     "say": "A nanya",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "Means 'unique'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Anastasia",
+   "spellings": [],
+   "origin": "Ukrainian/Russian/Greek",
+   "variants": [
+    {
+     "ipa": "ˌænəˈsteɪziːə",
+     "respell": "an-uh-STAY-zee-uh",
+     "say": "Anastasia",
+     "label": "English"
+    },
+    {
+     "ipa": "ˌænəˈstɑːsiːə",
+     "respell": "an-uh-STAH-see-uh",
+     "say": "Annastahsia",
+     "label": "Ukrainian/Russian"
+    },
+    {
+     "ipa": "ˌɑːnɑːstɑːˈsiːɑː",
+     "respell": "ah-nah-stah-SEE-ah",
+     "say": "Ahnahstah see-ah",
+     "label": "Greek"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Anaya",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit; Arabic/Urdu",
+   "variants": [
+    {
+     "ipa": "əˈnɑːjə",
+     "respell": "uh-NAH-yuh",
+     "say": "A naaya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Used by Hindu and Muslim families. The stress is on the middle 'nah'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Andrea",
+   "spellings": [],
+   "origin": "Greek (via Italian/Spanish)",
+   "variants": [
+    {
+     "ipa": "ˈændriə",
+     "respell": "AN-dree-uh",
+     "say": "Andrea",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ænˈdreɪə",
+     "respell": "an-DRAY-uh",
+     "say": "An draya",
+     "label": "Italian/Spanish"
+    }
+   ],
+   "note": "In Italy Andrea is a boy's name (an-DRAY-uh); in the UK it is usually a girl's name.",
+   "confidence": "high"
+  },
+  {
+   "name": "Andrei",
+   "spellings": [],
+   "origin": "Romanian/Russian/Ukrainian",
+   "variants": [
+    {
+     "ipa": "ænˈdreɪ",
+     "respell": "an-DRAY",
+     "say": "An-dray",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Romanian and Eastern European form of Andrew.",
+   "confidence": "high"
+  },
+  {
+   "name": "Angharad",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "æŋˈhæræd",
+     "respell": "ang-HARR-ad",
+     "say": "An-harrad",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Anja",
+   "spellings": [
+    "Anya"
+   ],
+   "origin": "German/Scandinavian/Slavic",
+   "variants": [
+    {
+     "ipa": "ˈænjə",
+     "respell": "AN-yuh",
+     "say": "Anya",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɑːnjə",
+     "respell": "AHN-yuh",
+     "say": "Ahnya",
+     "label": "Also used"
+    }
+   ],
+   "note": "The j sounds like y.",
+   "confidence": "high"
+  },
+  {
+   "name": "Anne-Marie",
+   "spellings": [
+    "Annemarie",
+    "Ann-Marie"
+   ],
+   "origin": "French/English",
+   "variants": [
+    {
+     "ipa": "ˌænməˈriː",
+     "respell": "an-muh-REE",
+     "say": "Anne-Marie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Anouk",
+   "spellings": [],
+   "origin": "Dutch/French",
+   "variants": [
+    {
+     "ipa": "æˈnuːk",
+     "respell": "a-NOOK",
+     "say": "An ook",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ɑːˈnuːk",
+     "respell": "ah-NOOK",
+     "say": "Ahn ook",
+     "label": "Dutch"
+    }
+   ],
+   "note": "Stress on NOOK. Dutch families start with a long 'ah'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Antoni",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ænˈtɒniː",
+     "respell": "an-TON-ee",
+     "say": "An-tawnee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Anthony. The stress is on the second syllable.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aodhán",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈeɪdɔːn",
+     "respell": "AY-dawn",
+     "say": "Eighdawn",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish original of Aidan. Some Irish speakers drop the d (AY-awn).",
+   "confidence": "medium"
+  },
+  {
+   "name": "Aoi",
+   "spellings": [],
+   "origin": "Japanese",
+   "variants": [
+    {
+     "ipa": "ɑːˈɔɪ",
+     "respell": "ah-OY",
+     "say": "Ah-woy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'blue' or 'hollyhock'. In Japanese it has three even beats: ah-oh-ee.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aoibh",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "iːv",
+     "respell": "EEV",
+     "say": "Eeve",
+     "label": "Irish"
+    }
+   ],
+   "note": "Rhymes with 'Eve'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aoibheann",
+   "spellings": [
+    "Eavan"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈiːvən",
+     "respell": "EE-vuhn",
+     "say": "Eevun",
+     "label": "Irish"
+    }
+   ],
+   "note": "bh = v.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aoibhinn",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈiːvɪn",
+     "respell": "EE-vin",
+     "say": "Eevin",
+     "label": "Irish"
+    }
+   ],
+   "note": "bh = v.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aoife",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈiːfə",
+     "respell": "EE-fuh",
+     "say": "Eefa",
+     "label": "Irish"
+    }
+   ],
+   "note": "ao = 'ee'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Arabella",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ˌærəˈbɛlə",
+     "respell": "arr-uh-BEL-uh",
+     "say": "Arabella",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Archie",
+   "spellings": [],
+   "origin": "English (Scottish)",
+   "variants": [
+    {
+     "ipa": "ˈɑːtʃi",
+     "respell": "AR-chee",
+     "say": "Archie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ardit",
+   "spellings": [],
+   "origin": "Albanian",
+   "variants": [
+    {
+     "ipa": "ɑːˈdiːt",
+     "respell": "ar-DEET",
+     "say": "Ar deet",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'golden day'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Aria",
+   "spellings": [],
+   "origin": "Italian/Persian",
+   "variants": [
+    {
+     "ipa": "ˈɑːriə",
+     "respell": "AR-ee-uh",
+     "say": "Ahria",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ariana",
+   "spellings": [
+    "Arianna"
+   ],
+   "origin": "Italian/Welsh",
+   "variants": [
+    {
+     "ipa": "ˌɑːriˈɑːnə",
+     "respell": "ar-ee-AH-nuh",
+     "say": "Ariana",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ariel",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈɛəriːəl",
+     "respell": "AIR-ee-uhl",
+     "say": "Airiel",
+     "label": "English"
+    },
+    {
+     "ipa": "ˌɑːriːˈɛl",
+     "respell": "ah-ree-EL",
+     "say": "Ahri-ell",
+     "label": "Hebrew"
+    }
+   ],
+   "note": "Means 'lion of God'. In Israel it is mostly a boy's name.",
+   "confidence": "high"
+  },
+  {
+   "name": "Arjun",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈɑːdʒʊn",
+     "respell": "AR-juun",
+     "say": "Arjun",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The hero of the Mahabharata. In Hindi and Punjabi the first a is short, closer to UR-juun.",
+   "confidence": "high"
+  },
+  {
+   "name": "Arlo",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɑːləʊ",
+     "respell": "AR-loh",
+     "say": "Arlo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Arnab",
+   "spellings": [],
+   "origin": "Bengali",
+   "variants": [
+    {
+     "ipa": "ˈɔːnɒb",
+     "respell": "OR-nob",
+     "say": "Ornob",
+     "label": "Bengali"
+    }
+   ],
+   "note": "Means 'ocean'. Bengali families say OR-nob. Hindi speakers may say AR-nuhb.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Arnav",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈɑːnəv",
+     "respell": "AR-nuhv",
+     "say": "Arnuv",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'ocean'. In Hindi the first vowel is shorter (closer to UR-nuhv).",
+   "confidence": "medium"
+  },
+  {
+   "name": "Arthur",
+   "spellings": [],
+   "origin": "English (Celtic)",
+   "variants": [
+    {
+     "ipa": "ˈɑːθə",
+     "respell": "AR-thuh",
+     "say": "Arthur",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Arya",
+   "spellings": [],
+   "origin": "Sanskrit / Game of Thrones",
+   "variants": [
+    {
+     "ipa": "ˈɑːrjə",
+     "respell": "AR-yuh",
+     "say": "Ar-ya",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɑːriə",
+     "respell": "AR-ee-uh",
+     "say": "Ahria",
+     "label": "Like Aria"
+    }
+   ],
+   "note": "Usually two syllables (AR-yuh); some families say it like Aria.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Aryan",
+   "spellings": [
+    "Aaryan"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈɑːrjən",
+     "respell": "AR-yuhn",
+     "say": "Aar-yun",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Astrid",
+   "spellings": [],
+   "origin": "Scandinavian",
+   "variants": [
+    {
+     "ipa": "ˈæstrɪd",
+     "respell": "AS-trid",
+     "say": "Astrid",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Aurelia",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ɔːˈriːliə",
+     "respell": "aw-REE-lee-uh",
+     "say": "Aw reelia",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "aʊˈreɪliə",
+     "respell": "ow-RAY-lee-uh",
+     "say": "Ouw raylia",
+     "label": "Italian/Spanish"
+    }
+   ],
+   "note": "Italian and Spanish families say ow-RAY-lee-uh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Aurélie",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˌɔːreɪˈliː",
+     "respell": "or-ay-LEE",
+     "say": "Oray lee",
+     "label": "French"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Aurora",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ɔːˈrɔːrə",
+     "respell": "aw-ROR-uh",
+     "say": "Aurora",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ava",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈeɪvə",
+     "respell": "AY-vuh",
+     "say": "Eighva",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ayaan",
+   "spellings": [],
+   "origin": "Arabic/Urdu/Hindi; Somali",
+   "variants": [
+    {
+     "ipa": "əˈjɑːn",
+     "respell": "uh-YAHN",
+     "say": "A yahn",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Used as a boy's name in South Asian Muslim and Hindu families (meaning 'gift of God') and as a girl's name in Somali families (meaning 'luck'). All use the long 'ahn' at the end.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ayesha",
+   "spellings": [],
+   "origin": "Arabic (via Urdu)",
+   "variants": [
+    {
+     "ipa": "ɑːˈjeɪʃə",
+     "respell": "ah-YAY-shuh",
+     "say": "Ah yaysha",
+     "label": "South Asian"
+    },
+    {
+     "ipa": "aɪˈiːʃə",
+     "respell": "eye-EE-shuh",
+     "say": "Ayeesha",
+     "label": "Also used"
+    }
+   ],
+   "note": "Same name as Aisha; the spelling Ayesha is most used by Pakistani, Indian and Bangladeshi families.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ayla",
+   "spellings": [],
+   "origin": "Turkish / Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈeɪlə",
+     "respell": "AY-luh",
+     "say": "Eighla",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈaɪlə",
+     "respell": "EYE-luh",
+     "say": "Eyela",
+     "label": "Turkish / Hebrew"
+    }
+   ],
+   "note": "Families are split; Turkish and Hebrew speakers say EYE-luh.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ayo",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˈaɪəʊ",
+     "respell": "EYE-oh",
+     "say": "Eyeoh",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɑːjɔː",
+     "respell": "AH-yaw",
+     "say": "Ah-yaw",
+     "label": "Yoruba"
+    }
+   ],
+   "note": "Means 'joy'. Most UK families say EYE-oh; in Yoruba it is closer to AH-yaw.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ayomide",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˌaɪəʊˈmiːdeɪ",
+     "respell": "eye-oh-MEE-day",
+     "say": "Eyeoh meeday",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˌɑːjɔːˈmiːdeɪ",
+     "respell": "ah-yaw-MEE-day",
+     "say": "Ah-yaw meeday",
+     "label": "Yoruba"
+    }
+   ],
+   "note": "Means 'my joy has come'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Beatrice",
+   "spellings": [],
+   "origin": "Latin (English/Italian)",
+   "variants": [
+    {
+     "ipa": "ˈbiːətrɪs",
+     "respell": "BEE-uh-tris",
+     "say": "Beatrice",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˌbeɪəˈtriːtʃeɪ",
+     "respell": "bay-uh-TREE-chay",
+     "say": "Baya treechay",
+     "label": "Italian"
+    }
+   ],
+   "note": "Italian families say bay-uh-TREE-chay.",
+   "confidence": "high"
+  },
+  {
+   "name": "Benjamin",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈbɛndʒəmɪn",
+     "respell": "BEN-juh-min",
+     "say": "Benjamin",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Besa",
+   "spellings": [],
+   "origin": "Albanian",
+   "variants": [
+    {
+     "ipa": "ˈbɛsə",
+     "respell": "BES-uh",
+     "say": "Bessa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'faith' or 'a promise kept'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Bethan",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈbɛθən",
+     "respell": "BETH-uhn",
+     "say": "Bethan",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Bilal",
+   "spellings": [
+    "Bilaal"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "bɪˈlɑːl",
+     "respell": "bi-LAHL",
+     "say": "Belahl",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Bjørn",
+   "spellings": [],
+   "origin": "Scandinavian",
+   "variants": [
+    {
+     "ipa": "ˈbjɔːn",
+     "respell": "BYORN",
+     "say": "Bjorn",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈbjɜːn",
+     "respell": "BYURN",
+     "say": "Bjurn",
+     "label": "Scandinavian"
+    }
+   ],
+   "note": "One syllable; the B and J run together as 'by'. Scandinavian families say it closer to BYURN.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Bláthnaid",
+   "spellings": [
+    "Blánaid"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈblɔːnɪd",
+     "respell": "BLAW-nid",
+     "say": "Blawnid",
+     "label": "Irish"
+    }
+   ],
+   "note": "th is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Bonnie",
+   "spellings": [],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈbɒni",
+     "respell": "BON-ee",
+     "say": "Bonnie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Cadi",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈkædi",
+     "respell": "KAD-ee",
+     "say": "Caddy",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Cai",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "kaɪ",
+     "respell": "KYE",
+     "say": "Kye",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh form of Kay. Sounds the same as Kai.",
+   "confidence": "high"
+  },
+  {
+   "name": "Caio",
+   "spellings": [],
+   "origin": "Welsh / Portuguese",
+   "variants": [
+    {
+     "ipa": "ˈkaɪəʊ",
+     "respell": "KY-oh",
+     "say": "Kai-oh",
+     "label": "Welsh"
+    },
+    {
+     "ipa": "ˈkaɪuː",
+     "respell": "KY-oo",
+     "say": "Kai oo",
+     "label": "Brazilian / Portuguese"
+    }
+   ],
+   "note": "Two syllables. Portuguese and Brazilian families end it with an oo sound.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Calum",
+   "spellings": [
+    "Callum"
+   ],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈkæləm",
+     "respell": "KAL-uhm",
+     "say": "Callum",
+     "label": "Scottish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Caoilfhionn",
+   "spellings": [
+    "Caoilfhinn",
+    "Caoilinn"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkiːlɪn",
+     "respell": "KEE-lin",
+     "say": "Keelin",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈkwiːlɪn",
+     "respell": "KWEE-lin",
+     "say": "Kweelin",
+     "label": "Northern Irish"
+    }
+   ],
+   "note": "fh is silent. Often anglicised as Keelin.",
+   "confidence": "high"
+  },
+  {
+   "name": "Caoimhe",
+   "spellings": [
+    "Keeva"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkiːvə",
+     "respell": "KEE-vuh",
+     "say": "Keeva",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈkwiːvə",
+     "respell": "KWEE-vuh",
+     "say": "Kweeva",
+     "label": "Northern Irish"
+    }
+   ],
+   "note": "mh = v. Some Connacht speakers say KEE-wuh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Caoimhín",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkiːviːn",
+     "respell": "KEE-veen",
+     "say": "Keeveen",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈkwiːviːn",
+     "respell": "KWEE-veen",
+     "say": "Kweeveen",
+     "label": "Ulster"
+    }
+   ],
+   "note": "Irish form of Kevin; mh = v.",
+   "confidence": "high"
+  },
+  {
+   "name": "Carys",
+   "spellings": [
+    "Caris"
+   ],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈkærɪs",
+     "respell": "KARR-iss",
+     "say": "Karris",
+     "label": "Welsh"
+    },
+    {
+     "ipa": "ˈkɛərɪs",
+     "respell": "KAIR-iss",
+     "say": "Cairis",
+     "label": "Also used"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Cathal",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkæhəl",
+     "respell": "KA-huhl",
+     "say": "Kahal",
+     "label": "Irish"
+    }
+   ],
+   "note": "th sounds like h; not 'KATH-ul'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Catriona",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "kəˈtriːnə",
+     "respell": "kuh-TREE-nuh",
+     "say": "Katrina",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˌkætriˈəʊnə",
+     "respell": "kat-ree-OH-nuh",
+     "say": "Catriona",
+     "label": "Also used"
+    }
+   ],
+   "note": "The Irish spelling Caitríona is often said kuh-TREE-uh-nuh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Céline",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "seɪˈliːn",
+     "respell": "say-LEEN",
+     "say": "Say leen",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Cerys",
+   "spellings": [
+    "Ceris",
+    "Keris"
+   ],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈkɛrɪs",
+     "respell": "KERR-iss",
+     "say": "Kerris",
+     "label": "Welsh"
+    }
+   ],
+   "note": "C is always hard.",
+   "confidence": "high"
+  },
+  {
+   "name": "Charlie",
+   "spellings": [
+    "Charley"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈtʃɑːli",
+     "respell": "CHAR-lee",
+     "say": "Charlie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Charlotte",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈʃɑːlət",
+     "respell": "SHAR-luht",
+     "say": "Charlotte",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Chiamaka",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "ˌtʃiːɑːˈmɑːkɑː",
+     "respell": "chee-ah-MAH-kah",
+     "say": "Chee-ah mahkaa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'God is beautiful'. Say every vowel fully: the second syllable is 'ah', not 'uh'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Chiara",
+   "spellings": [
+    "Kiara"
+   ],
+   "origin": "Italian",
+   "variants": [
+    {
+     "ipa": "kiˈɑːrə",
+     "respell": "kee-AR-uh",
+     "say": "Kiara",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Ch sounds like k. Italian families run the first two sounds together (KYAH-ruh).",
+   "confidence": "high"
+  },
+  {
+   "name": "Chidi",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "ˈtʃiːdiː",
+     "respell": "CHEE-dee",
+     "say": "Cheedee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'God exists'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Chidinma",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "tʃiːˈdɪnmɑː",
+     "respell": "chee-DIN-mah",
+     "say": "Chee dinmaa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'God is good'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Chinonso",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "tʃiːˈnɒnsəʊ",
+     "respell": "chee-NON-soh",
+     "say": "Cheenonso",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'God is near'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Chioma",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "tʃiːˈɒmɑː",
+     "respell": "chee-OM-ah",
+     "say": "Chee omma",
+     "label": "Igbo"
+    }
+   ],
+   "note": "Means 'good God'. The o is open, like the o in 'hot'. Often said chee-OH-mah in English.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Chisom",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "ˈtʃiːsɒm",
+     "respell": "CHEE-som",
+     "say": "Cheesomm",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'God is with me'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Chloe",
+   "spellings": [
+    "Cloe"
+   ],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈkləʊi",
+     "respell": "KLOH-ee",
+     "say": "Chloe",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The ch sounds like k; two syllables.",
+   "confidence": "high"
+  },
+  {
+   "name": "Cian",
+   "spellings": [
+    "Kian"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkiːən",
+     "respell": "KEE-uhn",
+     "say": "Keean",
+     "label": "Irish"
+    }
+   ],
+   "note": "C is always hard.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ciara",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkɪərə",
+     "respell": "KEER-uh",
+     "say": "Keera",
+     "label": "Irish"
+    },
+    {
+     "ipa": "kiˈɑːrə",
+     "respell": "kee-AR-uh",
+     "say": "Kiara",
+     "label": "Like Kiara"
+    }
+   ],
+   "note": "C is always hard. The Irish pronunciation rhymes with 'Keira'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ciarán",
+   "spellings": [
+    "Kieran"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkɪərən",
+     "respell": "KEER-uhn",
+     "say": "Keeran",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈkɪərɔːn",
+     "respell": "KEER-awn",
+     "say": "Keerawn",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Cillian",
+   "spellings": [
+    "Killian",
+    "Cilian"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkɪliən",
+     "respell": "KIL-ee-uhn",
+     "say": "Killian",
+     "label": "Irish"
+    }
+   ],
+   "note": "C is always hard.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ciorstaidh",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈkɜːsti",
+     "respell": "KUR-stee",
+     "say": "Kirsty",
+     "label": "Like Kirsty"
+    }
+   ],
+   "note": "Gaelic form of Kirsty. Gaelic-speaking families may use a more Gaelic pronunciation, so check.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Clara",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ˈklɑːrə",
+     "respell": "KLAR-uh",
+     "say": "Klahra",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈklɛərə",
+     "respell": "KLAIR-uh",
+     "say": "Clairah",
+     "label": "Also used"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Clíodhna",
+   "spellings": [
+    "Clíona",
+    "Cliona"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkliːənə",
+     "respell": "KLEE-uh-nuh",
+     "say": "Kleeunna",
+     "label": "Irish"
+    },
+    {
+     "ipa": "ˈkliːnə",
+     "respell": "KLEE-nuh",
+     "say": "Kleena",
+     "label": "Also used"
+    }
+   ],
+   "note": "dh is silent. The spelling Clíona is often said KLEE-nuh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Clodagh",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkləʊdə",
+     "respell": "KLOH-duh",
+     "say": "Clohda",
+     "label": "Irish"
+    }
+   ],
+   "note": "gh is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Colm",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkʌləm",
+     "respell": "KUL-uhm",
+     "say": "Kullum",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈkɒləm",
+     "respell": "KOL-uhm",
+     "say": "Kollum",
+     "label": "Also used"
+    }
+   ],
+   "note": "Two syllables, not 'COLM'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Conchúr",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈkɒnəxʊə",
+     "respell": "KON-uh-khoor",
+     "say": "Konnakooer",
+     "label": "Irish"
+    },
+    {
+     "ipa": "ˈkrʌxʊə",
+     "respell": "KRUKH-oor",
+     "say": "Kruckooer",
+     "label": "West & north of Ireland"
+    }
+   ],
+   "note": "Irish form of Conor; pronunciation varies by region and some families simply say 'Conor', so check with the family. ch as in 'loch' is approximated with k.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Cosima",
+   "spellings": [],
+   "origin": "Italian/German",
+   "variants": [
+    {
+     "ipa": "ˈkɒzɪmə",
+     "respell": "KOZ-i-muh",
+     "say": "Cozzima",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "D'Arcy",
+   "spellings": [
+    "Darcey",
+    "Darcie",
+    "Darci"
+   ],
+   "origin": "Norman French",
+   "variants": [
+    {
+     "ipa": "ˈdɑːsi",
+     "respell": "DAR-see",
+     "say": "Darcy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Daan",
+   "spellings": [],
+   "origin": "Dutch",
+   "variants": [
+    {
+     "ipa": "ˈdɑːn",
+     "respell": "DAHN",
+     "say": "Dahn",
+     "label": "Dutch"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Dafydd",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈdævɪð",
+     "respell": "DAV-idh",
+     "say": "Davith",
+     "label": "Welsh"
+    }
+   ],
+   "note": "dd = the 'th' in 'this'; English TTS voices the ending as the 'th' in 'thin'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Daisy",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈdeɪzi",
+     "respell": "DAY-zee",
+     "say": "Daisy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Dáithí",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈdɔːhiː",
+     "respell": "DAW-hee",
+     "say": "Dawhee",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish form of David.",
+   "confidence": "high"
+  },
+  {
+   "name": "Damilola",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˌdɑːmiːˈlɒlɑː",
+     "respell": "dah-mee-LOL-ah",
+     "say": "Dahmee lolla",
+     "label": "Yoruba"
+    },
+    {
+     "ipa": "ˌdæmɪˈləʊlə",
+     "respell": "dam-i-LOH-luh",
+     "say": "Dammy lohla",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "Means 'bless me with wealth'. Often shortened to Dami.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Daniel",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈdænjəl",
+     "respell": "DAN-yuhl",
+     "say": "Daniel",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Darragh",
+   "spellings": [
+    "Darra"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈdærə",
+     "respell": "DARR-uh",
+     "say": "Darra",
+     "label": "Irish"
+    }
+   ],
+   "note": "gh is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Dawit",
+   "spellings": [],
+   "origin": "Amharic/Tigrinya",
+   "variants": [
+    {
+     "ipa": "ˈdɑːwiːt",
+     "respell": "DAH-weet",
+     "say": "Dahweet",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Ethiopian and Eritrean form of David.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Dearbhla",
+   "spellings": [
+    "Dervla"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈdɜːvlə",
+     "respell": "DURV-luh",
+     "say": "Dervla",
+     "label": "Irish"
+    }
+   ],
+   "note": "bh = v; same name as Dervla.",
+   "confidence": "high"
+  },
+  {
+   "name": "Deio",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈdeɪjɒ",
+     "respell": "DAY-yo",
+     "say": "Day-yo",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Pet form of Dafydd. The final o is short, as in 'hop'. Welsh 'ei' sits between 'ay' and 'eye', so check with the family.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Delilah",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "dɪˈlaɪlə",
+     "respell": "di-LY-luh",
+     "say": "Delilah",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Demelza",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "dəˈmɛlzə",
+     "respell": "duh-MEL-zuh",
+     "say": "De-melza",
+     "label": "Cornish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Deniz",
+   "spellings": [],
+   "origin": "Turkish",
+   "variants": [
+    {
+     "ipa": "dɛˈniːz",
+     "respell": "de-NEEZ",
+     "say": "De-neez",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'sea'. Used for both boys and girls.",
+   "confidence": "high"
+  },
+  {
+   "name": "Dev",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈdɛv",
+     "respell": "DEV",
+     "say": "Dev",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈdeɪv",
+     "respell": "DAYV",
+     "say": "Dave",
+     "label": "Hindi/Punjabi"
+    }
+   ],
+   "note": "Means 'god'. Most UK families say DEV. In Hindi and Punjabi the vowel is longer, close to 'Dave'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Dhruv",
+   "spellings": [],
+   "origin": "Hindi/Gujarati",
+   "variants": [
+    {
+     "ipa": "ˈdruːv",
+     "respell": "DROOV",
+     "say": "Droov",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'pole star'. The dh is a d with a puff of air, not the 'th' in 'this'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Diarmuid",
+   "spellings": [
+    "Diarmaid"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈdɪəmɪd",
+     "respell": "DEER-mid",
+     "say": "Deermid",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Diya",
+   "spellings": [
+    "Dia"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈdiːjə",
+     "respell": "DEE-yuh",
+     "say": "Deeya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'lamp'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Dmytro",
+   "spellings": [
+    "Dmitro"
+   ],
+   "origin": "Ukrainian",
+   "variants": [
+    {
+     "ipa": "dmɪˈtrɒ",
+     "respell": "dmi-TRO",
+     "say": "Dmitraw",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Ukrainian form of Dmitri. It starts with 'dm' (no vowel in between), and the stress is on the last syllable.",
+   "confidence": "high"
+  },
+  {
+   "name": "Dónal",
+   "spellings": [
+    "Dónall"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈdəʊnəl",
+     "respell": "DOH-nuhl",
+     "say": "Dohnal",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Donnacha",
+   "spellings": [
+    "Donncha",
+    "Donnchadh"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈdʌnəxə",
+     "respell": "DUN-uh-khuh",
+     "say": "Dunnucka",
+     "label": "Irish"
+    }
+   ],
+   "note": "ch as in 'loch'; English TTS approximates it with k.",
+   "confidence": "high"
+  },
+  {
+   "name": "Dylan",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈdɪlən",
+     "respell": "DIL-uhn",
+     "say": "Dylan",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈdʌlæn",
+     "respell": "DUL-an",
+     "say": "Dullann",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Éabha",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈeɪvə",
+     "respell": "AY-vuh",
+     "say": "Eighva",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish form of Eve; sounds like 'Ava' said the British way.",
+   "confidence": "high"
+  },
+  {
+   "name": "Éadaoin",
+   "spellings": [
+    "Aideen"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈeɪdiːn",
+     "respell": "AY-deen",
+     "say": "Eighdeen",
+     "label": "Irish"
+    }
+   ],
+   "note": "Aideen is the usual English spelling of the same name.",
+   "confidence": "high"
+  },
+  {
+   "name": "Éanna",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈeɪnə",
+     "respell": "AY-nuh",
+     "say": "Eighna",
+     "label": "Irish"
+    }
+   ],
+   "note": "Traditionally a boy's name; now also used for girls.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ebuka",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "ɛˈbuːkə",
+     "respell": "e-BOO-kuh",
+     "say": "Eb-ooka",
+     "label": "Most common"
+    }
+   ],
+   "note": "Short for Chukwuebuka.",
+   "confidence": "high"
+  },
+  {
+   "name": "Edith",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈiːdɪθ",
+     "respell": "EE-dith",
+     "say": "Edith",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Edward",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɛdwəd",
+     "respell": "ED-wuhd",
+     "say": "Edward",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Eesa",
+   "spellings": [
+    "Isa",
+    "Esa",
+    "Eisa"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈiːsə",
+     "respell": "EE-suh",
+     "say": "Eesa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Arabic form of Jesus. The Isa spelling is still said with 'ee', not 'eye'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Efa",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɛvə",
+     "respell": "EV-uh",
+     "say": "Evva",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh f = v.",
+   "confidence": "high"
+  },
+  {
+   "name": "Eilidh",
+   "spellings": [
+    "Ailie"
+   ],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈeɪli",
+     "respell": "AY-lee",
+     "say": "Ailie",
+     "label": "Scottish"
+    }
+   ],
+   "note": "dh is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Eilish",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈeɪlɪʃ",
+     "respell": "AY-lish",
+     "say": "Ailish",
+     "label": "Traditional"
+    },
+    {
+     "ipa": "ˈaɪlɪʃ",
+     "respell": "EYE-lish",
+     "say": "Eyelish",
+     "label": "Like Billie Eilish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Eimear",
+   "spellings": [
+    "Emer",
+    "Eimhear"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈiːmə",
+     "respell": "EE-muh",
+     "say": "Eemer",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish speakers pronounce the final r (EE-mer).",
+   "confidence": "high"
+  },
+  {
+   "name": "Eira",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈeɪrə",
+     "respell": "AY-ruh",
+     "say": "Eighra",
+     "label": "Welsh"
+    },
+    {
+     "ipa": "ˈaɪrə",
+     "respell": "EYE-ruh",
+     "say": "Eyera",
+     "label": "Also used"
+    }
+   ],
+   "note": "Means 'snow'. Welsh 'ei' sits between 'ay' and 'eye', so families say it both ways.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Eitan",
+   "spellings": [
+    "Eytan"
+   ],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "eɪˈtɑːn",
+     "respell": "ay-TAHN",
+     "say": "Eightaarn",
+     "label": "Hebrew"
+    },
+    {
+     "ipa": "ˈeɪtən",
+     "respell": "AY-tuhn",
+     "say": "Eighten",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "The Hebrew form of Ethan.",
+   "confidence": "high"
+  },
+  {
+   "name": "Eleni",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ɛˈlɛniː",
+     "respell": "e-LEN-ee",
+     "say": "Elennee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Greek form of Helen.",
+   "confidence": "high"
+  },
+  {
+   "name": "Eleri",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ɛˈlɛri",
+     "respell": "el-ERR-ee",
+     "say": "El-erri",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Elif",
+   "spellings": [],
+   "origin": "Turkish",
+   "variants": [
+    {
+     "ipa": "ɛˈliːf",
+     "respell": "e-LEEF",
+     "say": "Eleef",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The stress is on the second syllable.",
+   "confidence": "high"
+  },
+  {
+   "name": "Elijah",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ɪˈlaɪdʒə",
+     "respell": "i-LY-juh",
+     "say": "Elijah",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Elin",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɛlɪn",
+     "respell": "EL-in",
+     "say": "Ellin",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Elis",
+   "spellings": [
+    "Ellis"
+   ],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɛlɪs",
+     "respell": "EL-iss",
+     "say": "Ellis",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Eliza",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ɪˈlaɪzə",
+     "respell": "i-LY-zuh",
+     "say": "Eliza",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Elizabeth",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ɪˈlɪzəbəθ",
+     "respell": "i-LIZ-uh-buhth",
+     "say": "Elizabeth",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ella",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɛlə",
+     "respell": "EL-uh",
+     "say": "Ella",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ellie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɛli",
+     "respell": "EL-ee",
+     "say": "Ellie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Élodie",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈɛlədi",
+     "respell": "EL-uh-dee",
+     "say": "Ellodee",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˌeɪlɒˈdiː",
+     "respell": "ay-lo-DEE",
+     "say": "Eh lo dee",
+     "label": "French"
+    }
+   ],
+   "note": "Most UK families say EL-uh-dee; French families say ay-lo-DEE.",
+   "confidence": "high"
+  },
+  {
+   "name": "Eloise",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈɛləʊiːz",
+     "respell": "EL-oh-eez",
+     "say": "Elloweez",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˌɛləʊˈiːz",
+     "respell": "el-oh-EEZ",
+     "say": "Ello eez",
+     "label": "Also common"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Elowen",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "ɛˈləʊwɛn",
+     "respell": "el-OH-wen",
+     "say": "El oh-wen",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɛləʊwɛn",
+     "respell": "EL-oh-wen",
+     "say": "Ello-wen",
+     "label": "Also used"
+    }
+   ],
+   "note": "Cornish for 'elm tree'. Cornish stresses the middle syllable: el-OH-wen.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Elsie",
+   "spellings": [],
+   "origin": "English/Scottish",
+   "variants": [
+    {
+     "ipa": "ˈɛlsi",
+     "respell": "EL-see",
+     "say": "Elsie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Emilia",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ɪˈmɪliə",
+     "respell": "i-MIL-ee-uh",
+     "say": "Emilia",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ɪˈmiːliə",
+     "respell": "i-MEE-lee-uh",
+     "say": "Emeelia",
+     "label": "Also used"
+    }
+   ],
+   "note": "Italian, Spanish and Polish families usually say i-MEE-lee-uh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Emily",
+   "spellings": [],
+   "origin": "English (Latin)",
+   "variants": [
+    {
+     "ipa": "ˈɛmɪli",
+     "respell": "EM-i-lee",
+     "say": "Emily",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Emir",
+   "spellings": [],
+   "origin": "Turkish",
+   "variants": [
+    {
+     "ipa": "ɛˈmɪə",
+     "respell": "e-MEER",
+     "say": "Emmeer",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'prince' or 'commander'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Emma",
+   "spellings": [],
+   "origin": "Germanic",
+   "variants": [
+    {
+     "ipa": "ˈɛmə",
+     "respell": "EM-uh",
+     "say": "Emma",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Emrys",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɛmrɪs",
+     "respell": "EM-riss",
+     "say": "Emmriss",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Eoghan",
+   "spellings": [],
+   "origin": "Irish / Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈəʊɪn",
+     "respell": "OH-in",
+     "say": "Owen",
+     "label": "Irish"
+    },
+    {
+     "ipa": "ˈjəʊən",
+     "respell": "YOH-uhn",
+     "say": "Yo-un",
+     "label": "Scottish"
+    }
+   ],
+   "note": "Irish families say it like Owen (the same sound as Eoin). Many Scottish families say YOH-uhn, closer to the Gaelic Eòghann.",
+   "confidence": "high"
+  },
+  {
+   "name": "Eoin",
+   "spellings": [
+    "Owen"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈəʊɪn",
+     "respell": "OH-in",
+     "say": "Owen",
+     "label": "Irish"
+    }
+   ],
+   "note": "Sounds the same as Owen.",
+   "confidence": "high"
+  },
+  {
+   "name": "Esmé",
+   "spellings": [
+    "Esmée"
+   ],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈɛzmi",
+     "respell": "EZ-mee",
+     "say": "Ezmee",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ɛzˈmeɪ",
+     "respell": "ez-MAY",
+     "say": "Ez may",
+     "label": "French"
+    }
+   ],
+   "note": "Most UK families say EZ-mee; some keep the French ez-MAY.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ethan",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈiːθən",
+     "respell": "EE-thuhn",
+     "say": "Ethan",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Eva",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈiːvə",
+     "respell": "EE-vuh",
+     "say": "Eva",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈeɪvə",
+     "respell": "AY-vuh",
+     "say": "Eighva",
+     "label": "European"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Evelyn",
+   "spellings": [
+    "Evelynn",
+    "Evelin"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɛvəlɪn",
+     "respell": "EV-uh-lin",
+     "say": "Evvalin",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "For girls almost always EV-uh-lin; the older male form was EEV-lin.",
+   "confidence": "high"
+  },
+  {
+   "name": "Evie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈiːvi",
+     "respell": "EE-vee",
+     "say": "Eevee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Rhymes with 'Stevie', not 'Chevy'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ezra",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈɛzrə",
+     "respell": "EZ-ruh",
+     "say": "Ezra",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Fatima",
+   "spellings": [
+    "Fatimah"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈfɑːtɪmə",
+     "respell": "FAH-ti-muh",
+     "say": "Fahtima",
+     "label": "Arabic/Urdu"
+    },
+    {
+     "ipa": "ˈfætɪmə",
+     "respell": "FAT-i-muh",
+     "say": "Fatima",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Fearghal",
+   "spellings": [
+    "Fergal"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈfɜːɡəl",
+     "respell": "FUR-guhl",
+     "say": "Fergal",
+     "label": "Irish"
+    }
+   ],
+   "note": "gh sounds like g; same name as Fergal.",
+   "confidence": "high"
+  },
+  {
+   "name": "Féilim",
+   "spellings": [
+    "Feidhlim"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈfeɪlɪm",
+     "respell": "FAY-lim",
+     "say": "Faylim",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ffion",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈfiːɒn",
+     "respell": "FEE-on",
+     "say": "Feeon",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Fiachra",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈfiːəxrə",
+     "respell": "FEE-uh-khruh",
+     "say": "Feeakra",
+     "label": "Irish"
+    }
+   ],
+   "note": "ch as in 'loch'; English TTS approximates it with k.",
+   "confidence": "high"
+  },
+  {
+   "name": "Fiadh",
+   "spellings": [
+    "Fia"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈfiːə",
+     "respell": "FEE-uh",
+     "say": "Feea",
+     "label": "Irish"
+    }
+   ],
+   "note": "dh is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Finlay",
+   "spellings": [
+    "Findlay",
+    "Finley"
+   ],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈfɪnli",
+     "respell": "FIN-lee",
+     "say": "Finley",
+     "label": "Scottish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Fionn",
+   "spellings": [],
+   "origin": "Irish/Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "fɪn",
+     "respell": "FIN",
+     "say": "Fin",
+     "label": "Most common"
+    },
+    {
+     "ipa": "fjʊn",
+     "respell": "FYUUN",
+     "say": "Fyunn",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish families often use the Irish vowel (FYUUN); otherwise it sounds like Finn.",
+   "confidence": "high"
+  },
+  {
+   "name": "Fionnuala",
+   "spellings": [
+    "Fionnula",
+    "Fionnghuala"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "fɪˈnuːlə",
+     "respell": "fih-NOO-luh",
+     "say": "Fin-oola",
+     "label": "Irish"
+    }
+   ],
+   "note": "Often shortened to Nuala. The spelling Finola is usually said fin-OH-luh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Florence",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ˈflɒrəns",
+     "respell": "FLORR-uhns",
+     "say": "Florence",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Folake",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "fɒˈlɑːkɛ",
+     "respell": "fo-LAH-keh",
+     "say": "Faw lahkeh",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'pampered with wealth'. It ends in a short 'keh'. In English it often drifts towards 'kay'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Frankie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈfræŋki",
+     "respell": "FRANG-kee",
+     "say": "Frankie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Freddie",
+   "spellings": [
+    "Freddy"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈfrɛdi",
+     "respell": "FRED-ee",
+     "say": "Freddie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Freja",
+   "spellings": [],
+   "origin": "Danish/Swedish",
+   "variants": [
+    {
+     "ipa": "ˈfreɪə",
+     "respell": "FRAY-uh",
+     "say": "Freya",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈfraɪə",
+     "respell": "FRY-uh",
+     "say": "Fryer",
+     "label": "Danish"
+    }
+   ],
+   "note": "The j sounds like y. Danish families say FRY-uh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Freya",
+   "spellings": [
+    "Freyja"
+   ],
+   "origin": "Norse",
+   "variants": [
+    {
+     "ipa": "ˈfreɪə",
+     "respell": "FRAY-uh",
+     "say": "Freya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Genevieve",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈdʒɛnəviːv",
+     "respell": "JEN-uh-veev",
+     "say": "Genevieve",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "French families may say zhuhn-VYEV.",
+   "confidence": "high"
+  },
+  {
+   "name": "George",
+   "spellings": [],
+   "origin": "English (Greek)",
+   "variants": [
+    {
+     "ipa": "ˈdʒɔːdʒ",
+     "respell": "JORJ",
+     "say": "George",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Georgia",
+   "spellings": [],
+   "origin": "English (Greek)",
+   "variants": [
+    {
+     "ipa": "ˈdʒɔːdʒə",
+     "respell": "JOR-juh",
+     "say": "Georgia",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Gethin",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɡɛθɪn",
+     "respell": "GETH-in",
+     "say": "Gethin",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Giovanni",
+   "spellings": [],
+   "origin": "Italian",
+   "variants": [
+    {
+     "ipa": "dʒəʊˈvɑːni",
+     "respell": "joh-VAH-nee",
+     "say": "Giovanni",
+     "label": "Italian"
+    }
+   ],
+   "note": "The i after G is silent: joh-VAH-nee.",
+   "confidence": "high"
+  },
+  {
+   "name": "Giulia",
+   "spellings": [],
+   "origin": "Italian",
+   "variants": [
+    {
+     "ipa": "ˈdʒuːljə",
+     "respell": "JOOL-yuh",
+     "say": "Jool ya",
+     "label": "Italian"
+    }
+   ],
+   "note": "Italian form of Julia; the i after G is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Gonçalo",
+   "spellings": [],
+   "origin": "Portuguese",
+   "variants": [
+    {
+     "ipa": "ɡɒnˈsɑːluː",
+     "respell": "gon-SAH-loo",
+     "say": "Gon sahloo",
+     "label": "Portuguese"
+    }
+   ],
+   "note": "The ç sounds like s.",
+   "confidence": "high"
+  },
+  {
+   "name": "Grá",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ɡrɔː",
+     "respell": "GRAW",
+     "say": "Graw",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish word for 'love'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Grace",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɡreɪs",
+     "respell": "GRAYS",
+     "say": "Grace",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Gráinne",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈɡrɔːnjə",
+     "respell": "GRAWN-yuh",
+     "say": "Grawnya",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Gruffudd",
+   "spellings": [
+    "Gruffydd"
+   ],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɡrɪfɪð",
+     "respell": "GRIF-idh",
+     "say": "Griffith",
+     "label": "Welsh"
+    }
+   ],
+   "note": "dd = the 'th' in 'this'; English TTS voices it as in 'thin'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Guadalupe",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "ˌɡwɑːdəˈluːpeɪ",
+     "respell": "gwah-duh-LOO-pay",
+     "say": "Gwahda loopay",
+     "label": "Spanish"
+    }
+   ],
+   "note": "Often shortened to Lupe (LOO-pay).",
+   "confidence": "high"
+  },
+  {
+   "name": "Guillermo",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "ɡiːˈjɛəməʊ",
+     "respell": "gee-YAIR-moh",
+     "say": "Ghee yairmo",
+     "label": "Spanish"
+    }
+   ],
+   "note": "The G is hard and the u is silent: gee-YAIR-moh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Gurleen",
+   "spellings": [],
+   "origin": "Punjabi",
+   "variants": [
+    {
+     "ipa": "ɡɜːˈliːn",
+     "respell": "gur-LEEN",
+     "say": "Gur leen",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The first syllable sounds like 'gur' in 'gurdwara'. In Punjabi it is shorter, with the u of 'put' and a lightly tapped r.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Guto",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɡɪtɒ",
+     "respell": "GIT-o",
+     "say": "Gitto",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Pet form of Gruffudd. The u sounds like the i in 'sit', and the final o is short, as in 'hop' rather than 'hope'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Gwen",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ɡwɛn",
+     "respell": "GWEN",
+     "say": "Gwen",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Gwenllian",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ɡwɛnˈɬiːæn",
+     "respell": "gwen-HLEE-an",
+     "say": "Gwen-lee-an",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh ll is a breathy 'hl' sound that English TTS cannot make; approximated with l.",
+   "confidence": "high"
+  },
+  {
+   "name": "Gwenno",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɡwɛnəʊ",
+     "respell": "GWEN-oh",
+     "say": "Gwenno",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Gwilym",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɡwɪlɪm",
+     "respell": "GWIL-im",
+     "say": "Gwillim",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh form of William.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ha-eun",
+   "spellings": [
+    "Haeun"
+   ],
+   "origin": "Korean",
+   "variants": [
+    {
+     "ipa": "ˈhɑːən",
+     "respell": "HAH-uhn",
+     "say": "Hah-un",
+     "label": "Korean (approx.)"
+    }
+   ],
+   "note": "The eu is a short 'uh' with unrounded lips. It is not 'you' or 'oo'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Hafsa",
+   "spellings": [
+    "Hafsah"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈhæfsə",
+     "respell": "HAF-suh",
+     "say": "Hafsa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Hallie",
+   "spellings": [
+    "Hally"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhæli",
+     "respell": "HAL-ee",
+     "say": "Hallie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Hamish",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈheɪmɪʃ",
+     "respell": "HAY-mish",
+     "say": "Hamish",
+     "label": "Scottish"
+    }
+   ],
+   "note": "Scottish form of James.",
+   "confidence": "high"
+  },
+  {
+   "name": "Hamza",
+   "spellings": [
+    "Hamzah"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈhæmzə",
+     "respell": "HAM-zuh",
+     "say": "Hamza",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Hannah",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈhænə",
+     "respell": "HAN-uh",
+     "say": "Hannah",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Haoran",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "haʊˈræn",
+     "respell": "how-RAN",
+     "say": "How-ran",
+     "label": "Mandarin"
+    }
+   ],
+   "note": "Hao rhymes with 'now'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Harjot",
+   "spellings": [],
+   "origin": "Punjabi",
+   "variants": [
+    {
+     "ipa": "ˈhɜːdʒəʊt",
+     "respell": "HUR-joht",
+     "say": "Herjote",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'God's light'. The first syllable sounds like 'her'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Harper",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhɑːpə",
+     "respell": "HAR-puh",
+     "say": "Harper",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Harriet",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhæriət",
+     "respell": "HARR-ee-uht",
+     "say": "Harriet",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Harrison",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhærɪsən",
+     "respell": "HARR-i-suhn",
+     "say": "Harrison",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Harry",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhæri",
+     "respell": "HARR-ee",
+     "say": "Harry",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Haruto",
+   "spellings": [],
+   "origin": "Japanese",
+   "variants": [
+    {
+     "ipa": "hɑːˈruːtəʊ",
+     "respell": "hah-ROO-toh",
+     "say": "Hahrooto",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Japanese uses pitch rather than stress, so the syllables are fairly even. The r is a light tap.",
+   "confidence": "high"
+  },
+  {
+   "name": "Hazel",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈheɪzəl",
+     "respell": "HAY-zuhl",
+     "say": "Hazel",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Heledd",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈhɛlɛð",
+     "respell": "HEL-edh",
+     "say": "Hel-eth",
+     "label": "Welsh"
+    }
+   ],
+   "note": "dd = the 'th' in 'this'; English TTS voices it as in 'thin'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Henry",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhɛnri",
+     "respell": "HEN-ree",
+     "say": "Henry",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Hermione",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "hɜːˈmaɪəni",
+     "respell": "hur-MY-uh-nee",
+     "say": "Hermione",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Four syllables.",
+   "confidence": "high"
+  },
+  {
+   "name": "Hinata",
+   "spellings": [],
+   "origin": "Japanese",
+   "variants": [
+    {
+     "ipa": "hɪˈnɑːtɑː",
+     "respell": "hi-NAH-tah",
+     "say": "Hinata",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'sunny place'. Used for both girls and boys.",
+   "confidence": "high"
+  },
+  {
+   "name": "Hodan",
+   "spellings": [],
+   "origin": "Somali",
+   "variants": [
+    {
+     "ipa": "ˈhəʊdæn",
+     "respell": "HOH-dan",
+     "say": "Hohdan",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Hudson",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhʌdsən",
+     "respell": "HUD-suhn",
+     "say": "Hudson",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Hugh",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈhjuː",
+     "respell": "HEW",
+     "say": "Hugh",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Sounds like 'hue'. The Welsh form Huw is said the same way.",
+   "confidence": "high"
+  },
+  {
+   "name": "Hugo",
+   "spellings": [],
+   "origin": "Latin/Germanic",
+   "variants": [
+    {
+     "ipa": "ˈhjuːɡəʊ",
+     "respell": "HEW-goh",
+     "say": "Hugo",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈuːɡəʊ",
+     "respell": "OO-goh",
+     "say": "Oogo",
+     "label": "Spanish"
+    }
+   ],
+   "note": "Spanish families drop the h: OO-goh. Portuguese families drop it too and end with an oo sound.",
+   "confidence": "high"
+  },
+  {
+   "name": "Huong",
+   "spellings": [],
+   "origin": "Vietnamese",
+   "variants": [
+    {
+     "ipa": "ˈhuːʌŋ",
+     "respell": "HOO-ung",
+     "say": "Hoo-ung",
+     "label": "Vietnamese (approx.)"
+    }
+   ],
+   "note": "Means 'fragrance'. Said as one gliding syllable: the 'oo' is made with spread (unrounded) lips, and the ending is 'ung' as in 'lung'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Hussain",
+   "spellings": [
+    "Hussein",
+    "Husain"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "hʊˈseɪn",
+     "respell": "huu-SAYN",
+     "say": "Hoo sane",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Huw",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "hjuː",
+     "respell": "HEW",
+     "say": "Hugh",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh form of Hugh and said the same way. In Welsh the vowel glides from 'i' to 'oo'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Hywel",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈhəwɛl",
+     "respell": "HUH-wel",
+     "say": "Huh-well",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Some English speakers say HOW-el.",
+   "confidence": "high"
+  },
+  {
+   "name": "Iain",
+   "spellings": [
+    "Ian"
+   ],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈiːən",
+     "respell": "EE-uhn",
+     "say": "Ian",
+     "label": "Scottish"
+    }
+   ],
+   "note": "Not 'EYE-an'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ibrahim",
+   "spellings": [
+    "Ibraheem"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˌɪbrɑːˈhiːm",
+     "respell": "ib-rah-HEEM",
+     "say": "Ibrahheem",
+     "label": "Arabic/Urdu"
+    }
+   ],
+   "note": "The Arabic form of Abraham. Some families put the stress at the start instead (IB-ruh-heem).",
+   "confidence": "high"
+  },
+  {
+   "name": "Idris",
+   "spellings": [
+    "Idriss"
+   ],
+   "origin": "Arabic; Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɪdrɪs",
+     "respell": "ID-ris",
+     "say": "Iddris",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ɪdˈriːs",
+     "respell": "id-REES",
+     "say": "Idd reece",
+     "label": "Arabic/Urdu"
+    }
+   ],
+   "note": "The Welsh name and many UK families say ID-ris. Many Arabic- and Urdu-speaking families say id-REES (also spelt Idrees).",
+   "confidence": "high"
+  },
+  {
+   "name": "Iestyn",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈjɛstɪn",
+     "respell": "YES-tin",
+     "say": "Yestin",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ifan",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈiːvæn",
+     "respell": "EE-van",
+     "say": "Eevan",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh form of Evan (John). Welsh f = v, and the i is a long 'ee'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ife",
+   "spellings": [],
+   "origin": "Yoruba; Igbo",
+   "variants": [
+    {
+     "ipa": "ˈiːfɛ",
+     "respell": "EE-feh",
+     "say": "Eefeh",
+     "label": "Yoruba"
+    },
+    {
+     "ipa": "ˈiːfeɪ",
+     "respell": "EE-fay",
+     "say": "Eefay",
+     "label": "Igbo"
+    }
+   ],
+   "note": "Means 'love' in Yoruba, where it ends in a short 'eh', not 'ay'. As a short form of Igbo names such as Ifeoma it is EE-fay.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ifeoma",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "ˌiːfeɪˈɒmɑː",
+     "respell": "ee-fay-OM-ah",
+     "say": "Eefay omma",
+     "label": "Igbo"
+    },
+    {
+     "ipa": "ˌiːfeɪˈəʊmɑː",
+     "respell": "ee-fay-OH-mah",
+     "say": "Eefay ohmaa",
+     "label": "Also used"
+    }
+   ],
+   "note": "Means 'good thing'. In Igbo the o is open, like the o in 'hot'; many people say ee-fay-OH-mah in English.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ignacio",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "ɪɡˈnɑːsiəʊ",
+     "respell": "ig-NAH-see-oh",
+     "say": "Ignahsio",
+     "label": "Latin American"
+    },
+    {
+     "ipa": "ɪɡˈnɑːθiəʊ",
+     "respell": "ig-NAH-thee-oh",
+     "say": "Ignahthio",
+     "label": "Spain"
+    }
+   ],
+   "note": "Families from Spain say ig-NAH-thee-oh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ilhan",
+   "spellings": [],
+   "origin": "Somali / Turkish",
+   "variants": [
+    {
+     "ipa": "ɪlˈhɑːn",
+     "respell": "il-HAHN",
+     "say": "Il hahn",
+     "label": "Most common"
+    }
+   ],
+   "note": "A girls' name in Somali families, a boys' name in Turkish families.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Imani",
+   "spellings": [],
+   "origin": "Swahili",
+   "variants": [
+    {
+     "ipa": "ɪˈmɑːniː",
+     "respell": "i-MAH-nee",
+     "say": "Imaarnee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'faith'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Imogen",
+   "spellings": [],
+   "origin": "English (Celtic)",
+   "variants": [
+    {
+     "ipa": "ˈɪmədʒən",
+     "respell": "IM-uh-juhn",
+     "say": "Imogen",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Inaya",
+   "spellings": [
+    "Inaaya",
+    "Enaya"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ɪˈnɑːjə",
+     "respell": "i-NAH-yuh",
+     "say": "Inaaya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'care' or 'concern'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Inès",
+   "spellings": [],
+   "origin": "French/Spanish/Portuguese",
+   "variants": [
+    {
+     "ipa": "iːˈnɛs",
+     "respell": "ee-NES",
+     "say": "Ee ness",
+     "label": "French/Spanish"
+    },
+    {
+     "ipa": "iˈneʃ",
+     "respell": "ee-NESH",
+     "say": "Ee nesh",
+     "label": "Portuguese"
+    }
+   ],
+   "note": "The final s is pronounced. Portuguese families (usually spelt Inês) end it with a sh sound.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ingrid",
+   "spellings": [],
+   "origin": "Scandinavian",
+   "variants": [
+    {
+     "ipa": "ˈɪŋɡrɪd",
+     "respell": "ING-grid",
+     "say": "Ingrid",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ioan",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈjəʊæn",
+     "respell": "YOH-an",
+     "say": "Yo-an",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh form of John. Two syllables; the second vowel is a full 'a', not 'uh'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ioana",
+   "spellings": [],
+   "origin": "Romanian",
+   "variants": [
+    {
+     "ipa": "jəʊˈɑːnə",
+     "respell": "yoh-AH-nuh",
+     "say": "Yo-ahna",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Romanian form of Joanna.",
+   "confidence": "high"
+  },
+  {
+   "name": "Iona",
+   "spellings": [],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "aɪˈəʊnə",
+     "respell": "eye-OH-nuh",
+     "say": "Eyeona",
+     "label": "Scottish"
+    }
+   ],
+   "note": "After the island of Iona.",
+   "confidence": "high"
+  },
+  {
+   "name": "Iris",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈaɪrɪs",
+     "respell": "EYE-ris",
+     "say": "Iris",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Isaac",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈaɪzək",
+     "respell": "EYE-zuhk",
+     "say": "Isaac",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Isabella",
+   "spellings": [],
+   "origin": "Italian/Spanish",
+   "variants": [
+    {
+     "ipa": "ˌɪzəˈbɛlə",
+     "respell": "iz-uh-BEL-uh",
+     "say": "Isabella",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Isabelle",
+   "spellings": [
+    "Isobel",
+    "Isabel",
+    "Isobelle"
+   ],
+   "origin": "French/Scottish",
+   "variants": [
+    {
+     "ipa": "ˈɪzəbɛl",
+     "respell": "IZ-uh-bel",
+     "say": "Izza-bell",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ishaan",
+   "spellings": [
+    "Ishan"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ɪˈʃɑːn",
+     "respell": "i-SHAHN",
+     "say": "Ishaarn",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The stress is on the long 'ahn'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ishbel",
+   "spellings": [],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈɪʃbɛl",
+     "respell": "ISH-bel",
+     "say": "Ishbel",
+     "label": "Scottish"
+    }
+   ],
+   "note": "Scottish form of Isobel.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ishita",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈɪʃɪtə",
+     "respell": "ISH-i-tuh",
+     "say": "Ishitta",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Isla",
+   "spellings": [],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈaɪlə",
+     "respell": "EYE-luh",
+     "say": "Eyela",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈɪzlə",
+     "respell": "IZ-luh",
+     "say": "Izla",
+     "label": "Also used"
+    }
+   ],
+   "note": "s is silent in the usual pronunciation, as in 'island'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Itzel",
+   "spellings": [],
+   "origin": "Mexican Spanish (Maya)",
+   "variants": [
+    {
+     "ipa": "iːtˈsɛl",
+     "respell": "eet-SEL",
+     "say": "Eet sell",
+     "label": "Mexican"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Ivy",
+   "spellings": [
+    "Ivie"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈaɪvi",
+     "respell": "EYE-vee",
+     "say": "Ivy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Iwan",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈiːwæn",
+     "respell": "EE-wan",
+     "say": "Ee-wan",
+     "label": "Welsh"
+    },
+    {
+     "ipa": "ˈjuːən",
+     "respell": "YOO-uhn",
+     "say": "Yooan",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "Welsh form of John. Welsh families say EE-wan (as the actor Iwan Rheon does); some English speakers say it like Ewan.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Jabari",
+   "spellings": [],
+   "origin": "Swahili",
+   "variants": [
+    {
+     "ipa": "dʒɑːˈbɑːriː",
+     "respell": "jah-BAH-ree",
+     "say": "Jabaaree",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'brave'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Jack",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈdʒæk",
+     "respell": "JAK",
+     "say": "Jack",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Jacob",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈdʒeɪkəb",
+     "respell": "JAY-kuhb",
+     "say": "Jacob",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Jago",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "ˈdʒeɪɡəʊ",
+     "respell": "JAY-goh",
+     "say": "Jaygo",
+     "label": "Cornish"
+    }
+   ],
+   "note": "Cornish form of James.",
+   "confidence": "high"
+  },
+  {
+   "name": "Jaime",
+   "spellings": [],
+   "origin": "English / Spanish",
+   "variants": [
+    {
+     "ipa": "ˈdʒeɪmi",
+     "respell": "JAY-mee",
+     "say": "Jamie",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈxaɪmeɪ",
+     "respell": "KHY-may",
+     "say": "Hymeh",
+     "label": "Spanish"
+    }
+   ],
+   "note": "In the UK this spelling is usually said like Jamie. As a Spanish boys' name it is KHY-may, with a throaty h.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Jakub",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈjɑːkuːp",
+     "respell": "YAH-koop",
+     "say": "Yahkoop",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Jacob. The j is said 'y' and the final b sounds like p.",
+   "confidence": "high"
+  },
+  {
+   "name": "James",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈdʒeɪmz",
+     "respell": "JAYMZ",
+     "say": "James",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Jasper",
+   "spellings": [],
+   "origin": "English (Persian)",
+   "variants": [
+    {
+     "ipa": "ˈdʒæspə",
+     "respell": "JAS-puh",
+     "say": "Jasper",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Jaspreet",
+   "spellings": [],
+   "origin": "Punjabi",
+   "variants": [
+    {
+     "ipa": "ˈdʒʌspriːt",
+     "respell": "JUS-preet",
+     "say": "Juspreet",
+     "label": "Punjabi"
+    },
+    {
+     "ipa": "ˈdʒæspriːt",
+     "respell": "JAS-preet",
+     "say": "Jaspreet",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "The first a sounds like the u in 'just', not the a in 'jazz'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Javier",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "xæˈvjɛə",
+     "respell": "khav-YAIR",
+     "say": "Hav yair",
+     "label": "Spanish"
+    }
+   ],
+   "note": "The J is a throaty h.",
+   "confidence": "high"
+  },
+  {
+   "name": "Jaxon",
+   "spellings": [
+    "Jackson",
+    "Jaxson"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈdʒæksən",
+     "respell": "JAK-suhn",
+     "say": "Jackson",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Jesse",
+   "spellings": [
+    "Jessie"
+   ],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈdʒɛsi",
+     "respell": "JES-ee",
+     "say": "Jessie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ji-woo",
+   "spellings": [
+    "Jiwoo",
+    "Ji-u"
+   ],
+   "origin": "Korean",
+   "variants": [
+    {
+     "ipa": "ˈdʒiːuː",
+     "respell": "JEE-oo",
+     "say": "Jeeoo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Used for both girls and boys. In Korean it is two light, even syllables, jee + oo, with no real w sound.",
+   "confidence": "high"
+  },
+  {
+   "name": "João",
+   "spellings": [],
+   "origin": "Portuguese",
+   "variants": [
+    {
+     "ipa": "ʒuˈaʊ̃",
+     "respell": "zhoo-OWN",
+     "say": "Zhoo oun",
+     "label": "Portuguese"
+    }
+   ],
+   "note": "The ending is a nasal 'ow' with no full n; the J is soft like the s in 'measure'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Joaquín",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "ˌxəʊɑːˈkiːn",
+     "respell": "khoh-ah-KEEN",
+     "say": "Ho ah keen",
+     "label": "Spanish"
+    },
+    {
+     "ipa": "wɑːˈkiːn",
+     "respell": "wah-KEEN",
+     "say": "Wah keen",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "The J is a throaty h (as in Scottish 'loch'), not a J sound.",
+   "confidence": "high"
+  },
+  {
+   "name": "Joep",
+   "spellings": [],
+   "origin": "Dutch",
+   "variants": [
+    {
+     "ipa": "ˈjuːp",
+     "respell": "YOOP",
+     "say": "Yoop",
+     "label": "Dutch"
+    }
+   ],
+   "note": "The J sounds like y; rhymes with 'hoop'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Johann",
+   "spellings": [],
+   "origin": "German",
+   "variants": [
+    {
+     "ipa": "ˈjəʊhæn",
+     "respell": "YOH-han",
+     "say": "Yohann",
+     "label": "German"
+    }
+   ],
+   "note": "The J sounds like y.",
+   "confidence": "high"
+  },
+  {
+   "name": "José",
+   "spellings": [],
+   "origin": "Spanish/Portuguese",
+   "variants": [
+    {
+     "ipa": "xəʊˈseɪ",
+     "respell": "khoh-SAY",
+     "say": "Ho say",
+     "label": "Spanish"
+    },
+    {
+     "ipa": "ʒuˈzɛ",
+     "respell": "zhoo-ZEH",
+     "say": "Zhoo zeh",
+     "label": "Portuguese"
+    },
+    {
+     "ipa": "həʊˈzeɪ",
+     "respell": "hoh-ZAY",
+     "say": "Ho zay",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "Spanish families say khoh-SAY (the J is a throaty h, as in 'loch'); Portuguese families say zhoo-ZEH.",
+   "confidence": "high"
+  },
+  {
+   "name": "Joseph",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈdʒəʊzɪf",
+     "respell": "JOH-zif",
+     "say": "Joezif",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Joshua",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈdʒɒʃuə",
+     "respell": "JOSH-oo-uh",
+     "say": "Joshua",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Juan",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "ˈxwɑːn",
+     "respell": "KHWAHN",
+     "say": "Juan",
+     "label": "Spanish"
+    },
+    {
+     "ipa": "ˈwɑːn",
+     "respell": "WAHN",
+     "say": "Wahn",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "One syllable; the J is a throaty h.",
+   "confidence": "high"
+  },
+  {
+   "name": "Jude",
+   "spellings": [],
+   "origin": "English (Hebrew)",
+   "variants": [
+    {
+     "ipa": "ˈdʒuːd",
+     "respell": "JOOD",
+     "say": "Jude",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Jun",
+   "spellings": [],
+   "origin": "Chinese/Japanese/Korean",
+   "variants": [
+    {
+     "ipa": "ˈdʒuːn",
+     "respell": "JOON",
+     "say": "Joon",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Not said like the English 'Jun' in 'jungle'. In Mandarin the vowel is between 'oo' and 'ee'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Jürgen",
+   "spellings": [
+    "Juergen"
+   ],
+   "origin": "German",
+   "variants": [
+    {
+     "ipa": "ˈjɜːɡən",
+     "respell": "YUR-guhn",
+     "say": "Yur-gun",
+     "label": "German"
+    }
+   ],
+   "note": "The J sounds like y.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kacper",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈkætspɛə",
+     "respell": "KATS-pair",
+     "say": "Katspair",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Casper. c is said 'ts', and in Polish the final r is lightly rolled.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kai",
+   "spellings": [
+    "Kye"
+   ],
+   "origin": "Various (Hawaiian, Scandinavian, Welsh)",
+   "variants": [
+    {
+     "ipa": "ˈkaɪ",
+     "respell": "KYE",
+     "say": "Kye",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Rhymes with 'sky'. The Welsh spelling Cai is said the same way.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kaia",
+   "spellings": [],
+   "origin": "Scandinavian/Hawaiian",
+   "variants": [
+    {
+     "ipa": "ˈkaɪə",
+     "respell": "KY-uh",
+     "say": "Kya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Kajus",
+   "spellings": [],
+   "origin": "Lithuanian",
+   "variants": [
+    {
+     "ipa": "ˈkɑːjʊs",
+     "respell": "KAH-yuus",
+     "say": "Kaayuss",
+     "label": "Most common"
+    }
+   ],
+   "note": "Lithuanian j = y.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Karthik",
+   "spellings": [],
+   "origin": "Tamil/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈkɑːtɪk",
+     "respell": "KAR-tik",
+     "say": "Kartik",
+     "label": "Tamil/Indian"
+    },
+    {
+     "ipa": "ˈkɑːθɪk",
+     "respell": "KAR-thik",
+     "say": "Karthik",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "In Indian languages the th is a soft t, not the 'th' in 'thin'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kavya",
+   "spellings": [
+    "Kaavya"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈkɑːvjə",
+     "respell": "KAHV-yuh",
+     "say": "Kahv-ya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'poetry'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kelechi",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "kɛˈlɛtʃi",
+     "respell": "ke-LE-chee",
+     "say": "Kelechi",
+     "label": "Most common"
+    }
+   ],
+   "note": "Means 'praise God'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kenzie",
+   "spellings": [
+    "Kenzi",
+    "Kenzy"
+   ],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈkɛnzi",
+     "respell": "KEN-zee",
+     "say": "Kenzie",
+     "label": "Scottish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Kerensa",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "kəˈrɛnzə",
+     "respell": "kuh-REN-zuh",
+     "say": "Kuh-renza",
+     "label": "Cornish"
+    }
+   ],
+   "note": "Means 'love' in Cornish. Some families say kuh-REN-suh.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Khadija",
+   "spellings": [
+    "Khadijah",
+    "Khadeeja",
+    "Khadeejah"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "kəˈdiːdʒə",
+     "respell": "kuh-DEE-juh",
+     "say": "Kuh deeja",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "In Arabic the kh is a soft throaty sound, as in 'loch'. Many UK families use a plain k.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kofi",
+   "spellings": [],
+   "origin": "Akan (Ghanaian)",
+   "variants": [
+    {
+     "ipa": "ˈkəʊfiː",
+     "respell": "KOH-fee",
+     "say": "Kohfee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Akan day name for a boy born on a Friday.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kojo",
+   "spellings": [],
+   "origin": "Akan (Ghanaian)",
+   "variants": [
+    {
+     "ipa": "ˈkəʊdʒəʊ",
+     "respell": "KOH-joh",
+     "say": "Kojo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Akan day name for a boy born on a Monday.",
+   "confidence": "high"
+  },
+  {
+   "name": "Krish",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈkrɪʃ",
+     "respell": "KRISH",
+     "say": "Krish",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Short for Krishna.",
+   "confidence": "high"
+  },
+  {
+   "name": "Krzysztof",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈkʃɪʃtɒf",
+     "respell": "KSHISH-tof",
+     "say": "Kuh-shishtof",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Christopher. rz and sz both sound like 'sh' here, so there's no vowel between the k and the sh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Kwabena",
+   "spellings": [],
+   "origin": "Akan (Ghana)",
+   "variants": [
+    {
+     "ipa": "kwɑːˈbeɪnə",
+     "respell": "kwah-BAY-nuh",
+     "say": "Kwah bayna",
+     "label": "Most common"
+    }
+   ],
+   "note": "Akan day name for a boy born on a Tuesday.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Kwame",
+   "spellings": [],
+   "origin": "Akan (Ghanaian)",
+   "variants": [
+    {
+     "ipa": "ˈkwɑːmeɪ",
+     "respell": "KWAH-may",
+     "say": "Kwahmay",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Akan day name for a boy born on a Saturday.",
+   "confidence": "high"
+  },
+  {
+   "name": "Lachlan",
+   "spellings": [
+    "Lachlann"
+   ],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈlæklən",
+     "respell": "LAK-luhn",
+     "say": "Lacklan",
+     "label": "Most common in England"
+    },
+    {
+     "ipa": "ˈlæxlən",
+     "respell": "LAKH-luhn",
+     "say": "Lakh-lun",
+     "label": "Scottish"
+    },
+    {
+     "ipa": "ˈlɒklən",
+     "respell": "LOK-luhn",
+     "say": "Locklan",
+     "label": "Also used"
+    }
+   ],
+   "note": "Scottish families use the throaty 'ch' of 'loch' (LAKH-luhn); plain text-to-speech can only approximate it with a k. Most families in England say LAK-luhn; some say LOK-luhn, as Australians do.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Laoise",
+   "spellings": [
+    "Leesha"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈliːʃə",
+     "respell": "LEE-shuh",
+     "say": "Leesha",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Layla",
+   "spellings": [
+    "Laila",
+    "Leyla",
+    "Lailah",
+    "Laylah"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈleɪlə",
+     "respell": "LAY-luh",
+     "say": "Layla",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈlaɪlə",
+     "respell": "LY-luh",
+     "say": "Lyla",
+     "label": "Arabic"
+    }
+   ],
+   "note": "Means 'night'. Some Arabic-speaking families say LYE-luh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Leah",
+   "spellings": [
+    "Lea"
+   ],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈliːə",
+     "respell": "LEE-uh",
+     "say": "Leea",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈleɪə",
+     "respell": "LAY-uh",
+     "say": "Laya",
+     "label": "Also used"
+    }
+   ],
+   "note": "Most UK families say LEE-uh; some say LAY-uh, which is also the usual Leia pronunciation.",
+   "confidence": "high"
+  },
+  {
+   "name": "Leia",
+   "spellings": [],
+   "origin": "Star Wars / Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈleɪə",
+     "respell": "LAY-uh",
+     "say": "Laya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Leo",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ˈliːəʊ",
+     "respell": "LEE-oh",
+     "say": "Leo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Leon",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈliːɒn",
+     "respell": "LEE-on",
+     "say": "Leon",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈleɪɒn",
+     "respell": "LAY-on",
+     "say": "Layon",
+     "label": "German / Dutch"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Liban",
+   "spellings": [
+    "Libaan",
+    "Liibaan"
+   ],
+   "origin": "Somali",
+   "variants": [
+    {
+     "ipa": "liːˈbɑːn",
+     "respell": "lee-BAHN",
+     "say": "Leebaarn",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Lily",
+   "spellings": [
+    "Lilly",
+    "Lillie"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈlɪli",
+     "respell": "LIL-ee",
+     "say": "Lily",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Linh",
+   "spellings": [],
+   "origin": "Vietnamese",
+   "variants": [
+    {
+     "ipa": "ˈlɪŋ",
+     "respell": "LING",
+     "say": "Ling",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The final h is silent. Southern speakers say it closer to LIN.",
+   "confidence": "high"
+  },
+  {
+   "name": "Liya",
+   "spellings": [],
+   "origin": "Amharic/Tigrinya",
+   "variants": [
+    {
+     "ipa": "ˈliːjə",
+     "respell": "LEE-yuh",
+     "say": "Leeya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Llew",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ɬɛu",
+     "respell": "HLEH-oo",
+     "say": "Leh-oo",
+     "label": "Welsh"
+    },
+    {
+     "ipa": "luː",
+     "respell": "LOO",
+     "say": "Lew",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "Means 'lion'. Welsh ll is a breathy 'hl' sound that English TTS cannot make, so the Welsh variant is approximated with l. The 'ew' is one gliding syllable: eh-oo.",
+   "confidence": "high"
+  },
+  {
+   "name": "Llinos",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɬɪnɒs",
+     "respell": "HLIN-oss",
+     "say": "Linnoss",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh ll is a breathy 'hl' sound that English TTS cannot make; approximated with l.",
+   "confidence": "high"
+  },
+  {
+   "name": "Lottie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈlɒti",
+     "respell": "LOT-ee",
+     "say": "Lottie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Louie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈluːi",
+     "respell": "LOO-ee",
+     "say": "Louie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Louis",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈluːi",
+     "respell": "LOO-ee",
+     "say": "Louie",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈluːɪs",
+     "respell": "LOO-is",
+     "say": "Loo-iss",
+     "label": "Also used"
+    }
+   ],
+   "note": "The s is usually silent in the UK (like Louie); some families say LOO-is.",
+   "confidence": "high"
+  },
+  {
+   "name": "Lowenna",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "ləʊˈwɛnə",
+     "respell": "loh-WEN-uh",
+     "say": "Lo wenna",
+     "label": "Cornish"
+    }
+   ],
+   "note": "Means 'joy'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Lowri",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈlaʊri",
+     "respell": "LOW-ree",
+     "say": "Lao-ree",
+     "label": "Welsh"
+    }
+   ],
+   "note": "LOW as in 'now'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Luca",
+   "spellings": [
+    "Luka"
+   ],
+   "origin": "Italian",
+   "variants": [
+    {
+     "ipa": "ˈluːkə",
+     "respell": "LOO-kuh",
+     "say": "Luca",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Lucas",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ˈluːkəs",
+     "respell": "LOO-kuhs",
+     "say": "Lucas",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Lucia",
+   "spellings": [],
+   "origin": "Latin (Italian/Spanish)",
+   "variants": [
+    {
+     "ipa": "luːˈsiːə",
+     "respell": "loo-SEE-uh",
+     "say": "Loo seea",
+     "label": "English / Latin American"
+    },
+    {
+     "ipa": "luːˈtʃiːə",
+     "respell": "loo-CHEE-uh",
+     "say": "Loo cheea",
+     "label": "Italian"
+    },
+    {
+     "ipa": "luːˈθiːə",
+     "respell": "loo-THEE-uh",
+     "say": "Loo theea",
+     "label": "Spain"
+    }
+   ],
+   "note": "Italian families say loo-CHEE-uh; families from Spain (usually spelt Lucía) say loo-THEE-uh.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Łucja",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈwuːtsjə",
+     "respell": "WOOTS-yuh",
+     "say": "Woots-ya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Lucy. ł is said like 'w' and c like 'ts'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Luis",
+   "spellings": [],
+   "origin": "Spanish/Portuguese",
+   "variants": [
+    {
+     "ipa": "luːˈiːs",
+     "respell": "loo-EES",
+     "say": "Loo eess",
+     "label": "Spanish"
+    },
+    {
+     "ipa": "luˈiːʃ",
+     "respell": "loo-EESH",
+     "say": "Loo eesh",
+     "label": "Portuguese"
+    }
+   ],
+   "note": "Portuguese families (Luís) often end it with a sh sound.",
+   "confidence": "high"
+  },
+  {
+   "name": "Luna",
+   "spellings": [],
+   "origin": "Latin/Spanish",
+   "variants": [
+    {
+     "ipa": "ˈluːnə",
+     "respell": "LOO-nuh",
+     "say": "Luna",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Lyla",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈlaɪlə",
+     "respell": "LY-luh",
+     "say": "Lyla",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Maarten",
+   "spellings": [],
+   "origin": "Dutch",
+   "variants": [
+    {
+     "ipa": "ˈmɑːtən",
+     "respell": "MAR-tuhn",
+     "say": "Maarten",
+     "label": "Dutch"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Mabel",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈmeɪbəl",
+     "respell": "MAY-buhl",
+     "say": "Mabel",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Mabli",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈmæbli",
+     "respell": "MAB-lee",
+     "say": "Mabbly",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Macsen",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈmæksɛn",
+     "respell": "MAK-sen",
+     "say": "Maxen",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Mairéad",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "məˈreɪd",
+     "respell": "muh-RAYD",
+     "say": "Muh-raid",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish form of Margaret. Scottish Gaelic speakers may say it differently.",
+   "confidence": "high"
+  },
+  {
+   "name": "Màiri",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈmɑːri",
+     "respell": "MAH-ree",
+     "say": "Mahree",
+     "label": "Gaelic"
+    },
+    {
+     "ipa": "ˈmɛəri",
+     "respell": "MAIR-ee",
+     "say": "Mairy",
+     "label": "Like Mary"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Maja",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈmaɪə",
+     "respell": "MY-uh",
+     "say": "Maya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "In Polish, j is said like 'y'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mali",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈmæli",
+     "respell": "MAL-ee",
+     "say": "Mally",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Not 'MAH-lee'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Manpreet",
+   "spellings": [],
+   "origin": "Punjabi",
+   "variants": [
+    {
+     "ipa": "ˈmʌnpriːt",
+     "respell": "MUN-preet",
+     "say": "Munpreet",
+     "label": "Punjabi"
+    },
+    {
+     "ipa": "ˈmænpriːt",
+     "respell": "MAN-preet",
+     "say": "Manpreet",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "In Punjabi the first a sounds like the u in 'fun', not the a in 'man'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Margot",
+   "spellings": [
+    "Margaux",
+    "Margo"
+   ],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈmɑːɡəʊ",
+     "respell": "MAR-goh",
+     "say": "Margo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The final t (or x) is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Maria",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "məˈriːə",
+     "respell": "muh-REE-uh",
+     "say": "Maria",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Martha",
+   "spellings": [],
+   "origin": "Aramaic",
+   "variants": [
+    {
+     "ipa": "ˈmɑːθə",
+     "respell": "MAR-thuh",
+     "say": "Martha",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Maryam",
+   "spellings": [
+    "Mariam"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈmærjæm",
+     "respell": "MARR-yam",
+     "say": "Marryam",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈmʌrjəm",
+     "respell": "MURR-yuhm",
+     "say": "Murriyum",
+     "label": "Urdu/Punjabi"
+    }
+   ],
+   "note": "The Arabic form of Mary. MARR sounds like the start of 'marry'. Many Pakistani families say MURR-yuhm.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mason",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈmeɪsən",
+     "respell": "MAY-suhn",
+     "say": "Mason",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Matas",
+   "spellings": [],
+   "origin": "Lithuanian",
+   "variants": [
+    {
+     "ipa": "ˈmɑːtəs",
+     "respell": "MAH-tuhs",
+     "say": "Mahtus",
+     "label": "Most common"
+    }
+   ],
+   "note": "Lithuanian form of Matthew.",
+   "confidence": "high"
+  },
+  {
+   "name": "Matei",
+   "spellings": [],
+   "origin": "Romanian",
+   "variants": [
+    {
+     "ipa": "mæˈteɪ",
+     "respell": "ma-TAY",
+     "say": "Ma tay",
+     "label": "Most common"
+    }
+   ],
+   "note": "Romanian form of Matthew.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mateo",
+   "spellings": [
+    "Matteo"
+   ],
+   "origin": "Spanish/Italian",
+   "variants": [
+    {
+     "ipa": "mæˈteɪəʊ",
+     "respell": "ma-TAY-oh",
+     "say": "Mateo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Matilda",
+   "spellings": [],
+   "origin": "Germanic",
+   "variants": [
+    {
+     "ipa": "məˈtɪldə",
+     "respell": "muh-TIL-duh",
+     "say": "Matilda",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Max",
+   "spellings": [],
+   "origin": "English (Latin)",
+   "variants": [
+    {
+     "ipa": "ˈmæks",
+     "respell": "MAKS",
+     "say": "Max",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Maya",
+   "spellings": [
+    "Maia",
+    "Mya"
+   ],
+   "origin": "Various",
+   "variants": [
+    {
+     "ipa": "ˈmaɪə",
+     "respell": "MY-uh",
+     "say": "Maya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Méabh",
+   "spellings": [
+    "Maeve",
+    "Maebh",
+    "Meadhbh"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "meɪv",
+     "respell": "MAYV",
+     "say": "Mave",
+     "label": "Irish"
+    }
+   ],
+   "note": "Rhymes with 'wave'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Megan",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈmɛɡən",
+     "respell": "MEG-uhn",
+     "say": "Megan",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Mei",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "ˈmeɪ",
+     "respell": "MAY",
+     "say": "May",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'beautiful'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Menzies",
+   "spellings": [],
+   "origin": "Scottish",
+   "variants": [
+    {
+     "ipa": "ˈmɪŋɪs",
+     "respell": "MING-is",
+     "say": "Ming-iss",
+     "label": "Scottish"
+    },
+    {
+     "ipa": "ˈmɛnziz",
+     "respell": "MEN-zeez",
+     "say": "Menzies",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "Rare as a first name. The traditional Scottish form is MING-is; the z was once a different letter.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Mhairi",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈvɑːri",
+     "respell": "VAH-ree",
+     "say": "Vahree",
+     "label": "Scottish"
+    }
+   ],
+   "note": "Mh = v.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mia",
+   "spellings": [
+    "Miah"
+   ],
+   "origin": "Scandinavian/Italian",
+   "variants": [
+    {
+     "ipa": "ˈmiːə",
+     "respell": "MEE-uh",
+     "say": "Mia",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Micheál",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈmiːhɔːl",
+     "respell": "MEE-hawl",
+     "say": "Meehawl",
+     "label": "Irish"
+    },
+    {
+     "ipa": "ˈmaɪkəl",
+     "respell": "MY-kuhl",
+     "say": "Michael",
+     "label": "Like Michael"
+    }
+   ],
+   "note": "Irish form of Michael. Without the accent, Micheal is often just a spelling of Michael, so check with the family.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mihai",
+   "spellings": [],
+   "origin": "Romanian",
+   "variants": [
+    {
+     "ipa": "miːˈhaɪ",
+     "respell": "mee-HY",
+     "say": "Mee-high",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Romanian form of Michael.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mikołaj",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "miːˈkɒwaɪ",
+     "respell": "mee-KO-wy",
+     "say": "Mee-kaw-wye",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Nicholas. ł is said like 'w' and the final aj rhymes with 'why'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mila",
+   "spellings": [],
+   "origin": "Slavic",
+   "variants": [
+    {
+     "ipa": "ˈmiːlə",
+     "respell": "MEE-luh",
+     "say": "Meela",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Millie",
+   "spellings": [
+    "Milly"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈmɪli",
+     "respell": "MIL-ee",
+     "say": "Millie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Min-jun",
+   "spellings": [
+    "Minjun",
+    "Min-joon"
+   ],
+   "origin": "Korean",
+   "variants": [
+    {
+     "ipa": "ˈmɪndʒuːn",
+     "respell": "MIN-joon",
+     "say": "Min-joon",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Korean has no strong stress, so both syllables are fairly even.",
+   "confidence": "high"
+  },
+  {
+   "name": "Minh",
+   "spellings": [],
+   "origin": "Vietnamese",
+   "variants": [
+    {
+     "ipa": "ˈmɪŋ",
+     "respell": "MING",
+     "say": "Ming",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The final h is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Mohammed",
+   "spellings": [
+    "Mohammad",
+    "Mohamed",
+    "Mohamad"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "məʊˈhæmɪd",
+     "respell": "moh-HAM-id",
+     "say": "Mohammed",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "mʊˈhæməd",
+     "respell": "muu-HAM-uhd",
+     "say": "Muhammad",
+     "label": "Also used"
+    }
+   ],
+   "note": "Another spelling of Muhammad. Families who use this spelling usually start it with 'moh'; some say it exactly like Muhammad.",
+   "confidence": "high"
+  },
+  {
+   "name": "Morag",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈmɔːræɡ",
+     "respell": "MOR-ag",
+     "say": "Morag",
+     "label": "Scottish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Morwenna",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "mɔːˈwɛnə",
+     "respell": "mor-WEN-uh",
+     "say": "Mor-wenna",
+     "label": "Cornish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Muhammad",
+   "spellings": [
+    "Muhammed",
+    "Muhamad"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "mʊˈhæməd",
+     "respell": "muu-HAM-uhd",
+     "say": "Muhammad",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "One of the most popular boys' names in the UK. In Arabic the m in the middle is doubled.",
+   "confidence": "high"
+  },
+  {
+   "name": "Muireann",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈmɪrən",
+     "respell": "MIRR-uhn",
+     "say": "Mirrun",
+     "label": "Irish"
+    }
+   ],
+   "note": "Many speakers add a slight w after the M (MWIRR-uhn).",
+   "confidence": "medium"
+  },
+  {
+   "name": "Musa",
+   "spellings": [
+    "Moosa",
+    "Mousa"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈmuːsə",
+     "respell": "MOO-suh",
+     "say": "Moosa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Arabic form of Moses.",
+   "confidence": "high"
+  },
+  {
+   "name": "Myla",
+   "spellings": [
+    "Mylah"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈmaɪlə",
+     "respell": "MY-luh",
+     "say": "Myla",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Nacho",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "ˈnætʃəʊ",
+     "respell": "NA-choh",
+     "say": "Nacho",
+     "label": "Spanish"
+    }
+   ],
+   "note": "Short for Ignacio.",
+   "confidence": "high"
+  },
+  {
+   "name": "Nahuel",
+   "spellings": [],
+   "origin": "Mapuche (Argentina/Chile)",
+   "variants": [
+    {
+     "ipa": "nɑːˈwɛl",
+     "respell": "nah-WEL",
+     "say": "Nah well",
+     "label": "Spanish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Nana",
+   "spellings": [],
+   "origin": "Akan (Ghanaian)",
+   "variants": [
+    {
+     "ipa": "ˈnɑːnɑː",
+     "respell": "NAH-nah",
+     "say": "Nahnaa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Also an Akan title of respect. Used for both boys and girls. Not said like 'nanna' (grandma).",
+   "confidence": "high"
+  },
+  {
+   "name": "Nancy",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈnænsi",
+     "respell": "NAN-see",
+     "say": "Nancy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Naoise",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈniːʃə",
+     "respell": "NEE-shuh",
+     "say": "Neesha",
+     "label": "Irish"
+    }
+   ],
+   "note": "Used for boys and girls.",
+   "confidence": "high"
+  },
+  {
+   "name": "Nevaeh",
+   "spellings": [],
+   "origin": "American English",
+   "variants": [
+    {
+     "ipa": "nəˈveɪə",
+     "respell": "nuh-VAY-uh",
+     "say": "Nuh vaya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "'Heaven' spelt backwards.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ngozi",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "ŋˈɡəʊziː",
+     "respell": "uhn-GOH-zee",
+     "say": "Ngohzee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'blessing'. It starts with a short hummed 'n' (shown as 'uhn'). Keep it light, not 'en'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Nguyen",
+   "spellings": [],
+   "origin": "Vietnamese",
+   "variants": [
+    {
+     "ipa": "nəˈwɪn",
+     "respell": "nuh-WIN",
+     "say": "Nuh win",
+     "label": "Vietnamese (approx.)"
+    },
+    {
+     "ipa": "ˈwɪn",
+     "respell": "WIN",
+     "say": "Win",
+     "label": "Simplified"
+    }
+   ],
+   "note": "Usually a family name, not a first name. In Vietnamese it is one syllable starting with the 'ng' sound in 'singer': northern speakers say roughly ngwee-uhn, southern speakers ngwing.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Nia",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈniːə",
+     "respell": "NEE-uh",
+     "say": "Neea",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Niamh",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "niːv",
+     "respell": "NEEV",
+     "say": "Neeve",
+     "label": "Irish"
+    }
+   ],
+   "note": "mh = v. Rhymes with 'Eve'. Some Irish speakers say it in two quick beats (NEE-uv).",
+   "confidence": "high"
+  },
+  {
+   "name": "Nicola",
+   "spellings": [],
+   "origin": "Italian",
+   "variants": [
+    {
+     "ipa": "ˈnɪkələ",
+     "respell": "NIK-uh-luh",
+     "say": "Nicola",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "niˈkəʊlə",
+     "respell": "nee-KOH-luh",
+     "say": "Nee kohla",
+     "label": "Italian"
+    }
+   ],
+   "note": "In the UK a girl's name (NIK-uh-luh); in Italy a boy's name (nee-KOH-luh).",
+   "confidence": "high"
+  },
+  {
+   "name": "Niels",
+   "spellings": [],
+   "origin": "Dutch/Danish",
+   "variants": [
+    {
+     "ipa": "ˈniːls",
+     "respell": "NEELS",
+     "say": "Neelss",
+     "label": "Dutch"
+    },
+    {
+     "ipa": "ˈnɛls",
+     "respell": "NELS",
+     "say": "Nelss",
+     "label": "Danish"
+    }
+   ],
+   "note": "Dutch families say NEELS; Danish families say NELS.",
+   "confidence": "high"
+  },
+  {
+   "name": "Nikhil",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈnɪkɪl",
+     "respell": "NIK-il",
+     "say": "Nikkil",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "In Hindi the kh is a k with a puff of air, not the 'ch' of 'loch'. Hindi speakers may stress the second syllable a little more.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Noa",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈnəʊə",
+     "respell": "NOH-uh",
+     "say": "Noah",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "A girl's name in Hebrew. It sounds the same as Noah.",
+   "confidence": "high"
+  },
+  {
+   "name": "Noah",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈnəʊə",
+     "respell": "NOH-uh",
+     "say": "Noah",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Noel",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈnəʊəl",
+     "respell": "NOH-uhl",
+     "say": "Nowel",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "nəʊˈɛl",
+     "respell": "noh-EL",
+     "say": "No ell",
+     "label": "French"
+    }
+   ],
+   "note": "British families usually say NOH-uhl; French-style noh-EL is also used, especially for girls (Noëlle).",
+   "confidence": "high"
+  },
+  {
+   "name": "Noor",
+   "spellings": [
+    "Nur",
+    "Nour"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈnʊə",
+     "respell": "NOOR",
+     "say": "Nooer",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'light'. One syllable with a long 'oo', like 'poor' said with a long oo, not like 'door'. In Arabic and Urdu the final r is lightly rolled.",
+   "confidence": "high"
+  },
+  {
+   "name": "Nova",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ˈnəʊvə",
+     "respell": "NOH-vuh",
+     "say": "Nova",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Nuala",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈnuːlə",
+     "respell": "NOO-luh",
+     "say": "Noola",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Oakley",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈəʊkli",
+     "respell": "OHK-lee",
+     "say": "Oakley",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Obinna",
+   "spellings": [],
+   "origin": "Igbo",
+   "variants": [
+    {
+     "ipa": "əʊˈbɪnə",
+     "respell": "oh-BIN-uh",
+     "say": "Oh binna",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'father's heart'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Odhrán",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈəʊrɔːn",
+     "respell": "OH-rawn",
+     "say": "Ohrawn",
+     "label": "Irish"
+    }
+   ],
+   "note": "dh is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Oisín",
+   "spellings": [
+    "Osheen"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "əˈʃiːn",
+     "respell": "uh-SHEEN",
+     "say": "A sheen",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈɒʃiːn",
+     "respell": "OSH-een",
+     "say": "Osheen",
+     "label": "Northern & western Irish"
+    }
+   ],
+   "note": "Never 'OY-sin'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Oleksandr",
+   "spellings": [],
+   "origin": "Ukrainian",
+   "variants": [
+    {
+     "ipa": "ˌɒlɛkˈsɑːndər",
+     "respell": "o-lek-SAHN-duhr",
+     "say": "Ollek sahnder",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Ukrainian form of Alexander.",
+   "confidence": "high"
+  },
+  {
+   "name": "Olena",
+   "spellings": [],
+   "origin": "Ukrainian",
+   "variants": [
+    {
+     "ipa": "ɒˈlɛnə",
+     "respell": "o-LEN-uh",
+     "say": "O lenna",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Ukrainian form of Helen.",
+   "confidence": "high"
+  },
+  {
+   "name": "Olive",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɒlɪv",
+     "respell": "OL-iv",
+     "say": "Olive",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Oliver",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈɒlɪvə",
+     "respell": "OL-i-vuh",
+     "say": "Oliver",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Olivia",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "əˈlɪviə",
+     "respell": "uh-LIV-ee-uh",
+     "say": "Olivia",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Oliwia",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ɒˈliːvjə",
+     "respell": "o-LEEV-yuh",
+     "say": "Ol-leev-ya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Olivia. w is said like 'v'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Oluwaseun",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˌəʊluːwɑːˈʃeɪuːn",
+     "respell": "oh-loo-wah-SHAY-oon",
+     "say": "Ohloowah Shay-oon",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'thank you, God'. The s is said 'sh'. Often shortened to Seun (SHAY-oon).",
+   "confidence": "high"
+  },
+  {
+   "name": "Oluwatobi",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˌəʊluːwɑːˈtəʊbiː",
+     "respell": "oh-loo-wah-TOH-bee",
+     "say": "Ohloowah tohbee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'God is great'. Often shortened to Tobi.",
+   "confidence": "high"
+  },
+  {
+   "name": "Omar",
+   "spellings": [],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈəʊmɑː",
+     "respell": "OH-mar",
+     "say": "Omar",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈuːmɑː",
+     "respell": "OO-mar",
+     "say": "Oomahr",
+     "label": "Arabic"
+    }
+   ],
+   "note": "In Arabic this is the same name as Umar, and some Arabic-speaking families say OO-mar.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ophelia",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "əˈfiːliə",
+     "respell": "uh-FEE-lee-uh",
+     "say": "Ophelia",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Orlaith",
+   "spellings": [
+    "Orla",
+    "Orlagh",
+    "Órla"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈɔːlə",
+     "respell": "OR-luh",
+     "say": "Orla",
+     "label": "Irish"
+    }
+   ],
+   "note": "th is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Oscar",
+   "spellings": [],
+   "origin": "English (Irish)",
+   "variants": [
+    {
+     "ipa": "ˈɒskə",
+     "respell": "OS-kuh",
+     "say": "Oscar",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Osian",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈɒʃən",
+     "respell": "OSH-uhn",
+     "say": "Oshan",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Otis",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈəʊtɪs",
+     "respell": "OH-tis",
+     "say": "Otis",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ottilie",
+   "spellings": [
+    "Ottillie",
+    "Otilie"
+   ],
+   "origin": "German/French",
+   "variants": [
+    {
+     "ipa": "ˈɒtɪli",
+     "respell": "OT-i-lee",
+     "say": "Ottilie",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ɒˈtɪli",
+     "respell": "o-TIL-ee",
+     "say": "A tilly",
+     "label": "Also used"
+    }
+   ],
+   "note": "Most UK families stress the first syllable; some say o-TIL-ee. The German original is closer to o-TEE-lee-uh.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Otto",
+   "spellings": [],
+   "origin": "German",
+   "variants": [
+    {
+     "ipa": "ˈɒtəʊ",
+     "respell": "OT-oh",
+     "say": "Otto",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Owain",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈəʊwaɪn",
+     "respell": "OH-wyn",
+     "say": "Ohwine",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Pádraig",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈpɔːdrɪɡ",
+     "respell": "PAW-drig",
+     "say": "Pawdrig",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈpɔːrɪɡ",
+     "respell": "PAW-rig",
+     "say": "Pawrig",
+     "label": "Northern & western Irish"
+    }
+   ],
+   "note": "Irish form of Patrick.",
+   "confidence": "high"
+  },
+  {
+   "name": "Penelope",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "pəˈnɛləpi",
+     "respell": "puh-NEL-uh-pee",
+     "say": "Penelope",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Four syllables, not 'PEN-uh-lohp'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Persephone",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "pəˈsɛfəni",
+     "respell": "puh-SEF-uh-nee",
+     "say": "Persephone",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Four syllables; the final e is pronounced.",
+   "confidence": "high"
+  },
+  {
+   "name": "Phoebe",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈfiːbi",
+     "respell": "FEE-bee",
+     "say": "Phoebe",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Piran",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "ˈpɪrən",
+     "respell": "PIRR-uhn",
+     "say": "Pirrun",
+     "label": "Cornish"
+    }
+   ],
+   "note": "Patron saint of Cornwall.",
+   "confidence": "high"
+  },
+  {
+   "name": "Poppy",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈpɒpi",
+     "respell": "POP-ee",
+     "say": "Poppy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Priya",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈpriːjə",
+     "respell": "PREE-yuh",
+     "say": "Preeya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'beloved'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Qing",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "ˈtʃɪŋ",
+     "respell": "CHING",
+     "say": "Ching",
+     "label": "Mandarin"
+    }
+   ],
+   "note": "In pinyin, q is said like 'ch'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Rafe",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈreɪf",
+     "respell": "RAYF",
+     "say": "Rafe",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Old British form of Ralph; rhymes with 'safe'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ralph",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈrælf",
+     "respell": "RALF",
+     "say": "Ralph",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈreɪf",
+     "respell": "RAYF",
+     "say": "Rafe",
+     "label": "Traditional British"
+    }
+   ],
+   "note": "Some traditional British families say RAYF (like Rafe).",
+   "confidence": "high"
+  },
+  {
+   "name": "Reggie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈrɛdʒi",
+     "respell": "REJ-ee",
+     "say": "Reggie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Remy",
+   "spellings": [
+    "Remi",
+    "Rémi"
+   ],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈrɛmi",
+     "respell": "REM-ee",
+     "say": "Remmy",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "reɪˈmiː",
+     "respell": "ray-MEE",
+     "say": "Ray mee",
+     "label": "French"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ren",
+   "spellings": [],
+   "origin": "Japanese",
+   "variants": [
+    {
+     "ipa": "ˈrɛn",
+     "respell": "REN",
+     "say": "Ren",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'lotus'. The r is a light tap.",
+   "confidence": "high"
+  },
+  {
+   "name": "Renée",
+   "spellings": [],
+   "origin": "French",
+   "variants": [
+    {
+     "ipa": "ˈrɛneɪ",
+     "respell": "REN-ay",
+     "say": "Rennay",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "rəˈneɪ",
+     "respell": "ruh-NAY",
+     "say": "Renee",
+     "label": "French"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Reuben",
+   "spellings": [
+    "Rueben"
+   ],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈruːbɪn",
+     "respell": "ROO-bin",
+     "say": "Reuben",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Reyansh",
+   "spellings": [
+    "Reyaansh"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "reɪˈɑːnʃ",
+     "respell": "ray-AHNSH",
+     "say": "Reyaarnsh",
+     "label": "Hindi"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Rhian",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈriːæn",
+     "respell": "REE-an",
+     "say": "Reeann",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rhiannon",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "riˈænən",
+     "respell": "ree-AN-uhn",
+     "say": "Rhiannon",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rhodri",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈrɒdri",
+     "respell": "ROD-ree",
+     "say": "Rodri",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh rh is a breathy r; most families simply say ROD-ree.",
+   "confidence": "high"
+  },
+  {
+   "name": "Rhys",
+   "spellings": [
+    "Rees",
+    "Reece",
+    "Reese"
+   ],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "riːs",
+     "respell": "REESS",
+     "say": "Reece",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rían",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈriːən",
+     "respell": "REE-uhn",
+     "say": "Reean",
+     "label": "Irish"
+    }
+   ],
+   "note": "Not 'Ryan'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ríona",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈriːnə",
+     "respell": "REE-nuh",
+     "say": "Rheena",
+     "label": "Irish"
+    }
+   ],
+   "note": "Short for Ríonach. Some Irish speakers slip a slight 'uh' into the middle (REE-uh-nuh).",
+   "confidence": "medium"
+  },
+  {
+   "name": "Riya",
+   "spellings": [
+    "Ria"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈriːjə",
+     "respell": "REE-yuh",
+     "say": "Reeya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rohan",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈrəʊhən",
+     "respell": "ROH-huhn",
+     "say": "Rohan",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Róisín",
+   "spellings": [
+    "Rosheen"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "rəʊˈʃiːn",
+     "respell": "roh-SHEEN",
+     "say": "Ro-sheen",
+     "label": "Irish"
+    }
+   ],
+   "note": "Some families put more weight on the first syllable (ROH-sheen).",
+   "confidence": "high"
+  },
+  {
+   "name": "Roman",
+   "spellings": [],
+   "origin": "Latin",
+   "variants": [
+    {
+     "ipa": "ˈrəʊmən",
+     "respell": "ROH-muhn",
+     "say": "Roman",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rónán",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈrəʊnən",
+     "respell": "ROH-nuhn",
+     "say": "Ronan",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈrəʊnɔːn",
+     "respell": "ROH-nawn",
+     "say": "Rohnawn",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ronnie",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈrɒni",
+     "respell": "RON-ee",
+     "say": "Ronnie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rory",
+   "spellings": [],
+   "origin": "Irish/Scottish",
+   "variants": [
+    {
+     "ipa": "ˈrɔːri",
+     "respell": "ROR-ee",
+     "say": "Rory",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rosie",
+   "spellings": [
+    "Rosey"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈrəʊzi",
+     "respell": "ROH-zee",
+     "say": "Rosy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rowan",
+   "spellings": [],
+   "origin": "Irish/Scottish",
+   "variants": [
+    {
+     "ipa": "ˈrəʊən",
+     "respell": "ROH-uhn",
+     "say": "Rowan",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈraʊən",
+     "respell": "ROW-uhn",
+     "say": "Rouwan",
+     "label": "Scottish"
+    }
+   ],
+   "note": "In the second version ROW rhymes with 'now', as many Scots say the rowan tree.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ruairí",
+   "spellings": [
+    "Ruaidhrí",
+    "Ruari"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈrʊəri",
+     "respell": "ROOR-ee",
+     "say": "Rooeree",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish form of Rory; the first syllable is 'roo' not 'raw'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ruaridh",
+   "spellings": [
+    "Ruairidh",
+    "Ruaraidh"
+   ],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈrʊəri",
+     "respell": "ROOR-ee",
+     "say": "Rooeree",
+     "label": "Gaelic"
+    },
+    {
+     "ipa": "ˈrɔːri",
+     "respell": "ROR-ee",
+     "say": "Rory",
+     "label": "Like Rory"
+    }
+   ],
+   "note": "Scottish Gaelic form of Rory.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ruby",
+   "spellings": [
+    "Rubie"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈruːbi",
+     "respell": "ROO-bee",
+     "say": "Ruby",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Rutendo",
+   "spellings": [],
+   "origin": "Shona",
+   "variants": [
+    {
+     "ipa": "ruːˈtɛndəʊ",
+     "respell": "roo-TEN-doh",
+     "say": "Rootendo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'faith'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Saanvi",
+   "spellings": [
+    "Sanvi"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈsɑːnviː",
+     "respell": "SAHN-vee",
+     "say": "Sahnvee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Another name for the goddess Lakshmi.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sadhbh",
+   "spellings": [
+    "Sadbh",
+    "Sive"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "saɪv",
+     "respell": "SYVE",
+     "say": "Sive",
+     "label": "Irish"
+    }
+   ],
+   "note": "Rhymes with 'five'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Safa",
+   "spellings": [
+    "Safaa"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈsæfə",
+     "respell": "SAF-uh",
+     "say": "Saffa",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "səˈfɑː",
+     "respell": "suh-FAH",
+     "say": "Suh fah",
+     "label": "Urdu/Arabic"
+    }
+   ],
+   "note": "Means 'purity'. Also the name of a hill in Mecca. Some families stress the end: suh-FAH.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Sai",
+   "spellings": [],
+   "origin": "Hindi / Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈsaɪ",
+     "respell": "SYE",
+     "say": "Sigh",
+     "label": "Most common"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Samuel",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈsæmjuəl",
+     "respell": "SAM-ew-uhl",
+     "say": "Samuel",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Santiago",
+   "spellings": [],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "ˌsæntiˈɑːɡəʊ",
+     "respell": "san-tee-AH-goh",
+     "say": "Santiago",
+     "label": "Spanish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Saoirse",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈsɪəʃə",
+     "respell": "SEER-shuh",
+     "say": "Seersha",
+     "label": "Most common"
+    },
+    {
+     "ipa": "ˈsɜːʃə",
+     "respell": "SUR-shuh",
+     "say": "Sursha",
+     "label": "Like Saoirse Ronan"
+    }
+   ],
+   "note": "Means 'freedom'. Both forms are used in Ireland and the UK.",
+   "confidence": "high"
+  },
+  {
+   "name": "Séamus",
+   "spellings": [
+    "Seumas"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈʃeɪməs",
+     "respell": "SHAY-muhs",
+     "say": "Shaymus",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish/Scottish form of James.",
+   "confidence": "high"
+  },
+  {
+   "name": "Seán",
+   "spellings": [
+    "Shaun",
+    "Shawn"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ʃɔːn",
+     "respell": "SHAWN",
+     "say": "Shawn",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Sebastian",
+   "spellings": [],
+   "origin": "Latin/Greek",
+   "variants": [
+    {
+     "ipa": "səˈbæstiən",
+     "respell": "suh-BAS-tee-uhn",
+     "say": "Sebastian",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Selam",
+   "spellings": [],
+   "origin": "Amharic/Tigrinya",
+   "variants": [
+    {
+     "ipa": "səˈlɑːm",
+     "respell": "suh-LAHM",
+     "say": "Selaarm",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'peace'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Sem",
+   "spellings": [],
+   "origin": "Dutch",
+   "variants": [
+    {
+     "ipa": "ˈsɛm",
+     "respell": "SEM",
+     "say": "Sem",
+     "label": "Dutch"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Senan",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈsɛnən",
+     "respell": "SEN-uhn",
+     "say": "Sennan",
+     "label": "Irish"
+    }
+   ],
+   "note": "The Irish spelling Seanán is said SHAN-awn.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Senara",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "sɛˈnɑːrə",
+     "respell": "seh-NAR-uh",
+     "say": "Sennara",
+     "label": "Cornish"
+    }
+   ],
+   "note": "Cornish saint of Zennor. Cornish names stress the second-to-last syllable.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Seo-yeon",
+   "spellings": [
+    "Seoyeon"
+   ],
+   "origin": "Korean",
+   "variants": [
+    {
+     "ipa": "ˈsʌjʌn",
+     "respell": "SUH-yun",
+     "say": "Suh-yun",
+     "label": "Korean (approx.)"
+    }
+   ],
+   "note": "In Korean, eo is an 'uh' sound made far back in the mouth, with the lips not rounded. It is not 'oh'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Seonaid",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈʃɔːnətʃ",
+     "respell": "SHAW-nuhch",
+     "say": "Shawnatch",
+     "label": "Gaelic"
+    },
+    {
+     "ipa": "ˈʃəʊnə",
+     "respell": "SHOH-nuh",
+     "say": "Shona",
+     "label": "Like Shona"
+    }
+   ],
+   "note": "Gaelic form of Janet.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Seosamh",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈʃəʊsəv",
+     "respell": "SHOH-suhv",
+     "say": "Shohsuv",
+     "label": "Irish"
+    },
+    {
+     "ipa": "ˈʃɔːsu",
+     "respell": "SHAW-soo",
+     "say": "Shawsoo",
+     "label": "Ulster Irish"
+    }
+   ],
+   "note": "Irish form of Joseph. mh = v in most of Ireland; in Ulster Irish the end sounds like 'oo'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Seraphina",
+   "spellings": [
+    "Serafina"
+   ],
+   "origin": "Hebrew/Latin",
+   "variants": [
+    {
+     "ipa": "ˌsɛrəˈfiːnə",
+     "respell": "serr-uh-FEE-nuh",
+     "say": "Seraphina",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Seren",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈsɛrɛn",
+     "respell": "SERR-en",
+     "say": "Serren",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Means 'star'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sergio",
+   "spellings": [],
+   "origin": "Spanish/Italian",
+   "variants": [
+    {
+     "ipa": "ˈsɛəxiəʊ",
+     "respell": "SAIR-khee-oh",
+     "say": "Sair heeoh",
+     "label": "Spanish"
+    },
+    {
+     "ipa": "ˈsɛədʒəʊ",
+     "respell": "SAIR-joh",
+     "say": "Sairjo",
+     "label": "Italian"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Seun",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˈʃeɪuːn",
+     "respell": "SHAY-oon",
+     "say": "Shay-oon",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Short for Oluwaseun. The s is said 'sh'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Siân",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ʃɑːn",
+     "respell": "SHAHN",
+     "say": "Shahn",
+     "label": "Welsh"
+    }
+   ],
+   "note": "One syllable; not 'SEE-an'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Siddharth",
+   "spellings": [
+    "Siddarth",
+    "Sidharth"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "sɪˈdɑːt",
+     "respell": "si-DART",
+     "say": "Siddaart",
+     "label": "Hindi"
+    },
+    {
+     "ipa": "sɪˈdɑːθ",
+     "respell": "si-DARTH",
+     "say": "Siddaarth",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "In Hindi the final th is a t with a puff of air, not the 'th' in 'thin'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Sienna",
+   "spellings": [
+    "Siena"
+   ],
+   "origin": "Italian",
+   "variants": [
+    {
+     "ipa": "siˈɛnə",
+     "respell": "see-EN-uh",
+     "say": "Sienna",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Sigrid",
+   "spellings": [],
+   "origin": "Scandinavian",
+   "variants": [
+    {
+     "ipa": "ˈsɪɡrɪd",
+     "respell": "SIG-rid",
+     "say": "Sigrid",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Norwegian families may say SEE-gree.",
+   "confidence": "high"
+  },
+  {
+   "name": "Síle",
+   "spellings": [
+    "Sheila",
+    "Sheelagh"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈʃiːlə",
+     "respell": "SHEE-luh",
+     "say": "Sheela",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Simran",
+   "spellings": [],
+   "origin": "Punjabi",
+   "variants": [
+    {
+     "ipa": "ˈsɪmrən",
+     "respell": "SIM-ruhn",
+     "say": "Simran",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'remembrance' or 'meditation'. Used for both girls and boys.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sìne",
+   "spellings": [
+    "Sheena"
+   ],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈʃiːnə",
+     "respell": "SHEE-nuh",
+     "say": "Sheena",
+     "label": "Gaelic"
+    }
+   ],
+   "note": "Gaelic form of Jane.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sinéad",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ʃɪˈneɪd",
+     "respell": "shih-NAYD",
+     "say": "Shi nade",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Siobhán",
+   "spellings": [
+    "Shivaun"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ʃɪˈvɔːn",
+     "respell": "shih-VAWN",
+     "say": "Shi vawn",
+     "label": "Irish"
+    }
+   ],
+   "note": "bh = v; never 'see-OB-han'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Síofra",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈʃiːfrə",
+     "respell": "SHEE-fruh",
+     "say": "Sheefra",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Siôn",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ʃɔːn",
+     "respell": "SHAWN",
+     "say": "Shawn",
+     "label": "Welsh"
+    }
+   ],
+   "note": "Welsh John; one syllable, not 'SY-on'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sioned",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈʃɒnɛd",
+     "respell": "SHON-ed",
+     "say": "Shonnedd",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Siu",
+   "spellings": [],
+   "origin": "Chinese (Cantonese)",
+   "variants": [
+    {
+     "ipa": "ˈsiːuː",
+     "respell": "SEE-oo",
+     "say": "See-oo",
+     "label": "Cantonese"
+    }
+   ],
+   "note": "Said as one gliding syllable. It is the Cantonese form of Xiao.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Sofia",
+   "spellings": [],
+   "origin": "Greek (via Italian/Spanish)",
+   "variants": [
+    {
+     "ipa": "səˈfiːə",
+     "respell": "suh-FEE-uh",
+     "say": "Sophia",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Sonny",
+   "spellings": [
+    "Sonnie"
+   ],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈsʌni",
+     "respell": "SUN-ee",
+     "say": "Sunny",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Sounds like 'sunny'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sophia",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "səˈfiːə",
+     "respell": "suh-FEE-uh",
+     "say": "Sophia",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "səˈfaɪə",
+     "respell": "suh-FY-uh",
+     "say": "Suh fire",
+     "label": "Traditional British"
+    }
+   ],
+   "note": "The traditional British suh-FY-uh is still used by some families.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sophie",
+   "spellings": [
+    "Sophy"
+   ],
+   "origin": "Greek (via French)",
+   "variants": [
+    {
+     "ipa": "ˈsəʊfi",
+     "respell": "SOH-fee",
+     "say": "Sophie",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Sora",
+   "spellings": [],
+   "origin": "Japanese",
+   "variants": [
+    {
+     "ipa": "ˈsɔːrɑː",
+     "respell": "SOR-ah",
+     "say": "Sora",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'sky'. The r is a light tap and the final a is a full 'ah'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Sorcha",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈsɒrəxə",
+     "respell": "SORR-uh-khuh",
+     "say": "Sorrucka",
+     "label": "Irish"
+    },
+    {
+     "ipa": "ˈsɔːkə",
+     "respell": "SOR-kuh",
+     "say": "Sorka",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "The Irish form has a 'ch' as in 'loch'; English TTS can only approximate it with k. Never 'SOR-shuh' or 'SOR-chuh'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Søren",
+   "spellings": [],
+   "origin": "Danish",
+   "variants": [
+    {
+     "ipa": "ˈsɔːrən",
+     "respell": "SOR-uhn",
+     "say": "Sawren",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈsɜːrən",
+     "respell": "SUR-uhn",
+     "say": "Sur-un",
+     "label": "Danish"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "St John",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈsɪndʒən",
+     "respell": "SIN-juhn",
+     "say": "Sinjun",
+     "label": "Traditional British"
+    }
+   ],
+   "note": "As a first name it is traditionally said SIN-juhn.",
+   "confidence": "high"
+  },
+  {
+   "name": "Stanley",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈstænli",
+     "respell": "STAN-lee",
+     "say": "Stanley",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ștefan",
+   "spellings": [],
+   "origin": "Romanian",
+   "variants": [
+    {
+     "ipa": "ˈʃtɛfæn",
+     "respell": "SHTEF-an",
+     "say": "Schtefan",
+     "label": "Romanian"
+    },
+    {
+     "ipa": "ˈstɛfən",
+     "respell": "STEF-uhn",
+     "say": "Stefan",
+     "label": "English"
+    }
+   ],
+   "note": "In Romanian, ș is said 'sh'. English families usually say STEF-uhn.",
+   "confidence": "high"
+  },
+  {
+   "name": "Struan",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈstruːən",
+     "respell": "STROO-uhn",
+     "say": "Strooan",
+     "label": "Scottish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Szymon",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈʃɪmɒn",
+     "respell": "SHIM-on",
+     "say": "Shimmon",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Simon. sz is said 'sh'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Tadhg",
+   "spellings": [
+    "Tadg"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "taɪɡ",
+     "respell": "TYGE",
+     "say": "Tyge",
+     "label": "Irish"
+    }
+   ],
+   "note": "dh is silent; rhymes with 'tiger' without the -er.",
+   "confidence": "high"
+  },
+  {
+   "name": "Taliesin",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "tælˈjɛsɪn",
+     "respell": "tal-YESS-in",
+     "say": "Tal-yessin",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Tamsin",
+   "spellings": [
+    "Tamzin"
+   ],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "ˈtæmzɪn",
+     "respell": "TAM-zin",
+     "say": "Tamzin",
+     "label": "Cornish"
+    }
+   ],
+   "note": "Some families say TAM-sin.",
+   "confidence": "high"
+  },
+  {
+   "name": "Tatenda",
+   "spellings": [],
+   "origin": "Shona",
+   "variants": [
+    {
+     "ipa": "tɑːˈtɛndɑː",
+     "respell": "tah-TEN-dah",
+     "say": "Tahtenda",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'we are thankful'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Teddy",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈtɛdi",
+     "respell": "TED-ee",
+     "say": "Teddy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Temi",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˈtɛmiː",
+     "respell": "TEM-ee",
+     "say": "Temmy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'mine'. Often short for Temitope.",
+   "confidence": "high"
+  },
+  {
+   "name": "Tendai",
+   "spellings": [],
+   "origin": "Shona",
+   "variants": [
+    {
+     "ipa": "tɛnˈdaɪ",
+     "respell": "ten-DY",
+     "say": "Ten dye",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'be thankful'. Used for both boys and girls. English speakers often say TEN-dy instead.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Thanh",
+   "spellings": [],
+   "origin": "Vietnamese",
+   "variants": [
+    {
+     "ipa": "ˈtæn",
+     "respell": "TAN",
+     "say": "Tan",
+     "label": "Southern Vietnamese"
+    },
+    {
+     "ipa": "ˈtaɪŋ",
+     "respell": "TYNG",
+     "say": "Tieng",
+     "label": "Northern Vietnamese"
+    }
+   ],
+   "note": "The th is a t with a puff of air, not the 'th' in 'thin'. Southern speakers say TAN; northern speakers say something closer to TYNG.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Thea",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈθiːə",
+     "respell": "THEE-uh",
+     "say": "Thea",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈteɪə",
+     "respell": "TAY-uh",
+     "say": "Taya",
+     "label": "European"
+    }
+   ],
+   "note": "Scandinavian, Dutch and German families often say TAY-uh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Theo",
+   "spellings": [],
+   "origin": "English (Greek)",
+   "variants": [
+    {
+     "ipa": "ˈθiːəʊ",
+     "respell": "THEE-oh",
+     "say": "Theo",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ˈteɪəʊ",
+     "respell": "TAY-oh",
+     "say": "Tayo",
+     "label": "European"
+    }
+   ],
+   "note": "Dutch, German and Scandinavian families often say TAY-oh.",
+   "confidence": "high"
+  },
+  {
+   "name": "Theodore",
+   "spellings": [],
+   "origin": "English (Greek)",
+   "variants": [
+    {
+     "ipa": "ˈθiːədɔː",
+     "respell": "THEE-uh-dor",
+     "say": "Theodore",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Thomas",
+   "spellings": [],
+   "origin": "English (Aramaic)",
+   "variants": [
+    {
+     "ipa": "ˈtɒməs",
+     "respell": "TOM-uhs",
+     "say": "Thomas",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The h is silent.",
+   "confidence": "high"
+  },
+  {
+   "name": "Tiago",
+   "spellings": [
+    "Thiago"
+   ],
+   "origin": "Portuguese",
+   "variants": [
+    {
+     "ipa": "tiˈɑːɡəʊ",
+     "respell": "tee-AH-goh",
+     "say": "Tee ahgo",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "tʃiˈɑːɡuː",
+     "respell": "chee-AH-goo",
+     "say": "Chee ahgoo",
+     "label": "Brazilian"
+    },
+    {
+     "ipa": "tiˈɑːɡuː",
+     "respell": "tee-AH-goo",
+     "say": "Tee ahgoo",
+     "label": "Portugal"
+    }
+   ],
+   "note": "Brazilian families say chee-AH-goo; families from Portugal say tee-AH-goo.",
+   "confidence": "high"
+  },
+  {
+   "name": "Tiernan",
+   "spellings": [
+    "Tiarnan"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈtɪənən",
+     "respell": "TEER-nuhn",
+     "say": "Teernan",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Tobi",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˈtəʊbiː",
+     "respell": "TOH-bee",
+     "say": "Toby",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Short for Oluwatobi. Sounds the same as Toby.",
+   "confidence": "high"
+  },
+  {
+   "name": "Toby",
+   "spellings": [
+    "Tobey"
+   ],
+   "origin": "English (Hebrew)",
+   "variants": [
+    {
+     "ipa": "ˈtəʊbi",
+     "respell": "TOH-bee",
+     "say": "Toby",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Tolu",
+   "spellings": [],
+   "origin": "Yoruba",
+   "variants": [
+    {
+     "ipa": "ˈtəʊluː",
+     "respell": "TOH-loo",
+     "say": "Tohloo",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Short for names like Toluwani and Toluwalase.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Tomás",
+   "spellings": [],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "təˈmɔːs",
+     "respell": "tuh-MAWS",
+     "say": "To-mawss",
+     "label": "Irish"
+    }
+   ],
+   "note": "Irish form of Thomas. Without the accent, Tomas is often a different (e.g. Lithuanian or Scandinavian) name.",
+   "confidence": "high"
+  },
+  {
+   "name": "Tommy",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈtɒmi",
+     "respell": "TOM-ee",
+     "say": "Tommy",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Tomos",
+   "spellings": [],
+   "origin": "Welsh",
+   "variants": [
+    {
+     "ipa": "ˈtɒmɒs",
+     "respell": "TOM-oss",
+     "say": "Tomoss",
+     "label": "Welsh"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Tressa",
+   "spellings": [],
+   "origin": "Cornish",
+   "variants": [
+    {
+     "ipa": "ˈtrɛsə",
+     "respell": "TRESS-uh",
+     "say": "Tressa",
+     "label": "Cornish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Ùisdean",
+   "spellings": [],
+   "origin": "Scottish Gaelic",
+   "variants": [
+    {
+     "ipa": "ˈuːʃtʃən",
+     "respell": "OOSH-chuhn",
+     "say": "Ooshchun",
+     "label": "Gaelic"
+    }
+   ],
+   "note": "Gaelic form of Hugh.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Úna",
+   "spellings": [
+    "Oona",
+    "Oonagh"
+   ],
+   "origin": "Irish",
+   "variants": [
+    {
+     "ipa": "ˈuːnə",
+     "respell": "OO-nuh",
+     "say": "Oona",
+     "label": "Irish"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Veer",
+   "spellings": [],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "ˈvɪə",
+     "respell": "VEER",
+     "say": "Veer",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'brave'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Vihaan",
+   "spellings": [
+    "Vihan"
+   ],
+   "origin": "Hindi/Sanskrit",
+   "variants": [
+    {
+     "ipa": "vɪˈhɑːn",
+     "respell": "vi-HAHN",
+     "say": "Vihaarn",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'dawn'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Violet",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈvaɪələt",
+     "respell": "VY-uh-luht",
+     "say": "Violet",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Wei",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "ˈweɪ",
+     "respell": "WAY",
+     "say": "Way",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Wiktoria",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "vɪkˈtɔːrjə",
+     "respell": "vik-TOR-yuh",
+     "say": "Viktoria",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "In Polish, w is said like 'v'.",
+   "confidence": "high"
+  },
+  {
+   "name": "William",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈwɪljəm",
+     "respell": "WIL-yuhm",
+     "say": "William",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Willow",
+   "spellings": [],
+   "origin": "English",
+   "variants": [
+    {
+     "ipa": "ˈwɪləʊ",
+     "respell": "WIL-oh",
+     "say": "Willow",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Winta",
+   "spellings": [],
+   "origin": "Tigrinya",
+   "variants": [
+    {
+     "ipa": "ˈwɪntɑː",
+     "respell": "WIN-tah",
+     "say": "Wintaa",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "medium"
+  },
+  {
+   "name": "Wojciech",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈvɔɪtʃɛx",
+     "respell": "VOY-chekh",
+     "say": "Voychek",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The final ch is a throaty sound, as in 'loch'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Xanthe",
+   "spellings": [],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈzænθi",
+     "respell": "ZAN-thee",
+     "say": "Zanthee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "X sounds like z; two syllables.",
+   "confidence": "high"
+  },
+  {
+   "name": "Xavier",
+   "spellings": [],
+   "origin": "Basque/Spanish",
+   "variants": [
+    {
+     "ipa": "ˈzeɪviə",
+     "respell": "ZAY-vee-uh",
+     "say": "Zayvia",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "ɪɡˈzeɪviə",
+     "respell": "ig-ZAY-vee-uh",
+     "say": "Igzayvia",
+     "label": "Also common"
+    }
+   ],
+   "note": "Families differ: ZAY-vee-uh is most common in the UK; ig-ZAY-vee-uh is also widespread. French, Catalan and Portuguese families say it their own way.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Xiao",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "ˈʃjaʊ",
+     "respell": "shee-OW",
+     "say": "Shee-yow",
+     "label": "Mandarin"
+    }
+   ],
+   "note": "Said as one quick syllable: 'shee' slides straight into 'ow' (as in 'now'). Often part of a two-part name, like Xiaoming.",
+   "confidence": "high"
+  },
+  {
+   "name": "Ximena",
+   "spellings": [
+    "Jimena"
+   ],
+   "origin": "Spanish",
+   "variants": [
+    {
+     "ipa": "xiˈmɛnə",
+     "respell": "khee-MEN-uh",
+     "say": "Hee menna",
+     "label": "Spanish"
+    }
+   ],
+   "note": "The X is a throaty h (as in 'loch').",
+   "confidence": "medium"
+  },
+  {
+   "name": "Xin",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "ˈʃɪn",
+     "respell": "SHIN",
+     "say": "Shin",
+     "label": "Mandarin"
+    }
+   ],
+   "note": "In pinyin, x is said like 'sh'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Xochitl",
+   "spellings": [],
+   "origin": "Nahuatl (Mexican)",
+   "variants": [
+    {
+     "ipa": "ˈsəʊtʃiːtl",
+     "respell": "SOH-cheetl",
+     "say": "Soh-cheetl",
+     "label": "Mexican"
+    }
+   ],
+   "note": "The X sounds like s and the final tl is very light.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Yael",
+   "spellings": [],
+   "origin": "Hebrew",
+   "variants": [
+    {
+     "ipa": "jɑːˈɛl",
+     "respell": "yah-EL",
+     "say": "Ya-el",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Two syllables, with the stress on the second.",
+   "confidence": "high"
+  },
+  {
+   "name": "Yahya",
+   "spellings": [],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈjɑhjɑː",
+     "respell": "YAH-yah",
+     "say": "Yah-yah",
+     "label": "Most common"
+    }
+   ],
+   "note": "Arabic form of John. A soft breathy h ends the first syllable.",
+   "confidence": "high"
+  },
+  {
+   "name": "Yasmin",
+   "spellings": [
+    "Yazmin"
+   ],
+   "origin": "Arabic/Persian",
+   "variants": [
+    {
+     "ipa": "ˈjæzmɪn",
+     "respell": "YAZ-min",
+     "say": "Yasmin",
+     "label": "Most common in UK"
+    },
+    {
+     "ipa": "jæsˈmiːn",
+     "respell": "yas-MEEN",
+     "say": "Yass meen",
+     "label": "Arabic/Persian"
+    }
+   ],
+   "note": "Means 'jasmine'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Yaw",
+   "spellings": [],
+   "origin": "Akan (Ghanaian)",
+   "variants": [
+    {
+     "ipa": "ˈjaʊ",
+     "respell": "YOW",
+     "say": "Yow",
+     "label": "Akan"
+    },
+    {
+     "ipa": "ˈjɔː",
+     "respell": "YAW",
+     "say": "Yaw",
+     "label": "Anglicised"
+    }
+   ],
+   "note": "The Akan day name for a boy born on a Thursday. Ghanaian families say it to rhyme with 'now' (compare the Ivorian spelling Yao).",
+   "confidence": "medium"
+  },
+  {
+   "name": "Yiannis",
+   "spellings": [
+    "Giannis",
+    "Yannis"
+   ],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈjænɪs",
+     "respell": "YAN-is",
+     "say": "Yanniss",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Greek form of John.",
+   "confidence": "high"
+  },
+  {
+   "name": "Yiming",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "iːˈmɪŋ",
+     "respell": "ee-MING",
+     "say": "Ee ming",
+     "label": "Mandarin"
+    }
+   ],
+   "note": "Mandarin uses tones instead of stress, so both syllables are fairly even.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Yonas",
+   "spellings": [],
+   "origin": "Amharic/Tigrinya",
+   "variants": [
+    {
+     "ipa": "ˈjəʊnæs",
+     "respell": "YOH-nass",
+     "say": "Yohnass",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Ethiopian and Eritrean form of Jonah.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Yui",
+   "spellings": [],
+   "origin": "Japanese",
+   "variants": [
+    {
+     "ipa": "ˈjuːiː",
+     "respell": "YOO-ee",
+     "say": "Yooee",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Yuki",
+   "spellings": [],
+   "origin": "Japanese",
+   "variants": [
+    {
+     "ipa": "ˈjuːki",
+     "respell": "YOO-kee",
+     "say": "Yuki",
+     "label": "Most common"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Yusuf",
+   "spellings": [
+    "Yousuf"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈjuːsʊf",
+     "respell": "YOO-suuf",
+     "say": "Yusuf",
+     "label": "Arabic/Urdu"
+    }
+   ],
+   "note": "The Arabic form of Joseph.",
+   "confidence": "high"
+  },
+  {
+   "name": "Zainab",
+   "spellings": [
+    "Zaynab"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈzeɪnæb",
+     "respell": "ZAY-nab",
+     "say": "Zaynab",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Zakariya",
+   "spellings": [
+    "Zakariyya",
+    "Zakariyah",
+    "Zakaria"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˌzækəˈriːjə",
+     "respell": "zak-uh-REE-yuh",
+     "say": "Zakka reeya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Arabic form of Zachariah.",
+   "confidence": "high"
+  },
+  {
+   "name": "Zara",
+   "spellings": [],
+   "origin": "Arabic / Hebrew",
+   "variants": [
+    {
+     "ipa": "ˈzɑːrə",
+     "respell": "ZAR-uh",
+     "say": "Zara",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "",
+   "confidence": "high"
+  },
+  {
+   "name": "Zayn",
+   "spellings": [
+    "Zain",
+    "Zayne"
+   ],
+   "origin": "Arabic",
+   "variants": [
+    {
+     "ipa": "ˈzeɪn",
+     "respell": "ZAYN",
+     "say": "Zane",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'beauty' or 'grace'. Sounds the same as the English name Zane.",
+   "confidence": "high"
+  },
+  {
+   "name": "Zeynep",
+   "spellings": [],
+   "origin": "Turkish",
+   "variants": [
+    {
+     "ipa": "zeɪˈnɛp",
+     "respell": "zay-NEP",
+     "say": "Zay-nep",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Turkish form of Zainab.",
+   "confidence": "high"
+  },
+  {
+   "name": "Zhen",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "ˈdʒʌn",
+     "respell": "JUN",
+     "say": "Jun",
+     "label": "Mandarin"
+    }
+   ],
+   "note": "The zh sounds close to English j, and the e is a short 'uh'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Zixuan",
+   "spellings": [],
+   "origin": "Chinese (Mandarin)",
+   "variants": [
+    {
+     "ipa": "dzəˈʃwɛn",
+     "respell": "dzuh-SHWEN",
+     "say": "Zushwenn",
+     "label": "Mandarin"
+    }
+   ],
+   "note": "The zi is a short buzzing 'dz'. The xuan sounds like 'shwen'.",
+   "confidence": "medium"
+  },
+  {
+   "name": "Zoe",
+   "spellings": [
+    "Zoey",
+    "Zoie"
+   ],
+   "origin": "Greek",
+   "variants": [
+    {
+     "ipa": "ˈzəʊi",
+     "respell": "ZOH-ee",
+     "say": "Zoe",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Two syllables.",
+   "confidence": "high"
+  },
+  {
+   "name": "Zofia",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "ˈzɒfjə",
+     "respell": "ZOF-yuh",
+     "say": "Zoff-ya",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Sophia.",
+   "confidence": "high"
+  },
+  {
+   "name": "Zuri",
+   "spellings": [],
+   "origin": "Swahili",
+   "variants": [
+    {
+     "ipa": "ˈzuːriː",
+     "respell": "ZOO-ree",
+     "say": "Zoo-ree",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "Means 'beautiful'.",
+   "confidence": "high"
+  },
+  {
+   "name": "Zuzanna",
+   "spellings": [],
+   "origin": "Polish",
+   "variants": [
+    {
+     "ipa": "zuːˈzænə",
+     "respell": "zoo-ZAN-uh",
+     "say": "Zoozanna",
+     "label": "Most common in UK"
+    }
+   ],
+   "note": "The Polish form of Susanna.",
+   "confidence": "high"
+  }
+ ]
 }
