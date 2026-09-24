@@ -9,19 +9,44 @@
 //   "Turn the page!" (or turn by itself when settings.autoTurn).
 // Every page runs under its own AbortController: turning the page or
 // destroy() stops narration, timers, animations and listeners in one go.
+//
+// Family features (docs/architecture.md section 11):
+//   - a grown-up's recorded reading ("Read by Grandma Rose") plays instead of
+//     the computer voice wherever a page part was recorded;
+//   - pause/play (button, Space or K): speech can't be resumed mid-sentence
+//     reliably, so carrying on re-reads the current sentence;
+//   - name spotting: tap the name in the picture and hear "That says Ava!";
+//   - bedtime: a darker, quieter page that carries on by itself (the moving
+//     part shows itself, pages turn after a soft chime, the end fades to dark);
+//   - siblings: the pictures say "AMARA & ZAK" and name clips aren't used.
 
 import { bookUrl } from '../core/book.js';
-import { fillTemplate, person as makePerson } from '../core/personalise.js';
+import { fillTemplate, fillSpoken, person as makePerson } from '../core/personalise.js';
+import { readingLabel } from '../core/storage.js';
 import { planLines, estimateTimeline, estimateUnitMs } from '../narrator/plan.js';
 import { loadScene, prefetchScene, parseSvg, animationWrapper, needsAnimationWrapper, hoistAnimations, ANIMATION_CLASSES } from './scene.js';
 import { createDriver, pick, applyMatrix } from './drive.js';
 import { createControl } from './controls.js';
-import { fillNameSlots } from './name-fit.js';
+import { fillNameSlots, isShown } from './name-fit.js';
+import { clipTimeline, stretchTimeline, resumePlan, testScale } from './timeline.js';
+import { clipDurationMs } from './clip.js';
 
 const IDLE_REPROMPT_MS = 8000; // tests may shorten it with SB_TEST.idleMs
 const SLIDE_MS = 420;
 const SFX_GAP_MS = 250;
 const AUTO_TURN_MS = 1600;
+const PART_TIMEOUT_MS = 5000; // a recorded part that takes longer to fetch is skipped (computer voice instead)
+const CLIP_LATENCY_MS = 60; // playback starts a moment after we ask for it
+const SPOT_LINE = 'That says {name}!';
+// Bedtime: slower, quieter, and the story carries on by itself.
+const BEDTIME = Object.freeze({
+  rate: 0.9, // voice rateScale
+  sfxVolume: 0.2, // createSfx's default is 0.55
+  chimeVolume: 0.28,
+  showMeMs: 5000, // untouched mechanism plays itself (SB_TEST.timeScale shortens these)
+  turnMs: 3000, // after the chime, the page turns
+  fadeMs: 2600, // end page: pause, then the lights go down
+});
 
 const ICONS = {
   home: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6.5 10v8.5h11V10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -32,6 +57,8 @@ const ICONS = {
   hand: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l1.6 4.2 4.4.3-3.4 2.8 1.1 4.3L12 11.7l-3.7 2.4 1.1-4.3L6 7l4.4-.3z" fill="currentColor"/><path d="M5 17.5c2.2 2.6 11.8 2.6 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   moon: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M42 8a24 24 0 1 0 14 38A20 20 0 0 1 42 8z" fill="#FFE9A8"/><circle cx="14" cy="12" r="2" fill="#FFE9A8"/><circle cx="54" cy="16" r="1.6" fill="#FFE9A8"/><circle cx="8" cy="40" r="1.4" fill="#FFE9A8"/></svg>',
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.6" fill="currentColor"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.6" fill="currentColor"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.2s-7.6-4.6-7.6-10.1A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.6 2.7c0 5.5-7.6 10.1-7.6 10.1z" fill="currentColor"/></svg>',
 };
 
 const CONFETTI = ['#E8505B', '#FFC83D', '#7EC8F0', '#6CC24A', '#FFFFFF', '#3E7BDB', '#F59A2B'];
@@ -80,6 +107,35 @@ function childSignal(parent) {
   else parent.addEventListener('abort', () => ctl.abort(), { once: true });
   return ctl;
 }
+
+/** Resolve with `fallback` if the promise takes longer than `ms` (never rejects). */
+function within(promise, ms, fallback = null) {
+  return new Promise((resolve) => {
+    const id = setTimeout(() => resolve(fallback), ms);
+    Promise.resolve(promise).then(
+      (v) => {
+        clearTimeout(id);
+        resolve(v);
+      },
+      () => {
+        clearTimeout(id);
+        resolve(fallback);
+      },
+    );
+  });
+}
+
+// The recorder module plays recorded readings; loaded only when one is used.
+let recorderModule = null;
+function loadPlayer() {
+  recorderModule ??= import('../audio/recorder.js').then(
+    (m) => (typeof m.playBlob === 'function' ? m.playBlob : null),
+    () => null,
+  );
+  return recorderModule;
+}
+
+const isBlob = (b) => Boolean(b && typeof b === 'object' && b.size > 0 && typeof b.arrayBuffer === 'function');
 
 const reducedMotionQuery = () => {
   try {
@@ -186,15 +242,25 @@ function fallbackScene(page, message) {
  * @param {HTMLElement} root
  * @param {{
  *   book: object, bookId?: string, baseUrl?: string,
- *   person: {display: string, say: string},
+ *   person: {display: string, say: string, count?: number, art?: string},
  *   pronunciation?: {useRecording?: boolean, recordingId?: string|null},
  *   settings?: {highlight?: boolean, autoTurn?: boolean, readPrompts?: boolean},
- *   narrator?: object, sfx?: {play(name: string): void, unlock?(): void},
+ *   narrator?: object, sfx?: {play(name: string, opts?: {volume?: number}): void, unlock?(): void},
  *   startPage?: number, onPageChange?: (n: number) => void, onExit?: () => void, onMagic?: (n: number) => void,
  *   requireTap?: boolean,
+ *   reading?: {readerName: string, language?: string, label?: string, getPart(n: number, part: 'main'|'after'): Promise<Blob|null>} | null,
+ *   bedtime?: boolean,
  * }} opts  requireTap: show "Tap to start" first (default: only when the page has had no user gesture yet,
  *   since browsers block speech and sound until then).
- * @returns {Promise<{destroy(): void, goTo(n: number): void, replay(): void, readonly page: number}>}
+ *   person: `togetherPerson()` for siblings (count > 1): pictures use `art`, and recorded name clips and
+ *   recorded readings are not used (they say one child's name).
+ *   reading: a grown-up's recorded reading; a page part that exists ("main" = text + prompt, "after" = the
+ *   after lines) plays instead of the computer voice, highlighted on a timeline stretched to the clip.
+ *   A reading in another `language` plays without word-by-word highlighting.
+ *   bedtime: night styling, softer sounds, slower voice; the mechanism shows itself after a few seconds and
+ *   pages turn by themselves after a soft chime; the end page fades to dark.
+ * @returns {Promise<{destroy(): void, goTo(n: number): void, replay(): void, pause(): void, resume(): void,
+ *   readonly paused: boolean, readonly page: number}>}
  */
 export async function mountReader(root, opts) {
   const {
@@ -208,12 +274,22 @@ export async function mountReader(root, opts) {
     onPageChange,
     onExit,
     onMagic,
+    reading = null,
+    bedtime = false,
   } = opts ?? {};
   const baseUrl = opts?.baseUrl ?? bookUrl(bookId);
   const pages = Array.isArray(book?.pages) ? book.pages : [];
-  const person = who?.display ? makePerson(who.display, who.say) : makePerson('Friend');
+  const person = who?.display ? makePerson(who.display, who.say, { count: who.count, art: who.art }) : makePerson('Friend');
+  // Siblings: a recording says one child's name, so neither the parent's name
+  // clip nor a grown-up's recorded reading fits "Amara and Zak".
+  const several = (person.count ?? 1) > 1;
   let narrator = opts?.narrator ?? createSilentNarrator();
-  const recording = { useRecording: Boolean(pronunciation?.useRecording), recordingId: pronunciation?.recordingId ?? null };
+  const recording = { useRecording: Boolean(pronunciation?.useRecording) && !several, recordingId: pronunciation?.recordingId ?? null };
+  const readingOn = Boolean(reading && typeof reading.getPart === 'function' && !several);
+  // A reading in another language can't follow the English words one by one.
+  const readingLang = String(reading?.language ?? '').trim();
+  const clipHighlight = !readingLang || /^(english|en(-\w+)?)$/i.test(readingLang);
+  const isBedtime = Boolean(bedtime);
   const mq = reducedMotionQuery();
   const reduced = () => Boolean(mq?.matches);
   const setting = (k, dflt) => (settings && k in settings ? settings[k] : dflt);
@@ -242,14 +318,23 @@ export async function mountReader(root, opts) {
   const bubble = h('span', { class: 'sb-r-bubble', 'aria-hidden': 'true' }, 'Turn the page!');
   const nextBtn = btn('sb-r-nav sb-r-next', 'next-page', 'Next page', 'next');
   const nextWrap = h('div', { class: 'sb-r-next-wrap' }, bubble, nextBtn);
+  const pauseBtn = btn('sb-r-pause', 'pause', 'Pause the story', 'pause');
   const bookEl = h('div', { class: 'sb-r-book' });
   const confettiLayer = h('div', { class: 'sb-r-confetti', 'aria-hidden': 'true' });
-  const stage = h('div', { class: 'sb-r-stage' }, h('div', { class: 'sb-r-frame' }, bookEl, confettiLayer));
+  // "Read by Grandma Rose": shown on pages where her recording is playing. A
+  // sticker on the corner of the book, or above the words on portrait phones
+  // (where the picture is small); CSS shows one or the other.
+  const makeBadge = (where, testid) => h('div', { class: `sb-r-badge sb-r-badge-${where}`, 'data-testid': testid, hidden: true }, h('span', { class: 'sb-r-badge-icon', html: ICONS.heart }), h('span', { class: 'sb-r-badge-text' }));
+  const badge = makeBadge('frame', 'reading-badge');
+  const badgeBand = makeBadge('band', 'reading-badge-band');
+  // A calm "Paused" chip over the picture (the pause button shows "play").
+  const pausedChip = h('div', { class: 'sb-r-paused', 'data-testid': 'paused', role: 'status', hidden: true }, h('span', { class: 'sb-r-paused-icon', html: ICONS.pause }), h('span', {}, 'Paused'));
+  const stage = h('div', { class: 'sb-r-stage' }, h('div', { class: 'sb-r-frame' }, bookEl, confettiLayer, badge, pausedChip));
   const textEl = h('div', { class: 'sb-r-text', 'data-testid': 'page-text' });
   const againBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-again', 'data-testid': 'read-again' }, h('span', { class: 'sb-r-pill-icon', html: ICONS.replay }), 'Read again');
   const nightBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-goodnight', 'data-testid': 'goodnight' }, h('span', { class: 'sb-r-pill-icon', html: ICONS.moon }), 'Goodnight');
   const endBar = h('div', { class: 'sb-r-endbar', hidden: true }, againBtn, nightBtn);
-  const band = h('div', { class: 'sb-r-band' }, h('div', { class: 'sb-r-band-inner' }, textEl, endBar));
+  const band = h('div', { class: 'sb-r-band' }, h('div', { class: 'sb-r-band-inner' }, badgeBand, textEl, endBar));
   const hearBtn = h('button', { type: 'button', class: 'sb-r-pill sb-r-hear', 'data-testid': 'tap-to-hear', hidden: true }, h('span', { class: 'sb-r-pill-icon', html: ICONS.play }), 'Tap to hear the story');
   const night = h('div', { class: 'sb-r-night', hidden: true, 'aria-live': 'polite' });
   const startLayer = h('div', { class: 'sb-r-start', hidden: true },
@@ -257,8 +342,8 @@ export async function mountReader(root, opts) {
 
   const el = h(
     'section',
-    { class: 'sb-reader', 'data-testid': 'reader', 'data-state': 'reading', 'data-page': String(startPage), 'aria-label': title, lang: book?.lang ?? 'en-GB' },
-    h('div', { class: 'sb-r-top' }, exitBtn, dots, h('div', { class: 'sb-r-tools' }, magicBtn, replayBtn)),
+    { class: `sb-reader${isBedtime ? ' is-bedtime' : ''}`, 'data-testid': 'reader', 'data-state': 'reading', 'data-page': String(startPage), 'aria-label': title, lang: book?.lang ?? 'en-GB' },
+    h('div', { class: 'sb-r-top' }, exitBtn, dots, h('div', { class: 'sb-r-tools' }, magicBtn, replayBtn, pauseBtn)),
     stage,
     band,
     prevBtn,
@@ -271,9 +356,11 @@ export async function mountReader(root, opts) {
   root.append(el);
 
   // ---- Sound -------------------------------------------------------------------
-  const play = (name) => {
+  const play = (name, { volume } = {}) => {
     try {
-      if (name) sfx?.play?.(name);
+      // Bedtime: everything softer (sfx.play(name, {volume}) where supported).
+      const vol = volume ?? (isBedtime ? BEDTIME.sfxVolume : undefined);
+      if (name) sfx?.play?.(name, vol == null ? undefined : { volume: vol });
     } catch {
       /* sound is decoration */
     }
@@ -357,21 +444,37 @@ export async function mountReader(root, opts) {
     currentWord = null;
   }
 
+  // ---- Pause / play ----------------------------------------------------------------
+  // Pausing cuts short whatever is being said (`talk`) and holds every timer;
+  // the page flow waits at its next step until play is pressed again.
+  let paused = false;
+  let talk = null; // AbortController for the words being said right now
+  const resumeWaiters = new Set();
+
+  /** Resolves at once when playing, otherwise when play is pressed (or the page is left). */
+  function whilePaused(signal) {
+    if (!paused || signal?.aborted) return Promise.resolve();
+    return new Promise((resolve) => {
+      const done = () => {
+        resumeWaiters.delete(done);
+        signal?.removeEventListener('abort', done);
+        resolve();
+      };
+      resumeWaiters.add(done);
+      signal?.addEventListener('abort', done, { once: true });
+    });
+  }
+
   let narrating = 0;
-  /** Read lines aloud with highlighting. Resolves 'done' | 'stopped'. */
-  async function speak(lines, kind, signal, { show = true } = {}) {
-    const list = (Array.isArray(lines) ? lines : [lines]).filter((l) => typeof l === 'string' && l.trim());
-    if (!list.length) return 'done';
-    const plan = planLines(list, person, recording);
-    if (show) showPart(kind, plan.lines);
-    if (signal?.aborted) return 'stopped';
+  /** One go at saying a plan with the narrator (a broken engine carries on silently). */
+  async function say(plan, signal, onUnit) {
     const voice = cur?.page?.voice ?? {};
     narrating++;
     try {
       const r = await narrator.play(plan, {
         signal,
-        onUnit: (line, unit) => !signal?.aborted && highlight(line, unit),
-        rateScale: Number(voice.rate) || 1,
+        onUnit: (line, unit) => !signal?.aborted && onUnit(line, unit),
+        rateScale: (Number(voice.rate) || 1) * (isBedtime ? BEDTIME.rate : 1),
         pitchScale: Number(voice.pitch) || 1,
       });
       if (narrator.needsGesture && !unlocked) hearBtn.hidden = false;
@@ -380,10 +483,132 @@ export async function mountReader(root, opts) {
       // A broken speech engine must never stop the story: carry on silently.
       console.warn('[reader] narration failed; continuing silently', err);
       narrator = createSilentNarrator();
-      return narrator.play(plan, { signal, onUnit: (line, unit) => !signal?.aborted && highlight(line, unit) });
+      return narrator.play(plan, { signal, onUnit: (line, unit) => !signal?.aborted && onUnit(line, unit) });
     } finally {
       narrating--;
+    }
+  }
+
+  /**
+   * Read lines aloud with highlighting. Resolves 'done' | 'stopped'.
+   * A pause stops the voice; play starts the current sentence again.
+   */
+  async function speak(lines, kind, signal, { show = true } = {}) {
+    const list = (Array.isArray(lines) ? lines : [lines]).filter((l) => typeof l === 'string' && l.trim());
+    if (!list.length) return 'done';
+    const plan = planLines(list, person, recording);
+    if (show) showPart(kind, plan.lines);
+    let from = null; // where to pick up after a pause
+    for (;;) {
+      await whilePaused(signal);
+      if (signal?.aborted) return 'stopped';
+      const ctl = childSignal(signal ?? life.signal);
+      talk = ctl;
+      let last = from;
+      const r = await say(from ? resumePlan(plan, from) : plan, ctl.signal, (line, unit) => {
+        last = { line, u: typeof unit === 'object' && unit ? unit.u : unit };
+        highlight(line, unit);
+      });
+      if (talk === ctl) talk = null;
       clearHighlight();
+      if (signal?.aborted) return 'stopped';
+      if (ctl.signal.aborted && paused) {
+        from = last;
+        continue;
+      }
+      return r;
+    }
+  }
+
+  // ---- Recorded readings ("Read by Grandma Rose") ---------------------------------
+  const partsCache = new Map(); // page n -> Promise<{main, after}>
+
+  /** Fetch a page's recorded parts (and their lengths). Missing or broken parts are null. */
+  function loadParts(n) {
+    if (!readingOn) return Promise.resolve({ main: null, after: null });
+    if (partsCache.has(n)) return partsCache.get(n);
+    const one = async (kind) => {
+      const blob = await within(Promise.resolve().then(() => reading.getPart(n, kind)), PART_TIMEOUT_MS, null);
+      if (!isBlob(blob)) return null;
+      const durationMs = await within(clipDurationMs(blob), PART_TIMEOUT_MS, null);
+      return { blob, durationMs };
+    };
+    const p = Promise.all([one('main'), one('after')]).then(([main, after]) => ({ main, after }), () => ({ main: null, after: null }));
+    partsCache.set(n, p);
+    return p;
+  }
+
+  function showBadge(on) {
+    const label = String(reading?.label ?? '').trim() || readingLabel(reading ?? {});
+    for (const b of [badge, badgeBand]) {
+      b.lastChild.textContent = label; // untrusted (it may come from a family pack): text only
+      b.title = label;
+      b.hidden = !on || !label;
+    }
+  }
+
+  /**
+   * Play one recorded part, lighting up the words on the estimated timeline
+   * stretched to the clip's length. `blocks` are the parts of the page the
+   * clip covers, in order ([text, prompt] or [after]); onPart(part, cut) runs
+   * as the reading reaches each block (cut() ends the clip there).
+   * Resolves 'done' | 'stopped' | 'failed' (couldn't play: use the voice).
+   * A pause stops the clip; play starts the part again from its beginning.
+   */
+  async function playClip(clip, blocks, signal, { onPart } = {}) {
+    const playBlob = await loadPlayer();
+    if (!playBlob) return 'failed';
+    const tl = stretchTimeline(clipTimeline(blocks, { rate: 1 }), clip.durationMs);
+    for (;;) {
+      await whilePaused(signal);
+      if (signal.aborted) return 'stopped';
+      const ctl = childSignal(signal);
+      talk = ctl;
+      let part = null;
+      const cut = () => ctl.abort();
+      const timers = [];
+      const t0 = performance.now() + CLIP_LATENCY_MS;
+      for (const step of tl.steps) {
+        const fire = () => {
+          if (ctl.signal.aborted) return;
+          if (step.part !== part) {
+            part = step.part;
+            onPart?.(part, cut);
+            if (ctl.signal.aborted) return;
+          }
+          if (clipHighlight) highlight(step.line, step.u);
+          else clearHighlight();
+        };
+        timers.push(setTimeout(fire, Math.max(0, t0 + step.at - performance.now())));
+      }
+      let result = 'done';
+      narrating++;
+      try {
+        await playBlob(clip.blob, { signal: ctl.signal });
+      } catch (err) {
+        if (!ctl.signal.aborted) {
+          console.warn('[reader] could not play the recorded reading; using the voice', err?.message ?? err);
+          result = 'failed';
+        }
+      } finally {
+        narrating--;
+        timers.forEach(clearTimeout);
+        clearHighlight();
+        if (talk === ctl) talk = null;
+      }
+      if (signal.aborted) return 'stopped';
+      if (ctl.signal.aborted && paused) continue;
+      if (result === 'done') {
+        // A clip shorter than its estimate still moves the page on to every block.
+        for (const b of blocks) {
+          if (b.part === part || !tl.steps.some((x) => x.part === b.part)) continue;
+          if (tl.steps.findIndex((x) => x.part === b.part) > tl.steps.findIndex((x) => x.part === part)) {
+            part = b.part;
+            onPart?.(part, () => {});
+          }
+        }
+      }
+      return result;
     }
   }
 
@@ -476,6 +701,7 @@ export async function mountReader(root, opts) {
     const m = page.mechanic ?? { type: 'none' };
     const state = cur;
     const drivenTargets = new Set((m.drives ?? []).map((d) => d?.target));
+    state.drivenTargets = drivenTargets;
     // Idle animations on moving parts go on a wrapper so both can run.
     hoistAnimations(svg, drivenTargets);
     // Things that appear later start hidden, whatever the artist left showing.
@@ -560,6 +786,7 @@ export async function mountReader(root, opts) {
           state.completed = true;
           disarmIdle();
           state.promptCtl?.abort();
+          state.cutClip?.(); // a recorded prompt stops once the child has done it
           state.control?.hint(false);
           state.celebration = runEffects(m.complete, svg, signal, { drivenTargets, reveal: true });
           state.resolveCompletion?.();
@@ -606,12 +833,13 @@ export async function mountReader(root, opts) {
       const node = Array.isArray(pair) ? pick(svg, pair[0]) : null;
       if (!node || typeof pair[1] !== 'string') continue;
       for (const cls of pair[1].split(/\s+/).filter(Boolean)) {
+        if (isBedtime && cls === 'sb-blink') continue; // no flashing at bedtime
         if (ANIMATION_CLASSES.includes(cls)) animateClass(node, cls, drivenTargets);
         else node.classList.add(cls);
       }
     }
     const soundMs = playSeq(f.sfx ?? [], signal);
-    if (f.confetti) burstConfetti();
+    if (f.confetti && !isBedtime) burstConfetti(); // bedtime: no bright effects
     const waits = [sleep(Math.max(600, soundMs + 450), signal)];
     // Names inside something that just appeared write themselves in now.
     for (const node of shownNow) waits.push(writeNames(signal, { within: node, filter: () => true }));
@@ -647,7 +875,7 @@ export async function mountReader(root, opts) {
     setTimeout(() => batch.forEach((p) => p.remove()), 2800);
   }
 
-  // ---- Idle re-prompt ------------------------------------------------------------
+  // ---- Idle: re-prompt, or at bedtime let the mechanism show itself ----------------
   let idleTimer = 0;
   function disarmIdle() {
     clearTimeout(idleTimer);
@@ -656,17 +884,43 @@ export async function mountReader(root, opts) {
   function rearmIdle() {
     disarmIdle();
     const state = cur;
-    if (!state || state.completed || state.reprompted || !state.waiting) return;
+    if (!state || paused || state.completed || !state.waiting) return;
+    if (isBedtime) {
+      // The child may be working the real book: after a few quiet seconds the
+      // picture does it too ("show me"), and the story carries on.
+      if (!state.control) return;
+      idleTimer = setTimeout(() => {
+        if (cur !== state || state.completed || paused || destroyed) return;
+        if (narrating) return rearmIdle(); // never over the words
+        el.dataset.autoplayed = String(state.n);
+        state.control.complete();
+      }, testScale(BEDTIME.showMeMs));
+      return;
+    }
+    if (state.reprompted) return;
     idleTimer = setTimeout(async () => {
-      if (cur !== state || state.completed || state.reprompted || destroyed) return;
+      if (cur !== state || state.completed || state.reprompted || destroyed || paused) return;
+      if (narrating) return rearmIdle();
       state.reprompted = true;
       delete el.dataset.interacting;
       state.control?.hint(true);
+      if (state.clipPrompt) {
+        // Grandma already asked in her own voice: a nudge, not the computer voice.
+        nudgePrompt();
+        return;
+      }
       if (setting('readPrompts', true) !== false && state.page.prompt) {
         state.promptCtl = childSignal(state.signal);
         await speak(state.page.prompt, 'prompt', state.promptCtl.signal, { show: false });
       }
     }, globalThis.SB_TEST?.idleMs ?? IDLE_REPROMPT_MS);
+  }
+  function nudgePrompt() {
+    const p = textEl.querySelector('.sb-r-prompt');
+    if (!p) return;
+    p.classList.remove('is-nudged');
+    void p.offsetWidth;
+    p.classList.add('is-nudged');
   }
 
   // ---- Page flow -----------------------------------------------------------------
@@ -679,11 +933,24 @@ export async function mountReader(root, opts) {
     ]);
   }
 
+  /** Show the prompt and pulse the control: the child's turn. */
+  function enterWaiting(state) {
+    if (cur !== state || state.waiting || state.completed) return;
+    setState('waiting');
+    state.waiting = true;
+    const prompt = state.page.prompt || '';
+    if (prompt) showPart('prompt', planLines([prompt], person, recording).lines);
+    state.control?.hint(true);
+  }
+
   async function openPage(n, { dir = 0 } = {}) {
     if (destroyed || !pages.length) return;
     const num = Math.min(pages.length, Math.max(1, Math.round(Number(n)) || 1));
     pageCtl?.abort();
+    // Turning the page (or reading it again) carries on reading.
+    if (paused) setPaused(false);
     disarmIdle();
+    disarmTurn();
     try {
       narrator.stop?.();
     } catch {
@@ -698,7 +965,7 @@ export async function mountReader(root, opts) {
     const completion = new Promise((r) => {
       resolveCompletion = r;
     });
-    cur = { n: num, page, signal, completed: false, resolveCompletion, waiting: false, reprompted: false, celebration: null };
+    cur = { n: num, page, signal, completed: false, resolveCompletion, waiting: false, reprompted: false, celebration: null, finished: false };
     delete el.dataset.interacting;
     const state = cur;
     setState('reading');
@@ -709,6 +976,12 @@ export async function mountReader(root, opts) {
     } catch (err) {
       console.warn('[reader] onPageChange failed', err);
     }
+    // A grown-up's recording of this page, if there is one (fetched alongside the picture).
+    const partsP = loadParts(num);
+    showBadge(false);
+    partsP.then((parts) => {
+      if (cur === state && !signal.aborted) showBadge(Boolean(parts.main || parts.after));
+    });
 
     let svg;
     try {
@@ -726,6 +999,7 @@ export async function mountReader(root, opts) {
       console.warn(`[reader] page ${num} could not be set up`, err);
     }
     for (const k of [num + 1, num - 1]) if (pages[k - 1]) prefetchScene(book, pages[k - 1], baseUrl);
+    if (pages[num]) partsP.then(() => !signal.aborted && loadParts(num + 1));
 
     await sleep(reduced() || !dir ? 120 : SLIDE_MS, signal);
     if (signal.aborted) return;
@@ -736,18 +1010,39 @@ export async function mountReader(root, opts) {
     playSeq(page.sfx?.open, signal);
     await writeNames(signal);
     if (signal.aborted) return;
-    await speak(page.text ?? [], 'text', signal, { show: false });
+    const parts = (await untilAbort(partsP, signal)) ?? {};
     if (signal.aborted) return;
 
-    const mechanic = page.mechanic?.type && page.mechanic.type !== 'none' && state.control;
+    const mechanic = Boolean(page.mechanic?.type && page.mechanic.type !== 'none' && state.control);
+    const prompt = page.prompt || '';
+    if (parts.main) {
+      // Grandma reads the page, then asks for the moving part, in one clip.
+      const blocks = [{ part: 'text', lines: planLines(page.text ?? [], person, recording).lines }];
+      if (mechanic && prompt) blocks.push({ part: 'prompt', lines: planLines([prompt], person, recording).lines });
+      const r = await playClip(parts.main, blocks, signal, {
+        onPart: (part, cut) => {
+          if (part !== 'prompt') return;
+          if (state.completed) return cut(); // already done it: no need to ask
+          state.clipPrompt = true;
+          state.cutClip = cut;
+          enterWaiting(state);
+        },
+      });
+      state.cutClip = null;
+      if (signal.aborted) return;
+      if (r === 'failed') {
+        state.clipPrompt = false;
+        await speak(page.text ?? [], 'text', signal, { show: textEl.dataset.part !== 'text' });
+      }
+    } else {
+      await speak(page.text ?? [], 'text', signal, { show: false });
+    }
+    if (signal.aborted) return;
+
     if (mechanic) {
       if (!state.completed) {
-        setState('waiting');
-        state.waiting = true;
-        const prompt = page.prompt || '';
-        if (prompt) showPart('prompt', planLines([prompt], person, recording).lines);
-        state.control.hint(true);
-        if (prompt && setting('readPrompts', true) !== false) {
+        enterWaiting(state);
+        if (!state.clipPrompt && prompt && setting('readPrompts', true) !== false) {
           state.promptCtl = childSignal(signal);
           await speak(prompt, 'prompt', state.promptCtl.signal, { show: false });
         }
@@ -761,29 +1056,75 @@ export async function mountReader(root, opts) {
       delete el.dataset.interacting;
       await untilAbort(state.celebration, signal);
       if (signal.aborted) return;
-      await speak(page.after ?? [], 'after', signal);
+      await readAfter(state, parts.after, signal);
       if (signal.aborted) return;
     } else if (page.after?.length) {
       // No working mechanism (e.g. the picture failed to load): carry on with the story.
-      await speak(page.after, 'after', signal);
+      await readAfter(state, parts.after, signal);
       if (signal.aborted) return;
     }
     finishPage(state);
   }
 
+  /** The payoff lines: Grandma's recording if there is one, otherwise the voice. */
+  async function readAfter(state, clip, signal) {
+    const lines = (state.page.after ?? []).filter((l) => typeof l === 'string' && l.trim());
+    if (!clip || !lines.length) return speak(lines, 'after', signal);
+    const tokenized = planLines(lines, person, recording).lines;
+    showPart('after', tokenized);
+    const r = await playClip(clip, [{ part: 'after', lines: tokenized }], signal);
+    if (r === 'failed' && !signal.aborted) return speak(lines, 'after', signal, { show: false });
+    return r;
+  }
+
   function finishPage(state) {
     if (cur !== state) return;
     setState('done');
+    state.finished = true;
     const last = state.n >= pages.length;
     if (last || state.page.kind === 'end') {
+      state.isEnd = true;
       endBar.hidden = false;
+    } else {
+      nextWrap.classList.add('is-ready');
+    }
+    armTurn(state);
+  }
+
+  // ---- Turning by itself (settings.autoTurn, bedtime) ----------------------------
+  let turnTimer = 0;
+  function disarmTurn() {
+    clearTimeout(turnTimer);
+    turnTimer = 0;
+    nextWrap.classList.remove('is-counting');
+  }
+  function armTurn(state) {
+    disarmTurn();
+    if (!state || cur !== state || !state.finished || paused || destroyed) return;
+    if (state.isEnd) {
+      // Bedtime: the last page lingers a moment, then the lights go down.
+      if (isBedtime && !state.slept) {
+        turnTimer = setTimeout(() => {
+          if (cur !== state || paused || destroyed) return;
+          state.slept = true;
+          lightsOut();
+        }, testScale(BEDTIME.fadeMs));
+      }
       return;
     }
-    nextWrap.classList.add('is-ready');
-    if (setting('autoTurn', false)) {
-      sleep(AUTO_TURN_MS, state.signal).then(() => {
-        if (!state.signal.aborted && cur === state) go(state.n + 1);
-      });
+    if (isBedtime) {
+      // A soft chime, then the page turns (tap the arrow to turn sooner).
+      if (!state.chimed) {
+        state.chimed = true;
+        play('ding', { volume: BEDTIME.chimeVolume });
+      }
+      const ms = testScale(BEDTIME.turnMs);
+      nextWrap.style.setProperty('--turn-ms', `${Math.round(ms)}ms`);
+      void nextWrap.offsetWidth;
+      nextWrap.classList.add('is-counting');
+      turnTimer = setTimeout(() => cur === state && !paused && go(state.n + 1), ms);
+    } else if (setting('autoTurn', false)) {
+      turnTimer = setTimeout(() => cur === state && !paused && go(state.n + 1), AUTO_TURN_MS);
     }
   }
 
@@ -795,15 +1136,154 @@ export async function mountReader(root, opts) {
     openPage(target, { dir: Math.sign(target - cur.n) });
   }
 
-  // ---- Goodnight -----------------------------------------------------------------
-  async function goodnight() {
-    pageCtl?.abort();
-    disarmIdle();
-    try {
-      narrator.stop?.();
-    } catch {
-      /* ignore */
+  // ---- Pause / play: the button, Space and K ----------------------------------------
+  function setPaused(on) {
+    const next = Boolean(on);
+    if (next === paused || destroyed) return;
+    paused = next;
+    el.classList.toggle('is-paused', next);
+    if (next) el.dataset.paused = '1';
+    else delete el.dataset.paused;
+    pauseBtn.innerHTML = ICONS[next ? 'play' : 'pause'];
+    const label = next ? 'Carry on reading' : 'Pause the story';
+    pauseBtn.setAttribute('aria-label', label);
+    pauseBtn.title = label;
+    pausedChip.hidden = !next;
+    if (next) {
+      disarmIdle();
+      disarmTurn();
+      talk?.abort();
+      talk = null;
+      try {
+        narrator.stop?.();
+      } catch {
+        /* ignore */
+      }
+    } else {
+      for (const wake of [...resumeWaiters]) wake();
+      const state = cur;
+      if (state?.waiting) rearmIdle();
+      if (state?.finished) armTurn(state);
     }
+  }
+  const togglePause = () => {
+    if (!night.classList.contains('is-on')) setPaused(!paused);
+  };
+
+  // ---- Name spotting: "That says Ava!" ----------------------------------------------
+  const NAME_SLOTS = 'text.sb-name, .sb-letters';
+  let spotCtl = null;
+
+  /** A name the child can see right now (written in, not hidden, not the empty bunting). */
+  function spottable(slot, svg) {
+    if (!slot || !svg.contains(slot) || !isShown(slot, svg)) return false;
+    if (slot.matches('text.sb-name')) {
+      return Boolean(slot.textContent.trim()) && !slot.classList.contains('is-pending') && !slot.classList.contains('is-veiled');
+    }
+    return !slot.classList.contains('is-overflow') && [...slot.querySelectorAll('.sb-letter')].some((t) => t.textContent.trim() && !t.classList.contains('is-hidden'));
+  }
+
+  /** The name under (or right next to) a tap: small fingers get a generous margin. */
+  function nameAt(ev, svg) {
+    const t = ev.target;
+    if (t?.closest?.('.sb-control, .sb-grabbable')) return null; // the moving part wins
+    const direct = t?.closest?.(NAME_SLOTS);
+    if (direct && spottable(direct, svg)) return direct;
+    if (t?.closest?.('.sb-tappable')) return null; // a tap on something that makes a sound stays that
+    let best = null;
+    let bestD = Infinity;
+    for (const slot of svg.querySelectorAll(NAME_SLOTS)) {
+      if (!spottable(slot, svg)) continue;
+      const r = slot.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      const pad = Math.max(18, Math.min(44, r.height * 0.6));
+      const dx = Math.max(r.left - ev.clientX, 0, ev.clientX - r.right);
+      const dy = Math.max(r.top - ev.clientY, 0, ev.clientY - r.bottom);
+      if (dx > pad || dy > pad) continue;
+      const d = Math.hypot(dx, dy);
+      if (d < bestD) {
+        best = slot;
+        bestD = d;
+      }
+    }
+    return best;
+  }
+
+  function restartClass(node, cls, driven, delayMs = 0) {
+    const target = needsAnimationWrapper(node, driven) ? animationWrapper(node) : node;
+    target.classList.remove(cls);
+    void target.getBBox?.();
+    target.style.animationDelay = delayMs ? `${delayMs}ms` : '';
+    target.classList.add(cls);
+  }
+
+  const SPOT_COLOURS = isBedtime ? ['#FFE7A3', '#FFD27A', '#FFF4D6', '#E9C46A'] : ['#FFC83D', '#E8505B', '#7EC8F0', '#6CC24A', '#F59A2B', '#3E7BDB'];
+  const STAR_SVG = `<svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0-11 2.8-2.8 11 0 2.8 2.8 0 11-2.8 2.8-11 0-2.8-2.8Z" fill="currentColor" stroke="${isBedtime ? '#0B0F26' : '#2B2A33'}" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+  /** Stars burst out of the name (drawn in the HTML layer over the picture, sized in screen pixels). */
+  function sparkleAround(slot) {
+    const frame = confettiLayer.getBoundingClientRect();
+    const r = slot.getBoundingClientRect();
+    if (!r.width || !frame.width) return;
+    const cx = r.left + r.width / 2 - frame.left;
+    const cy = r.top + r.height / 2 - frame.top;
+    const burst = h('div', { class: 'sb-spot', style: `left:${Math.round(cx)}px;top:${Math.round(cy)}px` });
+    burst.append(h('span', { class: 'sb-spot-glow', style: `--w:${Math.round(r.width + 36)}px;--h:${Math.round(r.height + 28)}px` }));
+    const n = reduced() ? 5 : 8;
+    const rx = r.width / 2 + 22;
+    const ry = r.height / 2 + 18;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 - Math.PI / 2 + 0.3;
+      const size = 14 + ((i * 7) % 3) * 5;
+      burst.append(
+        h('span', {
+          class: 'sb-spot-star',
+          html: STAR_SVG,
+          style: `--x:${Math.round(Math.cos(a) * rx)}px;--y:${Math.round(Math.sin(a) * ry)}px;--s:${size}px;--c:${SPOT_COLOURS[i % SPOT_COLOURS.length]};--d:${i * 35}ms`,
+        }),
+      );
+    }
+    confettiLayer.append(burst);
+    setTimeout(() => burst.remove(), 1300);
+  }
+
+  function spotName(slot) {
+    const state = cur;
+    if (!state) return;
+    const driven = state.drivenTargets ?? new Set();
+    if (slot.matches('.sb-letters')) {
+      // The letters jump one after another, like a wave along the bunting.
+      [...slot.querySelectorAll('.sb-letter')].filter((t) => t.textContent.trim()).forEach((t, i) => restartClass(t, 'sb-name-spot', driven, i * 70));
+    } else {
+      restartClass(slot, 'sb-name-spot', driven);
+    }
+    sparkleAround(slot);
+    play('sparkle');
+    el.dataset.spotted = String((Number(el.dataset.spotted) || 0) + 1);
+    if (state.waiting) rearmIdle(); // they're busy with the picture: no re-prompt just yet
+    if (narrating || narrator.speaking) return; // don't talk over the story; the sparkle says it
+    sayName();
+  }
+
+  async function sayName() {
+    spotCtl?.abort();
+    const ctl = childSignal(life.signal);
+    spotCtl = ctl;
+    try {
+      if (recording.useRecording && recording.recordingId) {
+        // The grown-up's own recording of the name, inside the line.
+        await narrator.play(planLines([SPOT_LINE], person, recording), { signal: ctl.signal, rateScale: isBedtime ? BEDTIME.rate : 1 });
+      } else {
+        await narrator.speakText(fillSpoken(SPOT_LINE, person), { signal: ctl.signal });
+      }
+    } catch {
+      /* a name that can't be said still sparkled */
+    } finally {
+      if (spotCtl === ctl) spotCtl = null;
+    }
+  }
+
+  // ---- Goodnight -----------------------------------------------------------------
+  function showNight() {
     night.replaceChildren(
       h('div', { class: 'sb-r-night-inner' }, h('span', { class: 'sb-r-night-moon', html: ICONS.moon }), h('p', { class: 'sb-r-night-text' }, `Night night, ${person.display}.`)),
     );
@@ -811,6 +1291,18 @@ export async function mountReader(root, opts) {
     void night.offsetWidth;
     night.classList.add('is-on');
     el.classList.add('is-goodnight');
+  }
+
+  async function goodnight() {
+    pageCtl?.abort();
+    disarmIdle();
+    disarmTurn();
+    try {
+      narrator.stop?.();
+    } catch {
+      /* ignore */
+    }
+    showNight();
     await sleep(reduced() ? 1400 : 3200, life.signal);
     if (destroyed) return;
     if (typeof onExit === 'function') onExit();
@@ -820,6 +1312,27 @@ export async function mountReader(root, opts) {
       el.classList.remove('is-goodnight');
       openPage(1);
     }
+  }
+
+  /** Bedtime: the end page fades to dark and stays there, and the phone may sleep. */
+  function lightsOut() {
+    showNight();
+    night.firstChild?.append(h('p', { class: 'sb-r-night-hint' }, 'Tap to see the last page again'));
+    night.classList.add('is-sleepy');
+    night.setAttribute('data-testid', 'night');
+    night.title = 'Tap to turn the lights back on';
+    el.classList.add('is-lights-out');
+    releaseWakeLock();
+  }
+  /** A tap on the dark screen brings the last page back (Read again / Goodnight). */
+  function lightsOn() {
+    if (!night.classList.contains('is-sleepy')) return;
+    night.classList.remove('is-on', 'is-sleepy');
+    el.classList.remove('is-goodnight', 'is-lights-out');
+    setTimeout(() => {
+      if (!night.classList.contains('is-on')) night.hidden = true;
+    }, reduced() ? 300 : 1000);
+    lockScreen();
   }
 
   // ---- Input ---------------------------------------------------------------------
@@ -848,6 +1361,25 @@ export async function mountReader(root, opts) {
     const span = ev.target.closest?.('.sb-word');
     if (span) tapWord(span);
   });
+  on(pauseBtn, 'click', togglePause);
+  on(pausedChip, 'click', () => setPaused(false));
+  on(night, 'click', lightsOn);
+  // Name spotting. Capture phase, so a name inside something that makes a
+  // sound when tapped (data-sfx) is spotted first; controls always win.
+  on(
+    bookEl,
+    'click',
+    (ev) => {
+      if (!cur || Date.now() - lastSwipeAt < 400) return;
+      const svg = bookEl.querySelector('.sb-r-page.is-current > svg');
+      if (!svg || svg.classList.contains('sb-scene-missing') || !svg.contains(ev.target)) return;
+      const slot = nameAt(ev, svg);
+      if (!slot) return;
+      ev.stopPropagation();
+      spotName(slot);
+    },
+    { capture: true },
+  );
   // Any first touch in the reader unlocks audio (it must be inside a gesture).
   on(el, 'pointerdown', () => !unlocked && unlockAudio(), { capture: true });
 
@@ -877,12 +1409,19 @@ export async function mountReader(root, opts) {
     if (!cur || ev.defaultPrevented || ev.altKey || ev.ctrlKey || ev.metaKey) return;
     const t = ev.target;
     if (t?.closest?.('[data-testid="control"], input, textarea, select, [contenteditable="true"]')) return;
+    // A grown-up dialog on top (e.g. the parent gate, held with Space) keeps its keys.
+    if (document.querySelector('[aria-modal="true"]:not([hidden])') && !el.contains(t)) return;
     if (ev.key === 'ArrowRight' || ev.key === 'PageDown') {
       ev.preventDefault();
       go(cur.n + 1);
     } else if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') {
       ev.preventDefault();
       go(cur.n - 1);
+    } else if (ev.key === 'k' || ev.key === 'K' || ev.key === ' ' || ev.key === 'Spacebar') {
+      // Space on a focused button presses that button instead.
+      if (ev.key !== 'k' && ev.key !== 'K' && t?.closest?.('button, [role="button"], a[href]')) return;
+      ev.preventDefault();
+      if (!ev.repeat) togglePause();
     }
   });
   if (mq?.addEventListener) on(mq, 'change', () => el.classList.toggle('is-reduced-motion', reduced()));
@@ -891,22 +1430,25 @@ export async function mountReader(root, opts) {
   // ---- Keep the screen awake while reading ---------------------------------------
   async function lockScreen() {
     try {
-      if (destroyed || document.visibilityState !== 'visible' || !navigator.wakeLock?.request) return;
+      if (destroyed || el.classList.contains('is-lights-out') || document.visibilityState !== 'visible' || !navigator.wakeLock?.request) return;
+      if (wakeLock && !wakeLock.released) return;
       wakeLock = await navigator.wakeLock.request('screen');
-      if (destroyed) wakeLock?.release?.().catch?.(() => {});
+      if (destroyed || el.classList.contains('is-lights-out')) releaseWakeLock();
     } catch {
       wakeLock = null; // not allowed (battery saver, iframe, no gesture): fine
     }
   }
+  function releaseWakeLock() {
+    try {
+      wakeLock?.release?.()?.catch?.(() => {});
+    } catch {
+      /* ignore */
+    }
+    wakeLock = null;
+  }
   on(document, 'visibilitychange', () => {
     if (document.visibilityState === 'visible') lockScreen();
-    else {
-      try {
-        narrator.stop?.();
-      } catch {
-        /* ignore */
-      }
-    }
+    else setPaused(true); // back to the phone later: the story waits, then re-reads the sentence
   });
   lockScreen();
 
@@ -946,12 +1488,23 @@ export async function mountReader(root, opts) {
     replay() {
       if (cur) openPage(cur.n, { dir: 0 });
     },
+    pause() {
+      setPaused(true);
+    },
+    resume() {
+      setPaused(false);
+    },
+    get paused() {
+      return paused;
+    },
     destroy() {
       if (destroyed) return;
       destroyed = true;
       pageCtl?.abort();
       life.abort();
       disarmIdle();
+      disarmTurn();
+      for (const wake of [...resumeWaiters]) wake();
       try {
         narrator.stop?.();
       } catch {
@@ -959,12 +1512,7 @@ export async function mountReader(root, opts) {
       }
       for (const p of [...leaving, ...bookEl.querySelectorAll('.sb-r-page')]) p.__sbCleanup?.();
       leaving.clear();
-      try {
-        wakeLock?.release?.()?.catch?.(() => {});
-      } catch {
-        /* ignore */
-      }
-      wakeLock = null;
+      releaseWakeLock();
       el.remove();
     },
   };

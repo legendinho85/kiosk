@@ -29,9 +29,18 @@ export function graphemes(text) {
   return segmenter ? [...segmenter.segment(s)].map((x) => x.segment) : Array.from(s);
 }
 
+/**
+ * The name as drawn inside the pictures: `person.art` when there is one
+ * (siblings: "Amara & Zak"), otherwise the displayed name.
+ */
+export function artName(person) {
+  if (typeof person === 'string') return person;
+  return String(person?.art ?? person?.display ?? '');
+}
+
 /** The text a slot shows for its data-form: upper ("AVA"), poss ("Ava's") or plain. */
 export function nameForForm(person, form) {
-  const display = typeof person === 'string' ? person : String(person?.display ?? '');
+  const display = artName(person);
   if (form === 'upper') return upper(display);
   if (form === 'poss') return possessive(display);
   return display;
@@ -47,6 +56,9 @@ const FLAG_FRIENDLY = /^[\p{Script=Latin}\p{Script=Greek}\p{Script=Cyrillic}][\p
  * or null when the name isn't written in an alphabet that splits into letters.
  */
 export function slotLetters(display) {
+  // Several names ("Amara & Zak", "Amara and Zak") don't spell out on one
+  // string of bunting: the overflow banner shows them instead.
+  if (/[&+,]/.test(String(display ?? ''))) return null;
   const letters = graphemes(upper(String(display ?? '').normalize('NFC'))).filter((g) => !SEPARATOR.test(g));
   if (!letters.length || !letters.every((g) => FLAG_FRIENDLY.test(g))) return null;
   return letters;
@@ -283,9 +295,9 @@ function renderSlot(item, measure) {
   el.setAttribute('aria-label', item.text);
 }
 
-function renderLetters(group, svgRoot, display, animate) {
+function renderLetters(group, svgRoot, display, animate, several = false) {
   const texts = [...group.querySelectorAll('text.sb-letter')];
-  const dist = distributeLetters(slotLetters(display), texts.length);
+  const dist = several ? null : distributeLetters(slotLetters(display), texts.length);
   const overflow = pick(svgRoot, group.dataset.overflow ?? group.getAttribute('data-overflow'));
   const write = animate && (group.dataset.anim === 'write' || texts.some((t) => t.dataset.anim === 'write'));
   texts.forEach((t, i) => {
@@ -332,7 +344,8 @@ const sleep = (ms, signal) =>
  * themselves in when writeIn() is called; everything else shows at once.
  * The scene should be in the document so text can be measured.
  * @param {SVGSVGElement} svgRoot
- * @param {{display: string, say?: string}} person
+ * @param {{display: string, say?: string, art?: string, count?: number}} person  pictures show `art ?? display`;
+ *   with several children (`count > 1`) bunting always uses the overflow banner
  * @param {{animate?: boolean}} [opts]
  * @returns {{
  *   writeIn(opts?: {within?: Element, filter?: (el: Element) => boolean, signal?: AbortSignal,
@@ -341,8 +354,10 @@ const sleep = (ms, signal) =>
  *   refit(): void, pending(): Element[], revealAll(): void }}
  */
 export function fillNameSlots(svgRoot, person, { animate = false } = {}) {
-  const display = typeof person === 'string' ? person : String(person?.display ?? '');
-  const letterwise = slotLetters(display) !== null;
+  const display = artName(person);
+  const several = typeof person === 'object' && (person?.count ?? 1) > 1;
+  // Letter-by-letter write-in suits alphabetic scripts ("Amara & Zak" too).
+  const letterwise = slotLetters(display.replace(/[&+,]/g, ' ')) !== null;
   const items = [];
 
   const layoutAll = () => {
@@ -362,7 +377,7 @@ export function fillNameSlots(svgRoot, person, { animate = false } = {}) {
       pending: Boolean(animate && el.dataset.anim === 'write'),
     });
   }
-  for (const group of svgRoot.querySelectorAll('.sb-letters')) items.push(renderLetters(group, svgRoot, display, animate));
+  for (const group of svgRoot.querySelectorAll('.sb-letters')) items.push(renderLetters(group, svgRoot, display, animate, several));
   layoutAll();
 
   async function writeItem(item, { signal, letterMs, instant, onLetter, onWritten }) {

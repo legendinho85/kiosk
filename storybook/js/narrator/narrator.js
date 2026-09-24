@@ -10,6 +10,10 @@
 //     start (iOS before a tap) or never finish (Chrome after ~15 s, iOS after
 //     an interruption);
 //   - a voice that fails with a network error is swapped for the next best one;
+//   - online voices (which send the words, and so the child's name, to Google
+//     or Microsoft) are only used once the grown-up has agreed
+//     (settings.allowOnlineVoices); until then an on-device voice reads, or,
+//     if the device has none in English, the story reads silently;
 //   - locking the phone mid-sentence restarts that sentence when it comes back;
 //   - if nothing can speak at all, a silent timed mode still moves the
 //     highlight along and resolves, so the page flow always works.
@@ -17,7 +21,7 @@
 // plan says so; if it can't play, the voice says the name instead.
 
 import { unitForCharIndex, estimateTimeline, estimateUnitMs } from './plan.js';
-import { discoverVoices, rankVoices, pickVoice, watchVoices, detectPlatform, normaliseLang, voiceInfo } from './voices.js';
+import { discoverVoices, rankVoices, pickVoice, watchVoices, detectPlatform, normaliseLang, voiceInfo, voiceStatusOf } from './voices.js';
 import { playBlob } from '../audio/recorder.js';
 import { unlockAudio } from '../audio/sfx.js';
 
@@ -100,7 +104,7 @@ function segmentMs(seg, rate) {
 
 /**
  * @param {{
- *   getSettings?: () => {voiceURI?: string|null, rate?: number, pitch?: number},
+ *   getSettings?: () => {voiceURI?: string|null, rate?: number, pitch?: number, allowOnlineVoices?: boolean},
  *   getRecording?: (id: string) => Promise<Blob|null>,
  *   synth?: SpeechSynthesis, Utterance?: typeof SpeechSynthesisUtterance,
  *   playClip?: (blob: Blob, opts: {signal: AbortSignal}) => Promise<void>, platform?: string
@@ -140,13 +144,22 @@ export function createNarrator({
     : Promise.resolve([]);
 
   const settings = () => safe(getSettings) ?? {};
+  /** Has the grown-up agreed to online voices? Read live, so the settings toggle applies at once. */
+  const allowOnline = () => settings().allowOnlineVoices === true;
 
-  /** Ranked English voices, best first (all voices if the device has no English ones). */
+  /**
+   * Ranked English voices, best first (all voices if the device has no English
+   * ones). Online voices stay in the list, flagged `online: true`, so settings
+   * can offer them; they're only used with consent.
+   */
   function listVoices() {
     const english = ranked.filter((r) => r.english);
     return (english.length ? english : ranked).map(voiceInfo);
   }
-  const silentNow = () => !supported || testHooks().forceSilent || (ranked.length === 0 && !refreshVoices());
+  // Silent when there's no engine, in test mode, with no voices at all, or when
+  // the only voices that could read the story are online ones we may not use.
+  const silentNow = () =>
+    !supported || testHooks().forceSilent || (ranked.length === 0 && !refreshVoices()) || (!allowOnline() && !chooseVoice());
 
   // Safari can report no voices at first and never fire 'voiceschanged', so
   // if discovery came back empty, look again (cheaply) whenever we need one.
@@ -164,7 +177,7 @@ export function createNarrator({
   }
 
   function chooseVoice(voiceURI = settings().voiceURI) {
-    return pickVoice(ranked, voiceURI ?? null, badVoices);
+    return pickVoice(ranked, voiceURI ?? null, badVoices, { allowOnline: allowOnline() });
   }
 
   function cancelEngine() {
@@ -557,7 +570,13 @@ export function createNarrator({
       u.volume = 0;
       u.rate = 1;
       u.lang = DEFAULT_LANG;
-      const v = chooseVoice();
+      let v = chooseVoice();
+      if (!v && !allowOnline() && ranked.length) {
+        // Never wake an online voice without consent, not even for silence:
+        // borrow any on-device voice, or skip the speech part of the unlock.
+        v = ranked.find((r) => r.local && !badVoices.has(r.uri)) ?? null;
+        if (!v) return;
+      }
       if (v) u.voice = v.voice;
       u.onend = u.onerror = () => keep.delete(u);
       keep.add(u);
@@ -582,6 +601,18 @@ export function createNarrator({
       if (silentNow()) return null;
       const v = chooseVoice();
       return v ? voiceInfo(v) : null;
+    },
+    /**
+     * Online-voice consent at a glance: how many on-device and online voices
+     * listVoices() shows, whether an online voice is in use right now, and
+     * whether the story is silent until the grown-up agrees to online voices
+     * (no on-device English voice, but online ones exist).
+     * @returns {{local: number, online: number, usingOnline: boolean, needsConsent: boolean}}
+     */
+    voiceStatus() {
+      if (supported && ranked.length === 0) refreshVoices();
+      const current = silentNow() ? null : chooseVoice();
+      return voiceStatusOf(ranked, { allowOnline: allowOnline(), current });
     },
     unlock,
     speakText,

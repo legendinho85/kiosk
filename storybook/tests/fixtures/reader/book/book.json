@@ -32,7 +32,7 @@
       "kind": "spread",
       "scene": "scenes/p2.svg",
       "text": [
-        "Where is {name's} shirt?"
+        "Where {is|are} {name's} {shirt|shirts}?"
       ],
       "prompt": "Lift the flap on the bag!",
       "after": [

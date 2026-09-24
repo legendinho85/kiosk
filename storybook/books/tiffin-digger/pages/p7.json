@@ -1,0 +1,51 @@
+{
+  "sfx": {
+    "open": "cheer"
+  },
+  "mechanic": {
+    "type": "flap",
+    "control": {
+      "flap": "#dg-p7-cloth",
+      "hinge": "top"
+    },
+    "drives": [],
+    "complete": {
+      "at": 0.9,
+      "show": [
+        "#dg-p7-sparkles",
+        "#dg-p7-ribbon-l",
+        "#dg-p7-ribbon-r",
+        "#dg-p7-rosette"
+      ],
+      "hide": [
+        "#dg-p7-cloth",
+        "#dg-p7-ribbon"
+      ],
+      "addClass": [
+        [
+          "#dg-p7-crowd",
+          "sb-cheer"
+        ],
+        [
+          "#dg-p7-goose",
+          "sb-cheer"
+        ],
+        [
+          "#dg-p7-frog",
+          "sb-cheer"
+        ],
+        [
+          "#dg-p7-fish",
+          "sb-bulge"
+        ]
+      ],
+      "sfx": [
+        "pop",
+        "sparkle",
+        "swoosh",
+        "clap"
+      ],
+      "confetti": true
+    }
+  }
+}

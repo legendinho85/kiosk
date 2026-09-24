@@ -5,10 +5,13 @@
 // - Everything else from our own origin (app code, styles, books, the name
 //   dictionary): cache first for speed, refreshed quietly in the background
 //   so the next visit gets any update.
-// - Other origins (Google Fonts, CDNs) are left to the browser.
+// - Other origins (CDNs for optional extras) are left to the browser.
+// The fonts are our own files (css/fonts.css): the Latin ones are precached so
+// an offline visit looks right; Latin Extended files are cached the first
+// time a name needs them.
 // Bump VERSION to drop old caches.
 
-const VERSION = 'v0.1.0-1';
+const VERSION = 'v0.2.0-1';
 const CACHE = `tiffin-${VERSION}`;
 const NAV_TIMEOUT_MS = 4000;
 
@@ -19,6 +22,10 @@ const PRECACHE = [
   'css/app.css',
   'css/reader.css',
   'css/ar.css',
+  'css/fonts.css',
+  'fonts/andika-latin-400-normal.woff2',
+  'fonts/andika-latin-700-normal.woff2',
+  'fonts/fredoka-latin-wght-normal.woff2',
   'js/main.js',
   'icons/icon.svg',
   'icons/icon-192.png',
@@ -101,7 +108,7 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return; // fonts, CDNs: the browser's own cache
+  if (url.origin !== self.location.origin) return; // CDNs: the browser's own cache
   if (request.headers.has('range')) return; // media seeking: let the network handle it
   if (request.mode === 'navigate') {
     event.respondWith(networkFirst(event));

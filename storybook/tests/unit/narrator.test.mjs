@@ -2,7 +2,7 @@ import test, { mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { createNarrator, textSegment } from '../../js/narrator/narrator.js';
 import { planLines, estimateTimeline } from '../../js/narrator/plan.js';
-import { person } from '../../js/core/personalise.js';
+import { person, togetherPerson } from '../../js/core/personalise.js';
 
 // ---- A fake speechSynthesis driven by mock timers ------------------------------
 
@@ -394,7 +394,7 @@ test('no voices: ready resolves within ~1.5 s and the narrator runs silently', a
 
 test('a network voice that errors is swapped for the next best voice, and stays swapped', async () => {
   const behaviour = (u, s) => (u.voice === GOOGLE_UK ? errors('network')(u, s) : talk()(u, s));
-  const { synth, narrator } = setup({ voices: [DANIEL, GOOGLE_UK], behaviour, platform: 'windows' });
+  const { synth, narrator } = setup({ voices: [DANIEL, GOOGLE_UK], behaviour, platform: 'windows', settings: { allowOnlineVoices: true } });
   await narrator.ready;
   assert.equal(narrator.currentVoice().name, 'Google UK English Female');
   const s = start(narrator, planLines(['One two.'], person('Ava')));
@@ -407,7 +407,7 @@ test('a network voice that errors is swapped for the next best voice, and stays 
 
 test('a network voice that never starts (offline) is swapped for a local one', async () => {
   const behaviour = (u, s) => (u.voice === GOOGLE_UK ? undefined : talk()(u, s));
-  const { synth, narrator } = setup({ voices: [DANIEL, GOOGLE_UK], behaviour, platform: 'windows' });
+  const { synth, narrator } = setup({ voices: [DANIEL, GOOGLE_UK], behaviour, platform: 'windows', settings: { allowOnlineVoices: true } });
   await narrator.ready;
   const s = start(narrator, planLines(['One two.'], person('Ava')));
   await advance(5000);
@@ -600,4 +600,20 @@ test('a new recording under the same id is used next time (no stale cache)', asy
   await advance(500);
   assert.equal(b.result, 'done');
   assert.deepEqual(played, [1, 2]);
+});
+
+test('siblings reading together: the voice says the joined names, never one child\'s recording', async () => {
+  const played = [];
+  const { synth, narrator } = setup({ getRecording: async () => ({ size: 1 }), playClip: async (b) => played.push(b) });
+  await narrator.ready;
+  const both = togetherPerson([{ display: 'Amara', say: 'Ah-mah-ra' }, { display: 'Zak' }]);
+  const plan = planLines(['Where {is|are} {name}?'], both, { useRecording: true, recordingId: 'r' });
+  assert.ok(plan.segments.every((sg) => sg.kind !== 'clip'), 'no clip segments for siblings');
+  const s = start(narrator, plan);
+  await advance(3000);
+  assert.equal(s.result, 'done');
+  assert.equal(played.length, 0);
+  assert.match(synth.spoken.map((u) => u.text).join(' '), /Where are Ah-mah-ra and Zak\?/);
+  // One child: the recording is still used.
+  assert.ok(planLines(['Hi {name}!'], person('Amara'), { useRecording: true, recordingId: 'r' }).segments.some((sg) => sg.kind === 'clip'));
 });

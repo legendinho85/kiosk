@@ -8,11 +8,45 @@ if (params.get('test') === '1') {
   if (params.has('idle')) globalThis.SB_TEST.idleMs = Number(params.get('idle'));
 }
 
-const log = (window.__log = { speakText: [], play: [], sfx: [], pages: [], exit: 0, magic: [] });
+const log = (window.__log = { speakText: [], play: [], sfx: [], sfxOpts: [], pages: [], exit: 0, magic: [], parts: [], clips: [] });
+
+// Watch recorded clips start and stop (recorder.js plays them with Web Audio
+// once the page has had a tap, or an <audio> element before that).
+{
+  const t = () => Math.round(performance.now());
+  const mediaPlay = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function play(...args) {
+    if (String(this.src).startsWith('blob:')) {
+      const entry = { how: 'element', start: t(), end: null };
+      log.clips.push(entry);
+      const end = () => (entry.end ??= t());
+      this.addEventListener('pause', end, { once: true });
+      this.addEventListener('ended', end, { once: true });
+      this.addEventListener('emptied', end, { once: true });
+    }
+    return mediaPlay.apply(this, args);
+  };
+  const srcStart = AudioBufferSourceNode.prototype.start;
+  const srcStop = AudioBufferSourceNode.prototype.stop;
+  AudioBufferSourceNode.prototype.start = function start(...args) {
+    const ms = (this.buffer?.duration ?? 0) * 1000;
+    if ((window.__clipMs ?? []).some((x) => Math.abs(ms - x) < 80)) {
+      // one of the reading's clips (not a sound effect's noise buffer)
+      this.__entry = { how: 'webaudio', start: t(), end: null };
+      log.clips.push(this.__entry);
+      this.addEventListener('ended', () => (this.__entry.end ??= t()), { once: true });
+    }
+    return srcStart.apply(this, args);
+  };
+  AudioBufferSourceNode.prototype.stop = function stop(...args) {
+    if (this.__entry) this.__entry.end ??= t();
+    return srcStop.apply(this, args);
+  };
+}
 
 const { mountReader, createSilentNarrator } = await import('../../../js/reader/reader.js');
 const { validateBook, loadBook, bookUrl } = await import('../../../js/core/book.js');
-const { person } = await import('../../../js/core/personalise.js');
+const { person, togetherPerson } = await import('../../../js/core/personalise.js');
 
 const bookId = params.get('book') ?? 'fixture';
 let book;
@@ -106,17 +140,72 @@ const sfx = {
   unlock: () => realSfx.unlock?.(),
   play(name, opts) {
     log.sfx.push(name);
+    log.sfxOpts.push({ name, volume: opts?.volume ?? null });
     return realSfx.play(name, opts);
   },
 };
 
-const who = person(params.get('name') ?? 'Ava', params.get('say') ?? undefined);
+// reading=mic|tone: a grown-up's recorded reading (grandparent mode). The
+// clips are real WAV files: a snippet recorded from Chromium's fake
+// microphone (--use-fake-device-for-media-stream) through js/audio/recorder.js,
+// looped to the length each part should last (mainMs, afterMs). "tone" (or no
+// microphone) uses a soft sine tone instead.
+//   parts=all | "1:main,2:after"  which parts exist    reader=Grandma Rose    lang=Urdu
+async function makeReading() {
+  const kind = params.get('reading');
+  if (!kind) return null;
+  const rec = await import('../../../js/audio/recorder.js');
+  const rate = 22050;
+  let samples = null;
+  let source = 'tone';
+  if (kind === 'mic') {
+    try {
+      const { blob } = await rec.recordName({ maxMs: 1600, autoStop: false });
+      const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      const buf = await new OAC(1, 1, rate).decodeAudioData(await blob.arrayBuffer());
+      samples = buf.getChannelData(0);
+      source = 'mic';
+    } catch (err) {
+      console.info('fake microphone unavailable; using a tone', err?.message ?? err);
+    }
+  }
+  const make = (ms) => {
+    const n = Math.round((ms / 1000) * rate);
+    const out = new Float32Array(n);
+    for (let i = 0; i < n; i++) out[i] = samples?.length ? samples[i % samples.length] * 0.5 : Math.sin((i / rate) * 2 * Math.PI * 330) * 0.15;
+    return new Blob([rec.encodeWav(out, rate)], { type: 'audio/wav' });
+  };
+  const spec = params.get('parts') ?? 'all';
+  const has = (n, part) => spec === 'all' || spec.split(',').includes(`${n}:${part}`);
+  const ms = { main: Number(params.get('mainMs') ?? 2000), after: Number(params.get('afterMs') ?? 1200) };
+  window.__clipMs = [ms.main, ms.after];
+  const clips = new Map();
+  log.reading = { source };
+  return {
+    readerName: params.get('reader') ?? 'Grandma Rose',
+    language: params.get('lang') ?? undefined,
+    async getPart(n, part) {
+      log.parts.push(`${n}:${part}`);
+      if (!has(n, part)) return null;
+      const key = `${n}:${part}`;
+      if (!clips.has(key)) clips.set(key, make(ms[part]));
+      return clips.get(key);
+    },
+  };
+}
+const reading = await makeReading();
+
+// sibs=Amara,Zak: children reading together.
+const sibs = (params.get('sibs') ?? '').split(',').map((x) => x.trim()).filter(Boolean);
+const who = sibs.length > 1 ? togetherPerson(sibs.map((display) => ({ display }))) : person(params.get('name') ?? 'Ava', params.get('say') ?? undefined);
 window.__reader = await mountReader(document.getElementById('app'), {
   book,
   bookId,
   baseUrl,
   person: who,
   pronunciation: { useRecording: false, recordingId: null },
+  reading,
+  bedtime: params.get('bedtime') === '1',
   settings,
   narrator,
   sfx,

@@ -18,7 +18,7 @@
         "target": "#dg-p3-boom",
         "rotate": [
           0,
-          -18
+          -30
         ],
         "origin": [
           0,
@@ -30,7 +30,7 @@
         "target": "#dg-p3-stick",
         "rotate": [
           0,
-          -20
+          30
         ],
         "origin": [
           0,
@@ -42,7 +42,7 @@
         "target": "#dg-p3-bucket",
         "rotate": [
           0,
-          -30
+          -50
         ],
         "origin": [
           0,

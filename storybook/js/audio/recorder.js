@@ -183,7 +183,8 @@ export function encodeWav(samples, sampleRate) {
 
 // ---- Decoding ---------------------------------------------------------------
 
-function decodeWith(ctx, arrayBuffer) {
+/** decodeAudioData as a promise, for both the callback-only (old Safari) and promise forms. */
+export function decodeWith(ctx, arrayBuffer) {
   return new Promise((resolve, reject) => {
     try {
       // Old Safari only has the callback form; new browsers return a promise too.

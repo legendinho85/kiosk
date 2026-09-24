@@ -188,20 +188,67 @@ export function rankVoices(voices, { platform = 'other' } = {}) {
 }
 
 /**
- * The voice to use: the parent's saved choice if it still exists, otherwise
- * the best-ranked English voice that isn't a joke voice.
+ * Online ("network") voices — Chrome's Google voices, Edge's "Online
+ * (Natural)" voices — send the words they read, including the child's name,
+ * to Google's or Microsoft's servers. They are only used when the grown-up
+ * has said yes (settings.allowOnlineVoices).
+ *
+ * With consent off, only on-device voices may be used. If the device has no
+ * on-device English voice but does have online English ones, nothing is
+ * usable: the story reads silently (words still light up) until the grown-up
+ * agrees, rather than reading an English story in, say, a German voice.
+ * (A device with no English voices at all keeps its on-device voices, as before.)
+ *
+ * @param {RankedVoice[]} ranked
+ * @param {boolean} allowOnline
+ * @returns {RankedVoice[]} the voices that may be used, best first
+ */
+export function usableVoices(ranked, allowOnline = false) {
+  if (allowOnline) return ranked;
+  const local = ranked.filter((r) => r.local);
+  if (!local.some((r) => r.english) && ranked.some((r) => r.english && !r.local)) return [];
+  return local;
+}
+
+/**
+ * The voice to use: the parent's saved choice if it still exists (and may be
+ * used), otherwise the best-ranked English voice that isn't a joke voice.
  * @param {RankedVoice[]} ranked
  * @param {string|null} [voiceURI]
  * @param {Set<string>} [exclude] voices that have failed this session
+ * @param {{allowOnline?: boolean}} [opts] online voices only with consent (default: allowed, for callers that filter themselves)
  * @returns {RankedVoice|null}
  */
-export function pickVoice(ranked, voiceURI = null, exclude = new Set()) {
+export function pickVoice(ranked, voiceURI = null, exclude = new Set(), { allowOnline = true } = {}) {
+  const pool = usableVoices(ranked, allowOnline);
   const ok = (r) => !exclude.has(r.uri);
   if (voiceURI) {
-    const chosen = ranked.find((r) => ok(r) && r.uri === voiceURI) ?? ranked.find((r) => ok(r) && r.name === voiceURI);
+    const chosen = pool.find((r) => ok(r) && r.uri === voiceURI) ?? pool.find((r) => ok(r) && r.name === voiceURI);
     if (chosen) return chosen;
   }
-  return ranked.find((r) => ok(r) && r.english && !r.novelty) ?? ranked.find(ok) ?? null;
+  return pool.find((r) => ok(r) && r.english && !r.novelty) ?? pool.find(ok) ?? null;
+}
+
+/**
+ * How the device's voices stand with regard to online-voice consent.
+ * Counts are over the voices listVoices() shows (English ones, or every voice
+ * when the device has no English voice at all).
+ * @param {RankedVoice[]} ranked
+ * @param {{allowOnline?: boolean, current?: RankedVoice|null}} [opts] current = the voice that will be used (null in silent mode)
+ * @returns {{local: number, online: number, usingOnline: boolean, needsConsent: boolean}}
+ */
+export function voiceStatusOf(ranked, { allowOnline = false, current = null } = {}) {
+  const english = ranked.filter((r) => r.english);
+  const shown = english.length ? english : ranked;
+  const local = shown.filter((r) => r.local).length;
+  const hasLocalEnglish = english.some((r) => r.local);
+  const hasOnlineEnglish = english.some((r) => !r.local);
+  return {
+    local,
+    online: shown.length - local,
+    usingOnline: Boolean(current && !current.local),
+    needsConsent: !allowOnline && !hasLocalEnglish && hasOnlineEnglish,
+  };
 }
 
 /** addEventListener where available (older Safari only has onvoiceschanged). Returns an unsubscribe function. */
@@ -286,7 +333,10 @@ export function watchVoices(synth, onChange) {
   return listen(synth, 'voiceschanged', () => onChange(readVoices(synth)));
 }
 
-/** Plain, serialisable description of a ranked voice (what listVoices() returns). */
+/**
+ * Plain, serialisable description of a ranked voice (what listVoices() returns).
+ * `online` voices send what they read to the browser maker's servers.
+ */
 export function voiceInfo(r) {
   return {
     uri: r.uri,
@@ -294,6 +344,7 @@ export function voiceInfo(r) {
     lang: r.lang,
     local: r.local,
     isDefault: r.isDefault,
+    online: !r.local,
     label: r.label,
     quality: r.quality,
     novelty: r.novelty,

@@ -17,7 +17,7 @@ const SENTENCE_END = /[.!?…]["'”’)]*$/;
 
 /**
  * @param {string[]} lines template lines ("Pass, pass, pass to {name}!")
- * @param {{display: string, say: string}} person
+ * @param {{display: string, say: string, count?: number}} person  (count > 1: siblings; recordings are then not used)
  * @param {{useRecording?: boolean, recordingId?: string|null, linePauseMs?: number}} [opts]
  * @returns {{lines: ReturnType<typeof tokenizeLine>[], segments: Segment[]}}
  */
@@ -25,7 +25,10 @@ export function planLines(lines, person, { useRecording = false, recordingId = n
   const tokenized = lines.map((l) => tokenizeLine(l, person));
   /** @type {Segment[]} */
   const segments = [];
-  const clip = Boolean(useRecording && recordingId);
+  // Siblings reading together: the voice says the joined names ("Amara and
+  // Zak"), so one child's recorded name never stands in for all of them.
+  const together = (person?.count ?? 1) > 1;
+  const clip = Boolean(useRecording && recordingId && !together);
 
   tokenized.forEach((line, li) => {
     if (segments.length && linePauseMs > 0 && line.units.length) segments.push({ kind: 'pause', ms: linePauseMs });
