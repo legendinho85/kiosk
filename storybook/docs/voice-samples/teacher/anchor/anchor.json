@@ -1,0 +1,59 @@
+{
+ "what": "Locked identity of casting voice 2, \"gentle nursery teacher\". Reproduced bit-for-bit-equivalent from the casting recipe.",
+ "transcript": "Once upon a time, in a little house by the park, there lived a small rabbit who loved to count the stars. One, two, three... and then she gave a big, sleepy yawn.",
+ "wav": "anchor.wav",
+ "sample_rate": 24000,
+ "format": "PCM 16-bit mono",
+ "prompt_file": "anchor_prompt.safetensors",
+ "prompt_tensors": {
+  "ref_code": [
+   174,
+   16
+  ],
+  "ref_code_dtype": "torch.int64",
+  "ref_spk_embedding": [
+   2048
+  ]
+ },
+ "prompt_mode": "ICL (x_vector_only_mode=False): ref_code + ref_spk_embedding + ref_text",
+ "recipe": {
+  "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+  "method": "generate_voice_design",
+  "seed": 200,
+  "seeding": "torch.manual_seed(200); np.random.seed(200) immediately before the batch call",
+  "batch_size": 3,
+  "take_index": 2,
+  "language": "English",
+  "instruct": "A gentle British nursery teacher in her late twenties with a soft Southern English accent. Clear, kind and encouraging, lightly bright but not bubbly, unhurried and even, articulating each word softly. British English female narrator reading a picture book aloud to a small child. She reads slowly, at a relaxed bedtime-story pace, letting each phrase breathe with soft pauses at the commas. Gentle and calm throughout, never shouty, never dramatic, no sudden changes in volume or pitch.",
+  "text": "Once upon a time, in a little house by the park, there lived a small rabbit who loved to count the stars. One, two, three... and then she gave a big, sleepy yawn.",
+  "sampling": {
+   "do_sample": true,
+   "temperature": 0.7,
+   "top_p": 0.85,
+   "top_k": 50,
+   "repetition_penalty": 1.05,
+   "max_new_tokens": 300
+  },
+  "dtype": "float32",
+  "device": "cpu",
+  "threads": 4
+ },
+ "versions": {
+  "qwen-tts": "0.1.1",
+  "torch": "2.14.0+cu130",
+  "transformers": "4.57.3"
+ },
+ "model_commits": {
+  "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign": "5ecdb67327fd37bb2e042aab12ff7391903235d3",
+  "Qwen/Qwen3-TTS-12Hz-1.7B-Base": "fd4b254389122332181a7c3db7f27e918eec64e3"
+ },
+ "f0_median_hz": 200.9,
+ "metrics": {
+  "duration_s": 13.69,
+  "f0_median_hz": 200.9,
+  "pitch_spread_st": 4.21,
+  "loudness_range_db": 20.5,
+  "pace_wpm": 144.6
+ },
+ "load_example": "from safetensors.torch import load_file; t=load_file('anchor_prompt.safetensors'); VoiceClonePromptItem(ref_code=t['ref_code'], ref_spk_embedding=t['ref_spk_embedding'], x_vector_only_mode=False, icl_mode=True, ref_text=open('anchor.txt').read().strip())"
+}

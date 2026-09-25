@@ -1,0 +1,2632 @@
+{
+ "status": "INTERIM",
+ "anchor": {
+  "what": "Locked identity of casting voice 2, \"gentle nursery teacher\". Reproduced bit-for-bit-equivalent from the casting recipe.",
+  "transcript": "Once upon a time, in a little house by the park, there lived a small rabbit who loved to count the stars. One, two, three... and then she gave a big, sleepy yawn.",
+  "wav": "anchor.wav",
+  "sample_rate": 24000,
+  "format": "PCM 16-bit mono",
+  "prompt_file": "anchor_prompt.safetensors",
+  "prompt_tensors": {
+   "ref_code": [
+    174,
+    16
+   ],
+   "ref_code_dtype": "torch.int64",
+   "ref_spk_embedding": [
+    2048
+   ]
+  },
+  "prompt_mode": "ICL (x_vector_only_mode=False): ref_code + ref_spk_embedding + ref_text",
+  "recipe": {
+   "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+   "method": "generate_voice_design",
+   "seed": 200,
+   "seeding": "torch.manual_seed(200); np.random.seed(200) immediately before the batch call",
+   "batch_size": 3,
+   "take_index": 2,
+   "language": "English",
+   "instruct": "A gentle British nursery teacher in her late twenties with a soft Southern English accent. Clear, kind and encouraging, lightly bright but not bubbly, unhurried and even, articulating each word softly. British English female narrator reading a picture book aloud to a small child. She reads slowly, at a relaxed bedtime-story pace, letting each phrase breathe with soft pauses at the commas. Gentle and calm throughout, never shouty, never dramatic, no sudden changes in volume or pitch.",
+   "text": "Once upon a time, in a little house by the park, there lived a small rabbit who loved to count the stars. One, two, three... and then she gave a big, sleepy yawn.",
+   "sampling": {
+    "do_sample": true,
+    "temperature": 0.7,
+    "top_p": 0.85,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "max_new_tokens": 300
+   },
+   "dtype": "float32",
+   "device": "cpu",
+   "threads": 4
+  },
+  "versions": {
+   "qwen-tts": "0.1.1",
+   "torch": "2.14.0+cu130",
+   "transformers": "4.57.3"
+  },
+  "model_commits": {
+   "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign": "5ecdb67327fd37bb2e042aab12ff7391903235d3",
+   "Qwen/Qwen3-TTS-12Hz-1.7B-Base": "fd4b254389122332181a7c3db7f27e918eec64e3"
+  },
+  "f0_median_hz": 200.9,
+  "metrics": {
+   "duration_s": 13.69,
+   "f0_median_hz": 200.9,
+   "pitch_spread_st": 4.21,
+   "loudness_range_db": 20.5,
+   "pace_wpm": 144.6
+  },
+  "load_example": "from safetensors.torch import load_file; t=load_file('anchor_prompt.safetensors'); VoiceClonePromptItem(ref_code=t['ref_code'], ref_spk_embedding=t['ref_spk_embedding'], x_vector_only_mode=False, icl_mode=True, ref_text=open('anchor.txt').read().strip())"
+ },
+ "polished_ava": {
+  "day": "Ava_day_A_s5000_t2",
+  "bed": "Ava_bed_A_s5100_t1",
+  "pauses": {
+   "day": [
+    {
+     "after": "ava",
+     "kind": "comma",
+     "found": 0.74,
+     "reader_target": 0.3,
+     "set_to": 0.74
+    },
+    {
+     "after": "ava",
+     "kind": "comma",
+     "found": 0.39,
+     "reader_target": 0.3,
+     "set_to": 0.39
+    },
+    {
+     "after": "tight",
+     "kind": "line_end",
+     "found": 0.54,
+     "reader_target": 0.37,
+     "set_to": 0.54
+    },
+    {
+     "after": "up",
+     "kind": "comma",
+     "found": 0.46,
+     "reader_target": 0.3,
+     "set_to": 0.46
+    },
+    {
+     "after": "bright",
+     "kind": "couplet_end",
+     "found": 0.65,
+     "reader_target": 0.75,
+     "set_to": 0.75
+    },
+    {
+     "after": "roll",
+     "kind": "line_end",
+     "found": 0.59,
+     "reader_target": 0.408,
+     "set_to": 0.59
+    },
+    {
+     "shrink_alpha": 0.0,
+     "note": "fraction of each over-long pause removed (1 = full reader target)"
+    }
+   ],
+   "bed": [
+    {
+     "after": "ava",
+     "kind": "comma",
+     "found": 0.85,
+     "reader_target": 0.3,
+     "set_to": 0.85
+    },
+    {
+     "after": "ava",
+     "kind": "comma",
+     "found": 0.47,
+     "reader_target": 0.3,
+     "set_to": 0.47
+    },
+    {
+     "after": "bed",
+     "kind": "line_end",
+     "found": 0.51,
+     "reader_target": 0.471,
+     "set_to": 0.51
+    },
+    {
+     "after": "blanket",
+     "kind": "comma",
+     "found": 0.5,
+     "reader_target": 0.3,
+     "set_to": 0.5
+    },
+    {
+     "after": "head",
+     "kind": "couplet_end",
+     "found": 0.63,
+     "reader_target": 0.906,
+     "set_to": 0.906
+    },
+    {
+     "after": "out",
+     "kind": "comma",
+     "found": 0.47,
+     "reader_target": 0.3,
+     "set_to": 0.47
+    },
+    {
+     "after": "too",
+     "kind": "line_end",
+     "found": 0.53,
+     "reader_target": 0.815,
+     "set_to": 0.815
+    },
+    {
+     "after": "night",
+     "kind": "comma",
+     "found": 0.0,
+     "action": "no model silence: kept timing"
+    },
+    {
+     "after": "ava",
+     "kind": "comma",
+     "found": 0.45,
+     "reader_target": 0.3,
+     "set_to": 0.45
+    },
+    {
+     "shrink_alpha": 0.0,
+     "note": "fraction of each over-long pause removed (1 = full reader target)"
+    }
+   ]
+  },
+  "stanza_gap_s": 1.371,
+  "mastering": {
+   "hpf_hz": 80,
+   "high_shelf": "-2 dB @ 5 kHz",
+   "deess_band": "6-8 kHz",
+   "deess_max_db": 4.0,
+   "deess_p99_reduction_db": 4.0,
+   "comp": {
+    "ratio": 2,
+    "attack_ms": 20,
+    "release_ms": 200,
+    "threshold_db": -22.0,
+    "median_speech_gr_db": 2.47
+   },
+   "bed_gain_db": -1.97,
+   "limiter_used": true,
+   "true_peak_dbtp": -1.92
+  },
+  "room_tone_dbfs": -64.2,
+  "speech_rms_dbfs": -16.2,
+  "bounds_s": [
+   0.3,
+   10.499875,
+   11.871,
+   24.581875
+  ],
+  "verify": {
+   "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal. Ava, Ava, time for bed, a cozy blanket, a sleepy head. The moon is out, the stars are too. Night night Ava, we love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.62,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 11.92,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 13.22,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 22.78,
+     "phones": "aɪteɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa_vs_anchor": 0.8851,
+   "utmos_all": 4.402,
+   "utmos_day": 4.404,
+   "day": {
+    "duration_s": 10.06,
+    "f0_median_hz": 208.0,
+    "pitch_spread_st": 3.01,
+    "loudness_range_db": 17.1,
+    "pace_wpm": 155.1,
+    "lufs": -17.04
+   },
+   "utmos_bed": 4.433,
+   "bed": {
+    "duration_s": 12.54,
+    "f0_median_hz": 200.9,
+    "pitch_spread_st": 3.18,
+    "loudness_range_db": 18.0,
+    "pace_wpm": 119.6,
+    "lufs": -18.92
+   },
+   "bed_minus_day_lu": -1.88,
+   "lufs": -18.01,
+   "true_peak_dbtp": -1.8700000047683716,
+   "floor_dbfs_p5": -64.7,
+   "gap_rms_dbfs": [
+    -64.0,
+    -63.900001525878906,
+    -56.20000076293945,
+    -64.19999694824219,
+    -63.29999923706055,
+    -64.5,
+    -63.20000076293945,
+    -64.30000305175781,
+    -64.30000305175781,
+    -63.70000076293945,
+    -64.19999694824219,
+    -64.0999984741211,
+    -63.79999923706055,
+    -59.099998474121094,
+    -63.5,
+    -64.4000015258789,
+    -64.4000015258789
+   ],
+   "duration_s": 25.18,
+   "size_kb": 165
+  }
+ },
+ "casting_voice2_remeasured": {
+  "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal. Ava, Ava, time for bed, a cozy blanket, a sleepy head. The moon is out, the stars are too, night night Ava, we love you.",
+  "word_errors": 0,
+  "name_checks": [
+   {
+    "word": "Ava,",
+    "t": 0.0,
+    "phones": "eɪvɐ",
+    "best_window": "eɪvɐ",
+    "dist": 0,
+    "ok": true
+   },
+   {
+    "word": "Ava,",
+    "t": 1.58,
+    "phones": "eɪv",
+    "best_window": "eɪv",
+    "dist": 1,
+    "ok": true
+   },
+   {
+    "word": "Ava,",
+    "t": 13.16,
+    "phones": "eɪvɐ",
+    "best_window": "eɪvɐ",
+    "dist": 0,
+    "ok": true
+   },
+   {
+    "word": "Ava,",
+    "t": 14.64,
+    "phones": "eɪvɐ",
+    "best_window": "eɪvɐ",
+    "dist": 0,
+    "ok": true
+   },
+   {
+    "word": "Ava,",
+    "t": 24.88,
+    "phones": "teɪvɐ",
+    "best_window": "eɪvɐ",
+    "dist": 0,
+    "ok": true
+   }
+  ],
+  "name_ok": true,
+  "ecapa_vs_anchor": 0.9048,
+  "utmos_all": 4.466,
+  "utmos_day": 4.497,
+  "day": {
+   "duration_s": 11.24,
+   "f0_median_hz": 206.8,
+   "pitch_spread_st": 4.64,
+   "loudness_range_db": 18.4,
+   "pace_wpm": 138.8,
+   "lufs": -17.48
+  },
+  "utmos_bed": 4.478,
+  "bed": {
+   "duration_s": 13.46,
+   "f0_median_hz": 200.3,
+   "pitch_spread_st": 3.43,
+   "loudness_range_db": 19.2,
+   "pace_wpm": 111.4,
+   "lufs": -18.4
+  },
+  "bed_minus_day_lu": -0.92,
+  "lufs": -18.03,
+  "true_peak_dbtp": -1.0399999618530273,
+  "floor_dbfs_p5": -63.7,
+  "gap_rms_dbfs": [
+   -64.30000305175781,
+   -61.5,
+   -56.0,
+   -57.5,
+   -63.29999923706055,
+   -58.5,
+   -62.70000076293945,
+   -63.099998474121094,
+   -62.0,
+   -61.900001525878906,
+   -60.79999923706055,
+   -61.29999923706055,
+   -63.20000076293945,
+   -60.29999923706055,
+   -59.599998474121094,
+   -59.0,
+   -64.0
+  ],
+  "duration_s": 27.34,
+  "size_kb": 175,
+  "line_jumps_st": {
+   "day": [
+    2.5,
+    0.35,
+    5.4
+   ],
+   "bed": [
+    1.8,
+    2.2,
+    2.3
+   ]
+  },
+  "bounds_s": [
+   0.0,
+   11.54,
+   13.16,
+   26.68
+  ]
+ },
+ "takes": [
+  {
+   "raw_dur_s": 9.68,
+   "too_long": false,
+   "head_1p5s": "Ava, Ava...",
+   "echo": false,
+   "trim": {
+    "start_s": 0.37,
+    "end_s": 9.68,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.04,
+     "phones": "eɪvɐbuː",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8753,
+   "utmos": 4.545,
+   "metrics": {
+    "duration_s": 9.11,
+    "f0_median_hz": 198.6,
+    "pitch_spread_st": 3.02,
+    "loudness_range_db": 18.4,
+    "pace_wpm": 171.2
+   },
+   "f0_st_vs_anchor": -0.2,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.42,
+     "f0": 201.5,
+     "end_move_st": -3.85
+    },
+    {
+     "start": 2.9,
+     "end": 5.06,
+     "f0": 205.6,
+     "end_move_st": -2.7
+    },
+    {
+     "start": 5.84,
+     "end": 7.44,
+     "f0": 192.9,
+     "end_move_st": -2.2
+    },
+    {
+     "start": 7.74,
+     "end": 9.02,
+     "f0": 204.4,
+     "end_move_st": -1.85
+    }
+   ],
+   "line_jumps_st": [
+    0.35,
+    1.1,
+    1.0
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_A_s5000_t0",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "A",
+   "seed": 5000,
+   "batch_index": 0,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 106.5,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 3.4,
+   "score_parts": {
+    "spread": 1.08,
+    "pace": 2.32,
+    "f0": 0.0,
+    "jumps": 0.0,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 9.76,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.37,
+    "end_s": 9.76,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava. Ava boots on tight. The sun is up, the sky is bright. Kick the ball and watch it roll. All the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava.",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava",
+     "t": 1.14,
+     "phones": "eɪvɐbuː",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8667,
+   "utmos": 4.547,
+   "metrics": {
+    "duration_s": 9.22,
+    "f0_median_hz": 202.6,
+    "pitch_spread_st": 3.81,
+    "loudness_range_db": 20.9,
+    "pace_wpm": 169.2
+   },
+   "f0_st_vs_anchor": 0.15,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.4,
+     "f0": 232.8,
+     "end_move_st": 0.0
+    },
+    {
+     "start": 3.04,
+     "end": 5.04,
+     "f0": 209.2,
+     "end_move_st": -2.05
+    },
+    {
+     "start": 5.88,
+     "end": 7.28,
+     "f0": 213.4,
+     "end_move_st": -1.7
+    },
+    {
+     "start": 7.94,
+     "end": 9.12,
+     "f0": 187.4,
+     "end_move_st": -1.0
+    }
+   ],
+   "line_jumps_st": [
+    1.85,
+    0.34,
+    2.25
+   ],
+   "falls": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_A_s5000_t1",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "A",
+   "seed": 5000,
+   "batch_index": 1,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 106.5,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.535,
+   "score_parts": {
+    "spread": 0.29,
+    "pace": 2.12,
+    "f0": 0.0,
+    "jumps": 0.125,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 10.48,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.38,
+    "end_s": 10.48,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.28,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8842,
+   "utmos": 4.542,
+   "metrics": {
+    "duration_s": 9.95,
+    "f0_median_hz": 208.0,
+    "pitch_spread_st": 2.95,
+    "loudness_range_db": 19.6,
+    "pace_wpm": 156.8
+   },
+   "f0_st_vs_anchor": 0.6,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.92,
+     "f0": 190.7,
+     "end_move_st": -3.3
+    },
+    {
+     "start": 3.5,
+     "end": 5.66,
+     "f0": 209.2,
+     "end_move_st": -1.6
+    },
+    {
+     "start": 6.46,
+     "end": 8.02,
+     "f0": 225.5,
+     "end_move_st": -2.45
+    },
+    {
+     "start": 8.56,
+     "end": 9.86,
+     "f0": 219.1,
+     "end_move_st": -2.75
+    }
+   ],
+   "line_jumps_st": [
+    1.6,
+    1.3,
+    0.5
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_A_s5000_t2",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "A",
+   "seed": 5000,
+   "batch_index": 2,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 106.5,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.03,
+   "score_parts": {
+    "spread": 1.15,
+    "pace": 0.88,
+    "f0": 0.0,
+    "jumps": 0.0,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 10.88,
+   "too_long": false,
+   "head_1p5s": "Ava?",
+   "echo": false,
+   "trim": {
+    "start_s": 0.88,
+    "end_s": 10.88,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava? Ava, boots on tight. The sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava?",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.38,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8664,
+   "utmos": 4.561,
+   "metrics": {
+    "duration_s": 9.83,
+    "f0_median_hz": 199.7,
+    "pitch_spread_st": 3.86,
+    "loudness_range_db": 19.4,
+    "pace_wpm": 158.7
+   },
+   "f0_st_vs_anchor": -0.1,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.16,
+     "f0": 257.5,
+     "end_move_st": -10.2
+    },
+    {
+     "start": 3.7,
+     "end": 5.86,
+     "f0": 195.2,
+     "end_move_st": -1.95
+    },
+    {
+     "start": 6.52,
+     "end": 8.06,
+     "f0": 197.4,
+     "end_move_st": -3.85
+    },
+    {
+     "start": 8.34,
+     "end": 9.72,
+     "f0": 199.7,
+     "end_move_st": -2.15
+    }
+   ],
+   "line_jumps_st": [
+    4.8,
+    0.19,
+    0.2
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_A_s5001_t0",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "A",
+   "seed": 5001,
+   "batch_index": 0,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 80.2,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.71,
+   "score_parts": {
+    "spread": 0.24,
+    "pace": 1.07,
+    "f0": 0.0,
+    "jumps": 1.4,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 10.08,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.38,
+    "end_s": 10.08,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava, Ava boots on tight. The sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava",
+     "t": 1.04,
+     "phones": "eɪvɐbuː",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8544,
+   "utmos": 4.548,
+   "metrics": {
+    "duration_s": 9.51,
+    "f0_median_hz": 200.9,
+    "pitch_spread_st": 3.54,
+    "loudness_range_db": 20.0,
+    "pace_wpm": 164.0
+   },
+   "f0_st_vs_anchor": 0.0,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.34,
+     "f0": 182.1,
+     "end_move_st": -0.75
+    },
+    {
+     "start": 3.04,
+     "end": 5.26,
+     "f0": 204.4,
+     "end_move_st": -2.7
+    },
+    {
+     "start": 6.0,
+     "end": 7.56,
+     "f0": 206.8,
+     "end_move_st": -3.25
+    },
+    {
+     "start": 8.0,
+     "end": 9.38,
+     "f0": 209.2,
+     "end_move_st": -2.0
+    }
+   ],
+   "line_jumps_st": [
+    2.0,
+    0.2,
+    0.2
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_A_s5001_t1",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "A",
+   "seed": 5001,
+   "batch_index": 1,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 80.2,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.16,
+   "score_parts": {
+    "spread": 0.56,
+    "pace": 1.6,
+    "f0": 0.0,
+    "jumps": 0.0,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 10.96,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.37,
+    "end_s": 10.96,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava. Ava. Boots on tight. The sun is up. The sky is bright. Kick the ball and watch it roll. All the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava.",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 1.32,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.7819,
+   "utmos": 4.563,
+   "metrics": {
+    "duration_s": 10.38,
+    "f0_median_hz": 194.0,
+    "pitch_spread_st": 3.98,
+    "loudness_range_db": 20.6,
+    "pace_wpm": 150.3
+   },
+   "f0_st_vs_anchor": -0.61,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.98,
+     "f0": 174.9,
+     "end_move_st": -9.2
+    },
+    {
+     "start": 3.62,
+     "end": 5.96,
+     "f0": 212.8,
+     "end_move_st": -1.1
+    },
+    {
+     "start": 6.84,
+     "end": 8.36,
+     "f0": 187.4,
+     "end_move_st": -1.3
+    },
+    {
+     "start": 9.1,
+     "end": 10.28,
+     "f0": 217.2,
+     "end_move_st": -1.3
+    }
+   ],
+   "line_jumps_st": [
+    3.4,
+    2.2,
+    2.55
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_B_s5010_t0",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "B",
+   "seed": 5010,
+   "batch_index": 0,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 174.0,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 1.425,
+   "score_parts": {
+    "spread": 0.12,
+    "pace": 0.23,
+    "f0": 0.0,
+    "jumps": 1.075,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 22.4,
+   "too_long": true,
+   "head_1p5s": "You",
+   "echo": false,
+   "trim": {
+    "start_s": 0.75,
+    "end_s": 22.4,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "... ... ... ...",
+   "word_errors": 26,
+   "name_checks": [],
+   "name_ok": false,
+   "ecapa": -0.0027,
+   "utmos": 1.466,
+   "metrics": {
+    "duration_s": 21.59,
+    "f0_median_hz": 167.9,
+    "pitch_spread_st": 3.98,
+    "loudness_range_db": 26.6,
+    "pace_wpm": 72.3
+   },
+   "f0_st_vs_anchor": -3.11,
+   "lines": null,
+   "line_jumps_st": null,
+   "falls": null,
+   "key": "Ava_day_B_s5010_t1",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "B",
+   "seed": 5010,
+   "batch_index": 1,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 174.0,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 11.0,
+   "score_parts": {
+    "spread": 0.12,
+    "pace": 5.77,
+    "f0": 2.11,
+    "jumps": 2.0,
+    "falls": 1.0
+   }
+  },
+  {
+   "raw_dur_s": 9.84,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.65,
+    "end_s": 9.84,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava, Ava boots on tight. The sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava",
+     "t": 0.94,
+     "phones": "eɪvɐbuː",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8783,
+   "utmos": 4.555,
+   "metrics": {
+    "duration_s": 9.0,
+    "f0_median_hz": 195.2,
+    "pitch_spread_st": 3.23,
+    "loudness_range_db": 20.5,
+    "pace_wpm": 173.3
+   },
+   "f0_st_vs_anchor": -0.5,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.1,
+     "f0": 203.2,
+     "end_move_st": -4.35
+    },
+    {
+     "start": 2.7,
+     "end": 4.82,
+     "f0": 204.4,
+     "end_move_st": -2.5
+    },
+    {
+     "start": 5.64,
+     "end": 7.18,
+     "f0": 188.5,
+     "end_move_st": -2.2
+    },
+    {
+     "start": 7.68,
+     "end": 8.92,
+     "f0": 209.2,
+     "end_move_st": -3.3
+    }
+   ],
+   "line_jumps_st": [
+    0.1,
+    1.4,
+    1.8
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_B_s5010_t2",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "B",
+   "seed": 5010,
+   "batch_index": 2,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 174.0,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 3.4,
+   "score_parts": {
+    "spread": 0.87,
+    "pace": 2.53,
+    "f0": 0.0,
+    "jumps": 0.0,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 22.4,
+   "too_long": true,
+   "head_1p5s": "You",
+   "echo": false,
+   "trim": {
+    "start_s": 0.84,
+    "end_s": 5.56,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "You",
+   "word_errors": 26,
+   "name_checks": [],
+   "name_ok": false,
+   "ecapa": -0.0149,
+   "utmos": 1.391,
+   "metrics": {
+    "duration_s": 4.51,
+    "f0_median_hz": 90.5,
+    "pitch_spread_st": 0.6,
+    "loudness_range_db": 30.5,
+    "pace_wpm": 345.9
+   },
+   "f0_st_vs_anchor": -13.81,
+   "lines": null,
+   "line_jumps_st": null,
+   "falls": null,
+   "key": "Ava_day_B_s5011_t0",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "B",
+   "seed": 5011,
+   "batch_index": 0,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 142.4,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 39.1,
+   "score_parts": {
+    "spread": 3.5,
+    "pace": 19.79,
+    "f0": 12.81,
+    "jumps": 2.0,
+    "falls": 1.0
+   }
+  },
+  {
+   "raw_dur_s": 10.56,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 1.02,
+    "end_s": 10.5,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava. Ava, boots on tight. The sun is up. The sky is bright. Kick the ball and watch it roll, all the way into the goal.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava.",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.2,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.893,
+   "utmos": 4.55,
+   "metrics": {
+    "duration_s": 9.27,
+    "f0_median_hz": 196.3,
+    "pitch_spread_st": 3.61,
+    "loudness_range_db": 20.6,
+    "pace_wpm": 168.3
+   },
+   "f0_st_vs_anchor": -0.4,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.6,
+     "f0": 202.0,
+     "end_move_st": -4.95
+    },
+    {
+     "start": 3.18,
+     "end": 5.26,
+     "f0": 186.3,
+     "end_move_st": -1.2
+    },
+    {
+     "start": 5.94,
+     "end": 7.42,
+     "f0": 203.2,
+     "end_move_st": -2.74
+    },
+    {
+     "start": 7.88,
+     "end": 9.14,
+     "f0": 212.8,
+     "end_move_st": -1.9
+    }
+   ],
+   "line_jumps_st": [
+    1.4,
+    1.5,
+    0.8
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_day_B_s5011_t1",
+   "name": "Ava",
+   "stanza": "day",
+   "cfg": "B",
+   "seed": 5011,
+   "batch_index": 1,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll... all the way into the goal.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 281
+   },
+   "batch_render_s": 142.4,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.52,
+   "score_parts": {
+    "spread": 0.49,
+    "pace": 2.03,
+    "f0": 0.0,
+    "jumps": 0.0,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 12.32,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.75,
+    "end_s": 12.32,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava! Ava! Time for bed? A cozy blanket? A sleepy head? The moon is out. The stars are too. Night night, Ava. We love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava!",
+     "t": 0.0,
+     "phones": "vɐ",
+     "best_window": "vɐ",
+     "dist": 1,
+     "ok": true
+    },
+    {
+     "word": "Ava!",
+     "t": 1.24,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 10.02,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8578,
+   "utmos": 4.577,
+   "metrics": {
+    "duration_s": 11.43,
+    "f0_median_hz": 209.2,
+    "pitch_spread_st": 4.12,
+    "loudness_range_db": 20.1,
+    "pace_wpm": 131.2
+   },
+   "f0_st_vs_anchor": 0.7,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.8,
+     "f0": 179.0,
+     "end_move_st": -0.05
+    },
+    {
+     "start": 3.36,
+     "end": 5.74,
+     "f0": 254.6,
+     "end_move_st": -2.2
+    },
+    {
+     "start": 6.44,
+     "end": 8.78,
+     "f0": 223.5,
+     "end_move_st": -3.1
+    },
+    {
+     "start": 9.38,
+     "end": 11.44,
+     "f0": 192.9,
+     "end_move_st": -7.85
+    }
+   ],
+   "line_jumps_st": [
+    6.1,
+    2.26,
+    2.55
+   ],
+   "falls": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_bed_A_s5100_t0",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "A",
+   "seed": 5100,
+   "batch_index": 0,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 111.0,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 3.795,
+   "score_parts": {
+    "spread": 0.02,
+    "pace": 1.32,
+    "f0": 0.0,
+    "jumps": 2.455,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 12.88,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.73,
+    "end_s": 12.88,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava. Ava. Time for bed. A cozy blanket. A sleepy head. The moon is out. The stars are too. Night night, Ava. We love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava.",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 1.34,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 10.56,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8511,
+   "utmos": 4.556,
+   "metrics": {
+    "duration_s": 11.98,
+    "f0_median_hz": 205.6,
+    "pitch_spread_st": 3.05,
+    "loudness_range_db": 21.1,
+    "pace_wpm": 125.2
+   },
+   "f0_st_vs_anchor": 0.4,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.04,
+     "f0": 195.2,
+     "end_move_st": -2.1
+    },
+    {
+     "start": 3.64,
+     "end": 6.12,
+     "f0": 203.2,
+     "end_move_st": -1.55
+    },
+    {
+     "start": 6.82,
+     "end": 9.16,
+     "f0": 219.1,
+     "end_move_st": -3.3
+    },
+    {
+     "start": 9.94,
+     "end": 11.96,
+     "f0": 194.6,
+     "end_move_st": -2.75
+    }
+   ],
+   "line_jumps_st": [
+    0.7,
+    1.3,
+    2.05
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_bed_A_s5100_t1",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "A",
+   "seed": 5100,
+   "batch_index": 1,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 111.0,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 0.795,
+   "score_parts": {
+    "spread": 0.05,
+    "pace": 0.72,
+    "f0": 0.0,
+    "jumps": 0.025,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 12.32,
+   "too_long": false,
+   "head_1p5s": "Ava.",
+   "echo": false,
+   "trim": {
+    "start_s": 0.79,
+    "end_s": 12.32,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava? Ava, time for bed, a cozy blanket, a sleepy head. The moon is out, the stars are too. Night night, Ava. We love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava?",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.74,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 10.16,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8236,
+   "utmos": 4.556,
+   "metrics": {
+    "duration_s": 11.44,
+    "f0_median_hz": 202.0,
+    "pitch_spread_st": 3.14,
+    "loudness_range_db": 22.0,
+    "pace_wpm": 131.1
+   },
+   "f0_st_vs_anchor": 0.09,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.4,
+     "f0": 191.8,
+     "end_move_st": -3.25
+    },
+    {
+     "start": 3.8,
+     "end": 5.98,
+     "f0": 182.1,
+     "end_move_st": -1.4
+    },
+    {
+     "start": 6.8,
+     "end": 8.88,
+     "f0": 245.9,
+     "end_move_st": 0.5
+    },
+    {
+     "start": 9.64,
+     "end": 11.44,
+     "f0": 190.7,
+     "end_move_st": -5.8
+    }
+   ],
+   "line_jumps_st": [
+    0.9,
+    5.2,
+    4.4
+   ],
+   "falls": [
+    true,
+    true,
+    false,
+    true
+   ],
+   "key": "Ava_bed_A_s5100_t2",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "A",
+   "seed": 5100,
+   "batch_index": 2,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 111.0,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 4.11,
+   "score_parts": {
+    "spread": 0.0,
+    "pace": 1.31,
+    "f0": 0.0,
+    "jumps": 2.8,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 12.0,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.37,
+    "end_s": 12.0,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head, the moon is out, the stars are too, night night Ava, we love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.3,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 9.88,
+     "phones": "aɪteɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.83,
+   "utmos": 4.54,
+   "metrics": {
+    "duration_s": 11.52,
+    "f0_median_hz": 195.2,
+    "pitch_spread_st": 2.72,
+    "loudness_range_db": 23.0,
+    "pace_wpm": 130.2
+   },
+   "f0_st_vs_anchor": -0.5,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.98,
+     "f0": 173.9,
+     "end_move_st": -1.35
+    },
+    {
+     "start": 3.58,
+     "end": 5.78,
+     "f0": 217.2,
+     "end_move_st": -0.3
+    },
+    {
+     "start": 6.5,
+     "end": 8.74,
+     "f0": 205.6,
+     "end_move_st": -3.6
+    },
+    {
+     "start": 9.48,
+     "end": 11.52,
+     "f0": 192.9,
+     "end_move_st": -4.6
+    }
+   ],
+   "line_jumps_st": [
+    3.85,
+    0.95,
+    1.1
+   ],
+   "falls": [
+    true,
+    false,
+    true,
+    true
+   ],
+   "key": "Ava_bed_A_s5101_t0",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "A",
+   "seed": 5101,
+   "batch_index": 0,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 87.5,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 3.025,
+   "score_parts": {
+    "spread": 0.38,
+    "pace": 1.22,
+    "f0": 0.0,
+    "jumps": 0.925,
+    "falls": 0.5
+   }
+  },
+  {
+   "raw_dur_s": 12.72,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.39,
+    "end_s": 12.72,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava. Ava. Time for bed. A cozy blanket. A sleepy head. The moon is out. The stars are too. Night. Night, Ava. We love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava.",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 1.12,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 10.68,
+     "phones": "teɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8235,
+   "utmos": 4.556,
+   "metrics": {
+    "duration_s": 12.2,
+    "f0_median_hz": 202.0,
+    "pitch_spread_st": 4.13,
+    "loudness_range_db": 21.2,
+    "pace_wpm": 123.0
+   },
+   "f0_st_vs_anchor": 0.09,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.84,
+     "f0": 203.2,
+     "end_move_st": -4.3
+    },
+    {
+     "start": 3.42,
+     "end": 5.7,
+     "f0": 214.1,
+     "end_move_st": -2.15
+    },
+    {
+     "start": 6.48,
+     "end": 8.72,
+     "f0": 219.1,
+     "end_move_st": 1.37
+    },
+    {
+     "start": 9.54,
+     "end": 12.2,
+     "f0": 167.0,
+     "end_move_st": -5.45
+    }
+   ],
+   "line_jumps_st": [
+    0.9,
+    0.4,
+    4.7
+   ],
+   "falls": [
+    true,
+    true,
+    false,
+    true
+   ],
+   "key": "Ava_bed_A_s5101_t1",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "A",
+   "seed": 5101,
+   "batch_index": 1,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.75,
+    "subtalker_top_p": 0.9,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 87.5,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 1.88,
+   "score_parts": {
+    "spread": 0.03,
+    "pace": 0.5,
+    "f0": 0.0,
+    "jumps": 1.35,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 12.08,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.46,
+    "end_s": 12.08,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava. Ava time for bed. A cozy blanket. A sleepy head. The moon is out. The stars are too. Night night Ava. We love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava.",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava",
+     "t": 1.1,
+     "phones": "eɪvɐtaɪ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 9.7,
+     "phones": "aɪteɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8374,
+   "utmos": 4.567,
+   "metrics": {
+    "duration_s": 11.44,
+    "f0_median_hz": 203.2,
+    "pitch_spread_st": 3.35,
+    "loudness_range_db": 21.9,
+    "pace_wpm": 131.1
+   },
+   "f0_st_vs_anchor": 0.2,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.48,
+     "f0": 170.9,
+     "end_move_st": -2.5
+    },
+    {
+     "start": 3.1,
+     "end": 5.42,
+     "f0": 219.1,
+     "end_move_st": -3.39
+    },
+    {
+     "start": 6.06,
+     "end": 8.4,
+     "f0": 211.6,
+     "end_move_st": -2.75
+    },
+    {
+     "start": 9.28,
+     "end": 11.44,
+     "f0": 179.0,
+     "end_move_st": -4.05
+    }
+   ],
+   "line_jumps_st": [
+    4.3,
+    0.6,
+    2.9
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_bed_B_s5110_t0",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "B",
+   "seed": 5110,
+   "batch_index": 0,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 102.9,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.91,
+   "score_parts": {
+    "spread": 0.0,
+    "pace": 1.31,
+    "f0": 0.0,
+    "jumps": 1.6,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 11.92,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.39,
+    "end_s": 11.92,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head. The moon is out, the stars are too. Night, night, Ava, we love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.24,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 10.0,
+     "phones": "teɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8634,
+   "utmos": 4.556,
+   "metrics": {
+    "duration_s": 11.39,
+    "f0_median_hz": 198.6,
+    "pitch_spread_st": 3.48,
+    "loudness_range_db": 21.1,
+    "pace_wpm": 131.7
+   },
+   "f0_st_vs_anchor": -0.2,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.02,
+     "f0": 182.1,
+     "end_move_st": 0.45
+    },
+    {
+     "start": 3.54,
+     "end": 5.7,
+     "f0": 203.2,
+     "end_move_st": -0.7
+    },
+    {
+     "start": 6.48,
+     "end": 8.6,
+     "f0": 214.1,
+     "end_move_st": -1.9
+    },
+    {
+     "start": 9.4,
+     "end": 11.38,
+     "f0": 195.7,
+     "end_move_st": -4.5
+    }
+   ],
+   "line_jumps_st": [
+    1.9,
+    0.9,
+    1.56
+   ],
+   "falls": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_bed_B_s5110_t1",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "B",
+   "seed": 5110,
+   "batch_index": 1,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 102.9,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 1.37,
+   "score_parts": {
+    "spread": 0.0,
+    "pace": 1.37,
+    "f0": 0.0,
+    "jumps": 0.0,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 11.92,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.37,
+    "end_s": 11.92,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava. Ava. Time for bed. A cozy blanket. A sleepy head. The moon is out. The stars are too. Night night, Ava. We love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava.",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 1.16,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 10.04,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8597,
+   "utmos": 4.564,
+   "metrics": {
+    "duration_s": 11.4,
+    "f0_median_hz": 203.2,
+    "pitch_spread_st": 3.64,
+    "loudness_range_db": 21.7,
+    "pace_wpm": 131.6
+   },
+   "f0_st_vs_anchor": 0.2,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 2.86,
+     "f0": 212.8,
+     "end_move_st": -5.95
+    },
+    {
+     "start": 3.48,
+     "end": 5.74,
+     "f0": 226.8,
+     "end_move_st": -3.0
+    },
+    {
+     "start": 6.5,
+     "end": 8.64,
+     "f0": 189.6,
+     "end_move_st": -1.9
+    },
+    {
+     "start": 9.4,
+     "end": 11.38,
+     "f0": 186.3,
+     "end_move_st": -6.2
+    }
+   ],
+   "line_jumps_st": [
+    1.1,
+    3.1,
+    0.3
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_bed_B_s5110_t2",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "B",
+   "seed": 5110,
+   "batch_index": 2,
+   "batch_size": 3,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 102.9,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 1.91,
+   "score_parts": {
+    "spread": 0.0,
+    "pace": 1.36,
+    "f0": 0.0,
+    "jumps": 0.55,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 12.08,
+   "too_long": false,
+   "head_1p5s": "Ava",
+   "echo": false,
+   "trim": {
+    "start_s": 0.38,
+    "end_s": 12.06,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head. The moon is out, the stars are too. Night, night, Ava, we love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava,",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 1.22,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava,",
+     "t": 9.98,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8721,
+   "utmos": 4.555,
+   "metrics": {
+    "duration_s": 11.47,
+    "f0_median_hz": 196.3,
+    "pitch_spread_st": 3.11,
+    "loudness_range_db": 21.5,
+    "pace_wpm": 130.8
+   },
+   "f0_st_vs_anchor": -0.4,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.02,
+     "f0": 186.3,
+     "end_move_st": 0.05
+    },
+    {
+     "start": 3.5,
+     "end": 5.78,
+     "f0": 214.7,
+     "end_move_st": -3.5
+    },
+    {
+     "start": 6.46,
+     "end": 8.72,
+     "f0": 216.5,
+     "end_move_st": -4.4
+    },
+    {
+     "start": 9.4,
+     "end": 11.46,
+     "f0": 171.9,
+     "end_move_st": -4.0
+    }
+   ],
+   "line_jumps_st": [
+    2.46,
+    0.14,
+    3.99
+   ],
+   "falls": [
+    false,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_bed_B_s5111_t0",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "B",
+   "seed": 5111,
+   "batch_index": 0,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 92.3,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.505,
+   "score_parts": {
+    "spread": 0.0,
+    "pace": 1.28,
+    "f0": 0.0,
+    "jumps": 1.225,
+    "falls": 0.0
+   }
+  },
+  {
+   "raw_dur_s": 13.52,
+   "too_long": false,
+   "head_1p5s": "Ava?",
+   "echo": false,
+   "trim": {
+    "start_s": 0.56,
+    "end_s": 13.52,
+    "click_before": false,
+    "pre_burst_s": [],
+    "post_burst": false
+   },
+   "transcript": "Ava? Ava! Time for bed. A cozy blanket. A sleepy head. The moon is out. The stars are too. Night night, Ava. We love you.",
+   "word_errors": 0,
+   "name_checks": [
+    {
+     "word": "Ava?",
+     "t": 0.0,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava!",
+     "t": 1.22,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    },
+    {
+     "word": "Ava.",
+     "t": 11.26,
+     "phones": "eɪvɐ",
+     "best_window": "eɪvɐ",
+     "dist": 0,
+     "ok": true
+    }
+   ],
+   "name_ok": true,
+   "ecapa": 0.8367,
+   "utmos": 4.58,
+   "metrics": {
+    "duration_s": 12.86,
+    "f0_median_hz": 203.2,
+    "pitch_spread_st": 4.46,
+    "loudness_range_db": 22.0,
+    "pace_wpm": 116.6
+   },
+   "f0_st_vs_anchor": 0.2,
+   "lines": [
+    {
+     "start": 0.0,
+     "end": 3.08,
+     "f0": 245.9,
+     "end_move_st": -9.85
+    },
+    {
+     "start": 3.72,
+     "end": 6.3,
+     "f0": 203.2,
+     "end_move_st": -2.05
+    },
+    {
+     "start": 7.2,
+     "end": 9.7,
+     "f0": 230.7,
+     "end_move_st": -3.0
+    },
+    {
+     "start": 10.46,
+     "end": 12.84,
+     "f0": 166.0,
+     "end_move_st": -7.6
+    }
+   ],
+   "line_jumps_st": [
+    3.3,
+    2.2,
+    5.7
+   ],
+   "falls": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "key": "Ava_bed_B_s5111_t1",
+   "name": "Ava",
+   "stanza": "bed",
+   "cfg": "B",
+   "seed": 5111,
+   "batch_index": 1,
+   "batch_size": 2,
+   "text_fed": "Ava, Ava, time for bed, a cosy blanket, a sleepy head. The moon is out, the stars are too... night night, Ava. We love you.",
+   "gen": {
+    "do_sample": true,
+    "temperature": 0.45,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05,
+    "subtalker_dosample": true,
+    "subtalker_temperature": 0.7,
+    "subtalker_top_p": 0.95,
+    "subtalker_top_k": 50,
+    "max_new_tokens": 338
+   },
+   "batch_render_s": 92.3,
+   "prompt": "anchor",
+   "tag": "Ava",
+   "score": 2.96,
+   "score_parts": {
+    "spread": 0.36,
+    "pace": 0.0,
+    "f0": 0.0,
+    "jumps": 2.6,
+    "falls": 0.0
+   }
+  }
+ ]
+}
