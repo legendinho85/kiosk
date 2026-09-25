@@ -1,9 +1,32 @@
 {
   "status": "blocked",
-  "checked_at_utc": "2026-09-25T11:26Z",
+  "environment": "huggingface",
+  "attempt": 2,
+  "checked_at_utc": "2026-09-25T11:50Z",
   "samples": [],
-  "blocked_hosts": ["huggingface.co", "hf.co", "cdn-lfs.huggingface.co", "cdn-lfs-us-1.hf.co", "cas-bridge.xethub.hf.co", "download.pytorch.org"],
-  "reachable_hosts": ["pypi.org", "github.com"],
-  "error": "CONNECT tunnel failed, response 403 (proxy policy denial)",
-  "note": "No mirrors or workarounds used, per instructions. No models downloaded, no samples rendered."
+  "blocked_hosts": [
+    "pypi.org",
+    "files.pythonhosted.org",
+    "download.pytorch.org",
+    "archive.ubuntu.com",
+    "registry.npmjs.org",
+    "conda.anaconda.org",
+    "raw.githubusercontent.com"
+  ],
+  "reachable_hosts": [
+    "huggingface.co",
+    "us.aws.cdn.hf.co",
+    "github.com"
+  ],
+  "error": "PyPI blocked: 403 'Host not in allowlist: pypi.org'; no torch/numpy/onnxruntime preinstalled, so no TTS model, Whisper or UTMOS could run",
+  "unblock": "Add pypi.org and files.pythonhosted.org to the environment's allowed domains (optionally download.pytorch.org), keep huggingface.co and *.hf.co",
+  "model_card_licences": {
+    "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign": "apache-2.0",
+    "openbmb/VoxCPM2": "apache-2.0",
+    "ResembleAI/chatterbox-turbo": "mit",
+    "neuphonic/neutts-air": "apache-2.0",
+    "kyutai/pocket-tts": "cc-by-4.0",
+    "maya-research/maya1": "apache-2.0"
+  },
+  "note": "No mirrors or workarounds used, per instructions. No models run, no samples rendered."
 }
