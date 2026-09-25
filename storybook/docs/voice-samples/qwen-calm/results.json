@@ -1,5 +1,5 @@
 {
- "status": "INTERIM",
+ "status": "FINAL",
  "original": {
   "file": "qwen3tts-voicedesign.mp3",
   "sr": 24000,
@@ -424,7 +424,7 @@
      "in_gate": "False",
      "calm_score": 8.496,
      "gen_s_batch": 64.0,
-     "chosen": true
+     "chosen": false
     },
     {
      "chunk": 2,
@@ -1364,6 +1364,113 @@
      "calm_score": 5.262,
      "gen_s_batch": 70.6,
      "chosen": true
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 10,
+     "take": 0,
+     "ok": false,
+     "heard": "Where is Eva's shirt? Here it is",
+     "wer": 0.143,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava's"
+       ],
+       [
+        "eva's"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.31,
+      "wpm": 127.0,
+      "pitch_median_hz": 300.2,
+      "pitch_sd_st": 2.94,
+      "pitch_range_st_p5_p95": 8.94,
+      "rms_db_mean": -22.98,
+      "rms_db_sd_400ms": 3.54,
+      "loud_range_db_p10_p95": 8.16
+     },
+     "pitch_dev_from_anchor_st": 3.02,
+     "in_gate": "False",
+     "calm_score": 6.222,
+     "note": "targeted re-roll (fix_v1.py)"
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 10,
+     "take": 1,
+     "ok": true,
+     "heard": "Where is Ava's shirt? Here it is.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.43,
+      "wpm": 122.5,
+      "pitch_median_hz": 222.2,
+      "pitch_sd_st": 3.89,
+      "pitch_range_st_p5_p95": 12.49,
+      "rms_db_mean": -25.18,
+      "rms_db_sd_400ms": 2.97,
+      "loud_range_db_p10_p95": 7.11
+     },
+     "pitch_dev_from_anchor_st": 2.19,
+     "in_gate": "True",
+     "calm_score": 6.468,
+     "note": "targeted re-roll (fix_v1.py)",
+     "chosen": true
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 10,
+     "take": 2,
+     "ok": true,
+     "heard": "Where is Ava's shirt? Here it is!",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.07,
+      "wpm": 136.7,
+      "pitch_median_hz": 350.1,
+      "pitch_sd_st": 2.12,
+      "pitch_range_st_p5_p95": 7.86,
+      "rms_db_mean": -27.83,
+      "rms_db_sd_400ms": 10.35,
+      "loud_range_db_p10_p95": 22.33
+     },
+     "pitch_dev_from_anchor_st": 5.69,
+     "in_gate": "False",
+     "calm_score": 10.308,
+     "note": "targeted re-roll (fix_v1.py)"
     }
    ],
    "reference": {
@@ -1458,8 +1565,8 @@
    "master": {
     "compressor": "2:1 above -24 dBFS, attack 30 ms, release 300 ms",
     "high_shelf": "-2 dB at 6.5 kHz",
-    "lufs": -18.01,
-    "peak_dbfs": -1.82
+    "lufs": -17.99,
+    "peak_dbfs": -4.3
    },
    "levelling": "each chunk levelled to the same active RMS (-20 dBFS A, -24.5 dBFS B) before mastering",
    "B_time_stretch": 1.0,
@@ -1489,81 +1596,81 @@
     "What a big day, Neeve.",
     "Night night, Tiffin. Night night, Neeve."
    ],
-   "mp3_kb": 239.1,
-   "render_s_incl_retries": 879.5,
+   "mp3_kb": 243.7,
+   "render_s_incl_retries": 1167.6,
    "analysis": {
     "file": "qwen-calm-clone.mp3",
     "sr": 24000,
-    "duration_s": 45.9,
-    "peak_dbfs": -1.75,
-    "size_kb": 239.1,
-    "gap_between_passages_s": 1.61,
-    "lufs": -18.02,
+    "duration_s": 46.05,
+    "peak_dbfs": -4.24,
+    "size_kb": 243.7,
+    "gap_between_passages_s": 1.59,
+    "lufs": -17.99,
     "A": {
-     "dur_s": 27.8,
-     "wpm": 90.6,
-     "pitch_median_hz": 251.7,
-     "pitch_sd_st": 3.59,
-     "pitch_range_st_p5_p95": 12.05,
-     "rms_db_mean": -19.54,
+     "dur_s": 27.96,
+     "wpm": 90.1,
+     "pitch_median_hz": 243.5,
+     "pitch_sd_st": 3.34,
+     "pitch_range_st_p5_p95": 11.64,
+     "rms_db_mean": -19.51,
      "rms_db_sd_400ms": 6.02,
-     "loud_range_db_p10_p95": 10.45,
+     "loud_range_db_p10_p95": 14.87,
      "n_lines": 16,
-     "line_pitch_jump_st_mean": 3.17,
-     "line_pitch_jump_st_max": 6.53,
-     "line_level_jump_db_mean": 1.54,
-     "line_level_jump_db_max": 3.26,
+     "line_pitch_jump_st_mean": 2.77,
+     "line_pitch_jump_st_max": 5.94,
+     "line_level_jump_db_mean": 1.21,
+     "line_level_jump_db_max": 2.51,
      "pauses_s": [
-      0.43,
+      0.39,
       0.68,
       0.68,
       0.84,
-      0.93,
-      0.64,
+      0.96,
+      0.54,
       0.9,
-      0.71,
+      0.69,
       0.51,
-      0.81,
-      0.74,
+      0.78,
+      0.73,
       0.5,
-      0.57,
+      0.55,
       0.9,
       0.66
      ],
-     "lufs": -17.27,
+     "lufs": -17.6,
      "whisper": "Goal, Ava. It's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kickoff. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready, steady. Goal. Goal, Ava. Goal, goal, goal."
     },
     "B": {
      "dur_s": 15.62,
      "wpm": 92.2,
-     "pitch_median_hz": 226.6,
-     "pitch_sd_st": 2.5,
-     "pitch_range_st_p5_p95": 7.8,
-     "rms_db_mean": -21.84,
-     "rms_db_sd_400ms": 5.86,
-     "loud_range_db_p10_p95": 12.74,
+     "pitch_median_hz": 226.3,
+     "pitch_sd_st": 2.49,
+     "pitch_range_st_p5_p95": 7.67,
+     "rms_db_mean": -20.98,
+     "rms_db_sd_400ms": 5.96,
+     "loud_range_db_p10_p95": 12.86,
      "n_lines": 10,
-     "line_pitch_jump_st_mean": 2.03,
-     "line_pitch_jump_st_max": 4.8,
-     "line_level_jump_db_mean": 2.03,
-     "line_level_jump_db_max": 5.33,
+     "line_pitch_jump_st_mean": 2.05,
+     "line_pitch_jump_st_max": 4.96,
+     "line_level_jump_db_mean": 2.36,
+     "line_level_jump_db_max": 5.52,
      "pauses_s": [
-      0.81,
+      0.82,
       0.69,
       0.91,
-      0.37,
-      0.75,
+      0.36,
+      0.76,
       0.93,
       0.49,
       0.49,
       0.46
      ],
-     "lufs": -19.77,
+     "lufs": -18.91,
      "whisper": "Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night, night. Tiffin. Night, night. Neve."
     },
-    "A_to_B_pitch_drop_st": 1.82,
-    "A_to_B_level_drop_db": 2.3,
-    "whisper_small_en": "Goal, Ava, it's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kickoff. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready, steady. Goal, Ava. Goal, goal, goal. Home we go, boots off, lights low, paw in hand, side by side. What a big day, Neve. Night night, Tiffin. Night night, Neve.",
+    "A_to_B_pitch_drop_st": 1.27,
+    "A_to_B_level_drop_db": 1.47,
+    "whisper_small_en": "Goal, Ava, it's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kickoff. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready, steady. Goal, Ava. Goal, goal, goal. Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night night, Tiffin. Night night, Neve.",
     "wer_names_canonical": 0.015,
     "word_errors": [
      [
@@ -1574,7 +1681,7 @@
       []
      ]
     ],
-    "phonemes": "ɡoʊleɪvəɪtsfʊtbɔːdætɪfnhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪzpiːpkɪkɑːfpæspæspæstɪfəntəeɪvəsʌdwʌnmɔːɹpæstəeɪvəɹɛdistɛdiɡoʊlɡoʊleɪvɐɡoʊlɡoʊɡoʊlhoʊmwiːɡoʊbuːtsɑːflaɪtsloʊhɔːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːvnaɪtnaɪttɪfənnaɪtnaɪtniːv",
+    "phonemes": "ɡoʊleɪvəɪtsfʊtbɔːdeɪtɪfɪnhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪdɪzpiːpkɪkɑːfpspæspæstɪfəntəeɪvəsʌdwʌnmɔːɹpæstəeɪvɐɹɛdistɛdiɡoʊlɡoʊleɪvɐɡoʊlɡoʊɡoʊlhoʊmwiːɡoʊbuːtsɑːflaɪtsloʊhɔːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːvnaɪtnaɪttɪfənnaɪtnaɪtniːv",
     "names": {
      "ava_eɪv": 5,
      "ava_eɪv_only": 5,
@@ -1583,7 +1690,7 @@
      "niamh_niːv": 2,
      "ok": true
     },
-    "utmos22": 4.45
+    "utmos22": 4.41
    }
   },
   "v2": {
@@ -5201,11 +5308,11 @@
    "master": {
     "compressor": "2:1 above -24 dBFS, attack 30 ms, release 300 ms",
     "high_shelf": "-2 dB at 6.5 kHz",
-    "lufs": -18.0,
-    "peak_dbfs": -4.29
+    "lufs": -17.99,
+    "peak_dbfs": -4.11
    },
    "levelling": "each chunk levelled to the same active RMS (-20 dBFS A, -26.0 dBFS B) before mastering",
-   "B_time_stretch": 0.9,
+   "B_time_stretch": 1.0,
    "gaps_s": [
     0.55,
     0.7,
@@ -5232,34 +5339,34 @@
     "What a big day, Neeve.",
     "Night night, Tiffin... Night night, Neeve."
    ],
-   "mp3_kb": 231.5,
+   "mp3_kb": 227.6,
    "render_s_incl_retries": 914.4,
    "analysis": {
     "file": "qwen-calm-clone-soft.mp3",
     "sr": 24000,
-    "duration_s": 43.9,
-    "peak_dbfs": -4.09,
-    "size_kb": 231.5,
+    "duration_s": 42.48,
+    "peak_dbfs": -4.11,
+    "size_kb": 227.6,
     "gap_between_passages_s": 1.63,
     "lufs": -17.99,
     "A": {
      "dur_s": 24.72,
      "wpm": 101.9,
      "pitch_median_hz": 240.2,
-     "pitch_sd_st": 3.37,
-     "pitch_range_st_p5_p95": 10.6,
-     "rms_db_mean": -19.32,
+     "pitch_sd_st": 3.38,
+     "pitch_range_st_p5_p95": 10.59,
+     "rms_db_mean": -19.31,
      "rms_db_sd_400ms": 6.24,
      "loud_range_db_p10_p95": 9.86,
      "n_lines": 16,
-     "line_pitch_jump_st_mean": 2.9,
+     "line_pitch_jump_st_mean": 2.91,
      "line_pitch_jump_st_max": 6.05,
      "line_level_jump_db_mean": 1.33,
-     "line_level_jump_db_max": 5.26,
+     "line_level_jump_db_max": 5.25,
      "pauses_s": [
       0.6,
       0.69,
-      0.42,
+      0.41,
       0.86,
       0.75,
       0.63,
@@ -5274,40 +5381,40 @@
       0.45
      ],
      "lufs": -17.39,
-     "whisper": "Goal, Ava, it's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep, kick off, pass, pass, pass. Tiffin to Ava. Thud. One more pass to Ava. Ready, steady. Goal, goal, Ava. Goal, goal, goal."
+     "whisper": "Goal Ava, it's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep, kick off, pass, pass, pass. Tiffin to Ava. Thud. One more pass to Ava. Ready, steady. Goal, goal Ava. Goal, goal, goal."
     },
     "B": {
-     "dur_s": 16.66,
-     "wpm": 86.4,
-     "pitch_median_hz": 222.1,
-     "pitch_sd_st": 2.45,
-     "pitch_range_st_p5_p95": 8.0,
-     "rms_db_mean": -19.81,
-     "rms_db_sd_400ms": 3.4,
-     "loud_range_db_p10_p95": 7.61,
+     "dur_s": 15.23,
+     "wpm": 94.5,
+     "pitch_median_hz": 222.4,
+     "pitch_sd_st": 2.46,
+     "pitch_range_st_p5_p95": 8.05,
+     "rms_db_mean": -20.46,
+     "rms_db_sd_400ms": 5.53,
+     "loud_range_db_p10_p95": 8.7,
      "n_lines": 8,
      "line_pitch_jump_st_mean": 1.33,
-     "line_pitch_jump_st_max": 4.84,
-     "line_level_jump_db_mean": 1.26,
-     "line_level_jump_db_max": 2.64,
+     "line_pitch_jump_st_max": 4.78,
+     "line_level_jump_db_mean": 1.3,
+     "line_level_jump_db_max": 2.74,
      "pauses_s": [
-      0.83,
-      0.7,
-      1.02,
-      0.6,
+      0.74,
+      0.62,
+      1.01,
+      0.53,
       0.78,
-      1.21,
-      1.0
+      1.16,
+      0.9
      ],
-     "lufs": -19.13,
+     "lufs": -19.22,
      "whisper": "Home we go, boots off, lights low, paw in hand, side by side. What a big day, Neve. Night, night, Tiffin. Night, night, Neve."
     },
-    "A_to_B_pitch_drop_st": 1.36,
-    "A_to_B_level_drop_db": 0.49,
-    "whisper_small_en": "Goal, Ava, it's football day. Tiffin has boots, Tiffin has a ball. Where is Ava's shirt? Here it is, peep, kick off, pass, pass, pass, Tiffin to Ava. Thud, one more pass to Ava. Ready, steady, goal, goal, Ava, goal, goal, goal. Home we go, boots off. Lights low, paw in hand, side by side. What a big day, Neve, night night Tiffin, night night Neve.",
+    "A_to_B_pitch_drop_st": 1.33,
+    "A_to_B_level_drop_db": 1.15,
+    "whisper_small_en": "Goal, Ava, it's football day. Tiffin has boots, Tiffin has a ball. Where is Ava's shirt? Here it is. Peep, kick off, pass, pass, pass. Tiffin to Ava. Thud. One more pass to Ava. Ready, steady. Goal, goal, Ava. Goal, goal, goal. Home we go, boots off, lights low, paw in hand, side by side. What a big day, Neve. Night, night, Tiffin. Night, night, Neve.",
     "wer_names_canonical": 0.0,
     "word_errors": [],
-    "phonemes": "ɡoʊleɪvɐɪtsfʊtbɔːldeɪtɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪzpiːpkɪkɑːfpæspæstpæstɪfəntəeɪvəsʌdwʌnmɔːɹpæstəeɪvɐɹɛdistʌdiɡoʊlɡoʊleɪvɐɡoʊlɡoʊlɡoʊlhoʊmwiːɡoʊbuːtsɑːflaɪtsloʊhoʊɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːðnaɪtnaɪttɪfənnaɪtnaɪtniːv",
+    "phonemes": "ɡoʊleɪvɐɪtsfʊtbɔːldeɪtɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪzpiːpkɪkɑːfpæspæspæstɪfəntəeɪvəsʌdwʌnmɔːɹpæstəeɪvɐɹɛdistʌdiɡoʊlɡoʊleɪvɐɡoʊlɡoʊlɡoʊlhoʊmwiːɡoʊbuːtsɑːflaɪtslpɔːɪnhændsaɪdbaɪsaɪdwʌɾɐpɪɡdeɪniːðnaɪtnaɪttɪfənnaɪtnaɪtniːv",
     "names": {
      "ava_eɪv": 5,
      "ava_eɪv_only": 5,
@@ -5316,7 +5423,13 @@
      "niamh_niːv": 1,
      "ok": false
     },
-    "utmos22": 3.63
+    "utmos22": 4.42
+   },
+   "B_time_stretch_tried": {
+    "stretch_factor": 0.9,
+    "utmos_B_with": 3.48,
+    "utmos_B_without": 4.43,
+    "decision": "dropped: the stretch cost about 1 UTMOS point on passage B"
    }
   }
  }
