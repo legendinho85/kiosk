@@ -1311,6 +1311,2139 @@
     "utmos22": 4.4
    },
    "levelling": "each chunk levelled to the same active RMS (-20 dBFS A, -24.5 dBFS B) before mastering"
+  },
+  "v2": {
+   "variant": "v2",
+   "file": "qwen-calm-design.mp3",
+   "mode": "design",
+   "gen": {
+    "temperature": 0.5,
+    "top_p": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.05
+   },
+   "subtalker": "model defaults (temperature 0.9, top_p 1.0, top_k 50)",
+   "takes_per_chunk": 3,
+   "dtype": "float32",
+   "threads": 4,
+   "attempts": [
+    {
+     "chunk": 0,
+     "fed": "Goal, Ava! It's football day.",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "Goal, Ava, it's football day.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.61,
+      "wpm": 83.2,
+      "pitch_median_hz": 380.0,
+      "pitch_sd_st": 3.48,
+      "pitch_range_st_p5_p95": 9.49,
+      "rms_db_mean": -19.36,
+      "rms_db_sd_400ms": 5.1,
+      "loud_range_db_p10_p95": 9.72
+     },
+     "pitch_dev_from_anchor_st": 0.0,
+     "in_gate": true,
+     "calm_score": 7.21,
+     "gen_s_batch": 28.3
+    },
+    {
+     "chunk": 0,
+     "fed": "Goal, Ava! It's football day.",
+     "round": 0,
+     "take": 1,
+     "ok": false,
+     "heard": "GoLava, it's football day.",
+     "wer": 0.4,
+     "errors": [
+      [
+       "substitute",
+       [
+        "goal"
+       ],
+       [
+        "golava"
+       ]
+      ],
+      [
+       "delete",
+       [
+        "ava"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 3.75,
+      "wpm": 79.9,
+      "pitch_median_hz": 211.3,
+      "pitch_sd_st": 3.21,
+      "pitch_range_st_p5_p95": 9.98,
+      "rms_db_mean": -21.94,
+      "rms_db_sd_400ms": 3.16,
+      "loud_range_db_p10_p95": 6.71
+     },
+     "pitch_dev_from_anchor_st": 0.0,
+     "in_gate": true,
+     "calm_score": 6.3,
+     "gen_s_batch": 28.3
+    },
+    {
+     "chunk": 0,
+     "fed": "Goal, Ava! It's football day.",
+     "round": 0,
+     "take": 2,
+     "ok": true,
+     "heard": "Goal Ava, it's football day.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.94,
+      "wpm": 101.9,
+      "pitch_median_hz": 293.0,
+      "pitch_sd_st": 3.69,
+      "pitch_range_st_p5_p95": 10.42,
+      "rms_db_mean": -20.52,
+      "rms_db_sd_400ms": 4.18,
+      "loud_range_db_p10_p95": 10.64
+     },
+     "pitch_dev_from_anchor_st": 0.0,
+     "in_gate": true,
+     "calm_score": 5.78,
+     "gen_s_batch": 28.3,
+     "chosen": true
+    },
+    {
+     "chunk": 1,
+     "fed": "Tiffin has boots. Tiffin has a ball.",
+     "round": 0,
+     "take": 0,
+     "ok": false,
+     "heard": "Tiffin has boots.",
+     "wer": 0.571,
+     "errors": [
+      [
+       "delete",
+       [
+        "tiffin",
+        "has",
+        "a",
+        "ball"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 1.58,
+      "wpm": 266.0,
+      "pitch_median_hz": 231.0,
+      "pitch_sd_st": 2.32,
+      "pitch_range_st_p5_p95": 6.35,
+      "rms_db_mean": -17.62,
+      "rms_db_sd_400ms": 1.79,
+      "loud_range_db_p10_p95": 3.57
+     },
+     "pitch_dev_from_anchor_st": 4.12,
+     "in_gate": "False",
+     "calm_score": 18.953,
+     "gen_s_batch": 89.1
+    },
+    {
+     "chunk": 1,
+     "fed": "Tiffin has boots. Tiffin has a ball.",
+     "round": 0,
+     "take": 1,
+     "ok": true,
+     "heard": "Tiffin has boots. Tiffin has a ball.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.16,
+      "wpm": 133.0,
+      "pitch_median_hz": 254.5,
+      "pitch_sd_st": 3.56,
+      "pitch_range_st_p5_p95": 10.47,
+      "rms_db_mean": -24.42,
+      "rms_db_sd_400ms": 8.53,
+      "loud_range_db_p10_p95": 20.17
+     },
+     "pitch_dev_from_anchor_st": 2.44,
+     "in_gate": "True",
+     "calm_score": 9.824,
+     "gen_s_batch": 89.1,
+     "chosen": true
+    },
+    {
+     "chunk": 1,
+     "fed": "Tiffin has boots. Tiffin has a ball.",
+     "round": 0,
+     "take": 2,
+     "ok": true,
+     "heard": "Tiffin has boots. Tiffin has a ball.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.07,
+      "wpm": 103.1,
+      "pitch_median_hz": 213.0,
+      "pitch_sd_st": 3.37,
+      "pitch_range_st_p5_p95": 10.35,
+      "rms_db_mean": -20.62,
+      "rms_db_sd_400ms": 4.83,
+      "loud_range_db_p10_p95": 8.17
+     },
+     "pitch_dev_from_anchor_st": 5.52,
+     "in_gate": "False",
+     "calm_score": 8.565,
+     "gen_s_batch": 89.1
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "Where is Ava's shirt? Here it is.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.5,
+      "wpm": 93.3,
+      "pitch_median_hz": 170.6,
+      "pitch_sd_st": 1.73,
+      "pitch_range_st_p5_p95": 5.5,
+      "rms_db_mean": -22.77,
+      "rms_db_sd_400ms": 8.32,
+      "loud_range_db_p10_p95": 14.0
+     },
+     "pitch_dev_from_anchor_st": 9.36,
+     "in_gate": "False",
+     "calm_score": 11.542,
+     "gen_s_batch": 40.4
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 0,
+     "take": 1,
+     "ok": true,
+     "heard": "Where is Ava's shirt? Here it is.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.39,
+      "wpm": 123.8,
+      "pitch_median_hz": 190.8,
+      "pitch_sd_st": 2.56,
+      "pitch_range_st_p5_p95": 8.5,
+      "rms_db_mean": -16.15,
+      "rms_db_sd_400ms": 2.4,
+      "loud_range_db_p10_p95": 6.08
+     },
+     "pitch_dev_from_anchor_st": 7.43,
+     "in_gate": "False",
+     "calm_score": 8.347,
+     "gen_s_batch": 40.4
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 0,
+     "take": 2,
+     "ok": false,
+     "heard": "Where is Ava's shirt? Here it is.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 3.24,
+      "wpm": 129.5,
+      "pitch_median_hz": 256.6,
+      "pitch_sd_st": 1.55,
+      "pitch_range_st_p5_p95": 4.15,
+      "rms_db_mean": -21.88,
+      "rms_db_sd_400ms": 6.41,
+      "loud_range_db_p10_p95": 13.03
+     },
+     "pitch_dev_from_anchor_st": 2.3,
+     "in_gate": "True",
+     "calm_score": 7.425,
+     "gen_s_batch": 40.4
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 1,
+     "take": 0,
+     "ok": true,
+     "heard": "Where is Ava's shirt? Here it is.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.16,
+      "wpm": 133.0,
+      "pitch_median_hz": 226.3,
+      "pitch_sd_st": 2.1,
+      "pitch_range_st_p5_p95": 6.41,
+      "rms_db_mean": -18.21,
+      "rms_db_sd_400ms": 4.24,
+      "loud_range_db_p10_p95": 8.98
+     },
+     "pitch_dev_from_anchor_st": 4.47,
+     "in_gate": "False",
+     "calm_score": 6.918,
+     "gen_s_batch": 29.7,
+     "chosen": true
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 1,
+     "take": 1,
+     "ok": true,
+     "heard": "Where is Ava's shirt? Here it is.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.22,
+      "wpm": 130.4,
+      "pitch_median_hz": 202.7,
+      "pitch_sd_st": 0.63,
+      "pitch_range_st_p5_p95": 1.92,
+      "rms_db_mean": -22.81,
+      "rms_db_sd_400ms": 1.61,
+      "loud_range_db_p10_p95": 3.86
+     },
+     "pitch_dev_from_anchor_st": 6.38,
+     "in_gate": "False",
+     "calm_score": 10.932,
+     "gen_s_batch": 29.7
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 1,
+     "take": 2,
+     "ok": false,
+     "heard": "Where is Eva's shirt? Here it is.",
+     "wer": 0.143,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava's"
+       ],
+       [
+        "eva's"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.99,
+      "wpm": 140.6,
+      "pitch_median_hz": 186.9,
+      "pitch_sd_st": 3.92,
+      "pitch_range_st_p5_p95": 11.79,
+      "rms_db_mean": -20.26,
+      "rms_db_sd_400ms": 4.03,
+      "loud_range_db_p10_p95": 9.27
+     },
+     "pitch_dev_from_anchor_st": 7.78,
+     "in_gate": "False",
+     "calm_score": 10.439,
+     "gen_s_batch": 29.7
+    },
+    {
+     "chunk": 3,
+     "fed": "Peep. Kick-off. Pass, pass, pass.",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "Peep, kick off, pass, pass, pass.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.65,
+      "wpm": 77.4,
+      "pitch_median_hz": 204.3,
+      "pitch_sd_st": 3.33,
+      "pitch_range_st_p5_p95": 10.22,
+      "rms_db_mean": -24.17,
+      "rms_db_sd_400ms": 6.77,
+      "loud_range_db_p10_p95": 15.53
+     },
+     "pitch_dev_from_anchor_st": 6.24,
+     "in_gate": "False",
+     "calm_score": 12.326,
+     "gen_s_batch": 59.2
+    },
+    {
+     "chunk": 3,
+     "fed": "Peep. Kick-off. Pass, pass, pass.",
+     "round": 0,
+     "take": 1,
+     "ok": true,
+     "heard": "Peep, kick off, pass, pass, pass.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.86,
+      "wpm": 74.0,
+      "pitch_median_hz": 228.5,
+      "pitch_sd_st": 3.15,
+      "pitch_range_st_p5_p95": 9.13,
+      "rms_db_mean": -26.06,
+      "rms_db_sd_400ms": 3.67,
+      "loud_range_db_p10_p95": 8.84
+     },
+     "pitch_dev_from_anchor_st": 4.3,
+     "in_gate": "False",
+     "calm_score": 10.345,
+     "gen_s_batch": 59.2,
+     "chosen": true
+    },
+    {
+     "chunk": 3,
+     "fed": "Peep. Kick-off. Pass, pass, pass.",
+     "round": 0,
+     "take": 2,
+     "ok": true,
+     "heard": "Peep, kick off, pass, pass, pass.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 6.59,
+      "wpm": 54.6,
+      "pitch_median_hz": 199.0,
+      "pitch_sd_st": 1.8,
+      "pitch_range_st_p5_p95": 5.54,
+      "rms_db_mean": -29.79,
+      "rms_db_sd_400ms": 8.76,
+      "loud_range_db_p10_p95": 19.39
+     },
+     "pitch_dev_from_anchor_st": 6.7,
+     "in_gate": "False",
+     "calm_score": 15.423,
+     "gen_s_batch": 59.2
+    },
+    {
+     "chunk": 3,
+     "fed": "Peep. Kick-off. Pass, pass, pass.",
+     "round": 1,
+     "take": 0,
+     "ok": false,
+     "heard": "peep, kick off, pass, pass, pass.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 8.13,
+      "wpm": 44.3,
+      "pitch_median_hz": 234.7,
+      "pitch_sd_st": 3.66,
+      "pitch_range_st_p5_p95": 12.16,
+      "rms_db_mean": -25.77,
+      "rms_db_sd_400ms": 6.06,
+      "loud_range_db_p10_p95": 15.59
+     },
+     "pitch_dev_from_anchor_st": 3.84,
+     "in_gate": "False",
+     "calm_score": 14.73,
+     "gen_s_batch": 78.6
+    },
+    {
+     "chunk": 3,
+     "fed": "Peep. Kick-off. Pass, pass, pass.",
+     "round": 1,
+     "take": 1,
+     "ok": false,
+     "heard": "Peep.",
+     "wer": 0.833,
+     "errors": [
+      [
+       "delete",
+       [
+        "kick",
+        "off",
+        "pass",
+        "pass",
+        "pass"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 0.6,
+      "wpm": 602.7,
+      "pitch_median_hz": 167.2,
+      "pitch_sd_st": 2.04,
+      "pitch_range_st_p5_p95": 5.6,
+      "rms_db_mean": -23.18,
+      "rms_db_sd_400ms": 0.0,
+      "loud_range_db_p10_p95": 0.0
+     },
+     "pitch_dev_from_anchor_st": 9.71,
+     "in_gate": "False",
+     "calm_score": 54.198,
+     "gen_s_batch": 78.6
+    },
+    {
+     "chunk": 3,
+     "fed": "Peep. Kick-off. Pass, pass, pass.",
+     "round": 1,
+     "take": 2,
+     "ok": true,
+     "heard": "Peep, kick off, pass, pass, pass.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.86,
+      "wpm": 74.0,
+      "pitch_median_hz": 103.9,
+      "pitch_sd_st": 2.67,
+      "pitch_range_st_p5_p95": 8.03,
+      "rms_db_mean": -26.13,
+      "rms_db_sd_400ms": 5.35,
+      "loud_range_db_p10_p95": 10.04
+     },
+     "pitch_dev_from_anchor_st": 17.95,
+     "in_gate": "False",
+     "calm_score": 17.541,
+     "gen_s_batch": 78.6
+    },
+    {
+     "chunk": 4,
+     "fed": "Tiffin to Ava... thud.",
+     "round": 0,
+     "take": 0,
+     "ok": false,
+     "heard": "Tiffin Tueva",
+     "wer": 0.75,
+     "errors": [
+      [
+       "substitute",
+       [
+        "to"
+       ],
+       [
+        "tueva"
+       ]
+      ],
+      [
+       "delete",
+       [
+        "ava",
+        "thud"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 1,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.46,
+      "wpm": 53.8,
+      "pitch_median_hz": 240.6,
+      "pitch_sd_st": 1.46,
+      "pitch_range_st_p5_p95": 4.47,
+      "rms_db_mean": -24.48,
+      "rms_db_sd_400ms": 6.51,
+      "loud_range_db_p10_p95": 12.62
+     },
+     "pitch_dev_from_anchor_st": 3.41,
+     "in_gate": "False",
+     "calm_score": 13.033,
+     "gen_s_batch": 60.0
+    },
+    {
+     "chunk": 4,
+     "fed": "Tiffin to Ava... thud.",
+     "round": 0,
+     "take": 1,
+     "ok": false,
+     "heard": "Tiffen to Ava, Thud.",
+     "wer": 0.25,
+     "errors": [
+      [
+       "substitute",
+       [
+        "tiffin"
+       ],
+       [
+        "tiffen"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 1,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.86,
+      "wpm": 84.0,
+      "pitch_median_hz": 206.3,
+      "pitch_sd_st": 2.81,
+      "pitch_range_st_p5_p95": 8.27,
+      "rms_db_mean": -22.93,
+      "rms_db_sd_400ms": 7.66,
+      "loud_range_db_p10_p95": 12.45
+     },
+     "pitch_dev_from_anchor_st": 6.07,
+     "in_gate": "False",
+     "calm_score": 11.259,
+     "gen_s_batch": 60.0
+    },
+    {
+     "chunk": 4,
+     "fed": "Tiffin to Ava... thud.",
+     "round": 0,
+     "take": 2,
+     "ok": false,
+     "heard": "Tiffin to Ava, third.",
+     "wer": 0.25,
+     "errors": [
+      [
+       "substitute",
+       [
+        "thud"
+       ],
+       [
+        "third"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.94,
+      "wpm": 81.5,
+      "pitch_median_hz": 188.3,
+      "pitch_sd_st": 1.16,
+      "pitch_range_st_p5_p95": 3.76,
+      "rms_db_mean": -23.95,
+      "rms_db_sd_400ms": 2.78,
+      "loud_range_db_p10_p95": 5.3
+     },
+     "pitch_dev_from_anchor_st": 7.65,
+     "in_gate": "False",
+     "calm_score": 11.613,
+     "gen_s_batch": 60.0
+    },
+    {
+     "chunk": 4,
+     "fed": "Tiffin to Ava... thud.",
+     "round": 1,
+     "take": 0,
+     "ok": false,
+     "heard": "Tiffin to Ava, third.",
+     "wer": 0.25,
+     "errors": [
+      [
+       "substitute",
+       [
+        "thud"
+       ],
+       [
+        "third"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.99,
+      "wpm": 80.4,
+      "pitch_median_hz": 210.5,
+      "pitch_sd_st": 1.43,
+      "pitch_range_st_p5_p95": 4.78,
+      "rms_db_mean": -24.29,
+      "rms_db_sd_400ms": 10.38,
+      "loud_range_db_p10_p95": 21.0
+     },
+     "pitch_dev_from_anchor_st": 5.72,
+     "in_gate": "False",
+     "calm_score": 13.546,
+     "gen_s_batch": 59.0
+    },
+    {
+     "chunk": 4,
+     "fed": "Tiffin to Ava... thud.",
+     "round": 1,
+     "take": 1,
+     "ok": true,
+     "heard": "Tiffin to Ava Thud",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 1,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.75,
+      "wpm": 87.2,
+      "pitch_median_hz": 222.4,
+      "pitch_sd_st": 2.47,
+      "pitch_range_st_p5_p95": 6.94,
+      "rms_db_mean": -24.28,
+      "rms_db_sd_400ms": 10.83,
+      "loud_range_db_p10_p95": 18.89
+     },
+     "pitch_dev_from_anchor_st": 4.77,
+     "in_gate": "False",
+     "calm_score": 11.803,
+     "gen_s_batch": 59.0,
+     "chosen": true
+    },
+    {
+     "chunk": 4,
+     "fed": "Tiffin to Ava... thud.",
+     "round": 1,
+     "take": 2,
+     "ok": false,
+     "heard": "Tiffin to Ava",
+     "wer": 0.25,
+     "errors": [
+      [
+       "delete",
+       [
+        "thud"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 1,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 1.41,
+      "wpm": 170.5,
+      "pitch_median_hz": 186.7,
+      "pitch_sd_st": 1.28,
+      "pitch_range_st_p5_p95": 4.54,
+      "rms_db_mean": -18.91,
+      "rms_db_sd_400ms": 0.79,
+      "loud_range_db_p10_p95": 1.56
+     },
+     "pitch_dev_from_anchor_st": 7.8,
+     "in_gate": "False",
+     "calm_score": 12.048,
+     "gen_s_batch": 59.0
+    },
+    {
+     "chunk": 5,
+     "fed": "One more pass... to Ava. Ready... steady...",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "One more pass to Ava. Ready? Steady.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 6.19,
+      "wpm": 67.9,
+      "pitch_median_hz": 190.9,
+      "pitch_sd_st": 2.34,
+      "pitch_range_st_p5_p95": 6.62,
+      "rms_db_mean": -24.36,
+      "rms_db_sd_400ms": 7.1,
+      "loud_range_db_p10_p95": 19.97
+     },
+     "pitch_dev_from_anchor_st": 7.42,
+     "in_gate": "False",
+     "calm_score": 13.077,
+     "gen_s_batch": 86.6,
+     "chosen": true
+    },
+    {
+     "chunk": 5,
+     "fed": "One more pass... to Ava. Ready... steady...",
+     "round": 0,
+     "take": 1,
+     "ok": true,
+     "heard": "One more pass. To Ava. Ready? Steady.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 5.82,
+      "wpm": 72.1,
+      "pitch_median_hz": 181.7,
+      "pitch_sd_st": 3.08,
+      "pitch_range_st_p5_p95": 9.4,
+      "rms_db_mean": -24.93,
+      "rms_db_sd_400ms": 7.44,
+      "loud_range_db_p10_p95": 17.79
+     },
+     "pitch_dev_from_anchor_st": 8.27,
+     "in_gate": "False",
+     "calm_score": 14.108,
+     "gen_s_batch": 86.6
+    },
+    {
+     "chunk": 5,
+     "fed": "One more pass... to Ava. Ready... steady...",
+     "round": 0,
+     "take": 2,
+     "ok": false,
+     "heard": "One more pass.",
+     "wer": 0.571,
+     "errors": [
+      [
+       "delete",
+       [
+        "to",
+        "ava",
+        "ready",
+        "steady"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 1.11,
+      "wpm": 378.6,
+      "pitch_median_hz": 276.1,
+      "pitch_sd_st": 2.69,
+      "pitch_range_st_p5_p95": 6.3,
+      "rms_db_mean": -15.76,
+      "rms_db_sd_400ms": 4.93,
+      "loud_range_db_p10_p95": 8.38
+     },
+     "pitch_dev_from_anchor_st": 1.03,
+     "in_gate": "True",
+     "calm_score": 30.981,
+     "gen_s_batch": 86.6
+    },
+    {
+     "chunk": 5,
+     "fed": "One more pass... to Ava. Ready... steady...",
+     "round": 1,
+     "take": 0,
+     "ok": true,
+     "heard": "One more pass, to Ava, ready, steady.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 6.95,
+      "wpm": 60.4,
+      "pitch_median_hz": 160.2,
+      "pitch_sd_st": 3.71,
+      "pitch_range_st_p5_p95": 10.93,
+      "rms_db_mean": -25.33,
+      "rms_db_sd_400ms": 6.53,
+      "loud_range_db_p10_p95": 15.22
+     },
+     "pitch_dev_from_anchor_st": 10.45,
+     "in_gate": "False",
+     "calm_score": 16.623,
+     "gen_s_batch": 60.7
+    },
+    {
+     "chunk": 5,
+     "fed": "One more pass... to Ava. Ready... steady...",
+     "round": 1,
+     "take": 1,
+     "ok": true,
+     "heard": "One more pass to Ava, ready, steady.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 5.35,
+      "wpm": 78.4,
+      "pitch_median_hz": 170.8,
+      "pitch_sd_st": 1.6,
+      "pitch_range_st_p5_p95": 4.43,
+      "rms_db_mean": -26.45,
+      "rms_db_sd_400ms": 7.36,
+      "loud_range_db_p10_p95": 16.72
+     },
+     "pitch_dev_from_anchor_st": 9.34,
+     "in_gate": "False",
+     "calm_score": 13.798,
+     "gen_s_batch": 60.7
+    },
+    {
+     "chunk": 5,
+     "fed": "One more pass... to Ava. Ready... steady...",
+     "round": 1,
+     "take": 2,
+     "ok": false,
+     "heard": "One more pass to Eva. Ready? Steady.",
+     "wer": 0.143,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava"
+       ],
+       [
+        "eva"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 5.23,
+      "wpm": 80.4,
+      "pitch_median_hz": 204.0,
+      "pitch_sd_st": 3.59,
+      "pitch_range_st_p5_p95": 10.52,
+      "rms_db_mean": -23.77,
+      "rms_db_sd_400ms": 6.86,
+      "loud_range_db_p10_p95": 16.99
+     },
+     "pitch_dev_from_anchor_st": 6.27,
+     "in_gate": "False",
+     "calm_score": 12.264,
+     "gen_s_batch": 60.7
+    },
+    {
+     "chunk": 6,
+     "fed": "Goal... Goal, Ava! Goal, goal, goal.",
+     "round": 0,
+     "take": 0,
+     "ok": false,
+     "heard": "Goal. Goal. Ever. Goal, goal, goal.",
+     "wer": 0.167,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava"
+       ],
+       [
+        "ever"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 1,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.5,
+      "wpm": 102.9,
+      "pitch_median_hz": 216.4,
+      "pitch_sd_st": 1.9,
+      "pitch_range_st_p5_p95": 6.26,
+      "rms_db_mean": -17.94,
+      "rms_db_sd_400ms": 2.26,
+      "loud_range_db_p10_p95": 5.35
+     },
+     "pitch_dev_from_anchor_st": 5.25,
+     "in_gate": "False",
+     "calm_score": 6.169,
+     "gen_s_batch": 36.4
+    },
+    {
+     "chunk": 6,
+     "fed": "Goal... Goal, Ava! Goal, goal, goal.",
+     "round": 0,
+     "take": 1,
+     "ok": false,
+     "heard": "Go! Go, Ava! Go, go, go!",
+     "wer": 0.833,
+     "errors": [
+      [
+       "substitute",
+       [
+        "goal",
+        "goal"
+       ],
+       [
+        "go",
+        "go"
+       ]
+      ],
+      [
+       "substitute",
+       [
+        "goal",
+        "goal",
+        "goal"
+       ],
+       [
+        "go",
+        "go",
+        "go"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 4.05,
+      "wpm": 88.8,
+      "pitch_median_hz": 214.3,
+      "pitch_sd_st": 2.42,
+      "pitch_range_st_p5_p95": 8.11,
+      "rms_db_mean": -21.84,
+      "rms_db_sd_400ms": 5.61,
+      "loud_range_db_p10_p95": 10.58
+     },
+     "pitch_dev_from_anchor_st": 5.42,
+     "in_gate": "False",
+     "calm_score": 8.817,
+     "gen_s_batch": 36.4
+    },
+    {
+     "chunk": 6,
+     "fed": "Goal... Goal, Ava! Goal, goal, goal.",
+     "round": 0,
+     "take": 2,
+     "ok": false,
+     "heard": "Goal, goal, lava, goal, goal, goal.",
+     "wer": 0.167,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava"
+       ],
+       [
+        "lava"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 3.14,
+      "wpm": 114.8,
+      "pitch_median_hz": 195.4,
+      "pitch_sd_st": 2.94,
+      "pitch_range_st_p5_p95": 9.38,
+      "rms_db_mean": -18.91,
+      "rms_db_sd_400ms": 2.99,
+      "loud_range_db_p10_p95": 7.93
+     },
+     "pitch_dev_from_anchor_st": 7.01,
+     "in_gate": "False",
+     "calm_score": 8.264,
+     "gen_s_batch": 36.4
+    },
+    {
+     "chunk": 6,
+     "fed": "Goal... Goal, Ava! Goal, goal, goal.",
+     "round": 1,
+     "take": 0,
+     "ok": false,
+     "heard": "Go, go Lava, go, go, go",
+     "wer": 1.0,
+     "errors": [
+      [
+       "substitute",
+       [
+        "goal",
+        "goal",
+        "ava",
+        "goal",
+        "goal",
+        "goal"
+       ],
+       [
+        "go",
+        "go",
+        "lava",
+        "go",
+        "go",
+        "go"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 1,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 4.8,
+      "wpm": 75.0,
+      "pitch_median_hz": 193.8,
+      "pitch_sd_st": 2.61,
+      "pitch_range_st_p5_p95": 8.18,
+      "rms_db_mean": -20.21,
+      "rms_db_sd_400ms": 3.46,
+      "loud_range_db_p10_p95": 9.5
+     },
+     "pitch_dev_from_anchor_st": 7.16,
+     "in_gate": "False",
+     "calm_score": 9.98,
+     "gen_s_batch": 52.8
+    },
+    {
+     "chunk": 6,
+     "fed": "Goal... Goal, Ava! Goal, goal, goal.",
+     "round": 1,
+     "take": 1,
+     "ok": false,
+     "heard": "Goal, goal, lava, goal, goal, goal.",
+     "wer": 0.167,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava"
+       ],
+       [
+        "lava"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": false
+     },
+     "metrics": {
+      "dur_s": 2.73,
+      "wpm": 131.8,
+      "pitch_median_hz": 189.0,
+      "pitch_sd_st": 1.73,
+      "pitch_range_st_p5_p95": 5.34,
+      "rms_db_mean": -20.38,
+      "rms_db_sd_400ms": 2.77,
+      "loud_range_db_p10_p95": 6.71
+     },
+     "pitch_dev_from_anchor_st": 7.59,
+     "in_gate": "False",
+     "calm_score": 7.288,
+     "gen_s_batch": 52.8
+    },
+    {
+     "chunk": 6,
+     "fed": "Goal... Goal, Ava! Goal, goal, goal.",
+     "round": 1,
+     "take": 2,
+     "ok": true,
+     "heard": "Goal, goal Ava, goal, goal, goal.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 1,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 6.02,
+      "wpm": 59.8,
+      "pitch_median_hz": 181.9,
+      "pitch_sd_st": 2.88,
+      "pitch_range_st_p5_p95": 8.32,
+      "rms_db_mean": -23.71,
+      "rms_db_sd_400ms": 5.2,
+      "loud_range_db_p10_p95": 15.23
+     },
+     "pitch_dev_from_anchor_st": 8.25,
+     "in_gate": "False",
+     "calm_score": 13.765,
+     "gen_s_batch": 52.8,
+     "chosen": true
+    },
+    {
+     "chunk": 7,
+     "fed": "Home we go. Boots off. Lights low.",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.57,
+      "wpm": 92.0,
+      "pitch_median_hz": 183.9,
+      "pitch_sd_st": 2.32,
+      "pitch_range_st_p5_p95": 6.57,
+      "rms_db_mean": -23.11,
+      "rms_db_sd_400ms": 5.43,
+      "loud_range_db_p10_p95": 12.99
+     },
+     "pitch_dev_from_anchor_st": 7.06,
+     "in_gate": "False",
+     "calm_score": 8.567,
+     "gen_s_batch": 42.2
+    },
+    {
+     "chunk": 7,
+     "fed": "Home we go. Boots off. Lights low.",
+     "round": 0,
+     "take": 1,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.16,
+      "wpm": 101.0,
+      "pitch_median_hz": 176.3,
+      "pitch_sd_st": 3.31,
+      "pitch_range_st_p5_p95": 10.88,
+      "rms_db_mean": -22.47,
+      "rms_db_sd_400ms": 9.03,
+      "loud_range_db_p10_p95": 14.73
+     },
+     "pitch_dev_from_anchor_st": 7.79,
+     "in_gate": "False",
+     "calm_score": 11.722,
+     "gen_s_batch": 42.2
+    },
+    {
+     "chunk": 7,
+     "fed": "Home we go. Boots off. Lights low.",
+     "round": 0,
+     "take": 2,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.44,
+      "wpm": 94.7,
+      "pitch_median_hz": 186.2,
+      "pitch_sd_st": 2.24,
+      "pitch_range_st_p5_p95": 7.2,
+      "rms_db_mean": -23.89,
+      "rms_db_sd_400ms": 5.27,
+      "loud_range_db_p10_p95": 14.41
+     },
+     "pitch_dev_from_anchor_st": 6.85,
+     "in_gate": "False",
+     "calm_score": 8.299,
+     "gen_s_batch": 42.2,
+     "chosen": true
+    },
+    {
+     "chunk": 7,
+     "fed": "Home we go. Boots off. Lights low.",
+     "round": 1,
+     "take": 0,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.31,
+      "wpm": 97.5,
+      "pitch_median_hz": 113.9,
+      "pitch_sd_st": 3.99,
+      "pitch_range_st_p5_p95": 11.44,
+      "rms_db_mean": -20.43,
+      "rms_db_sd_400ms": 4.13,
+      "loud_range_db_p10_p95": 9.26
+     },
+     "pitch_dev_from_anchor_st": 15.36,
+     "in_gate": "False",
+     "calm_score": 13.734,
+     "gen_s_batch": 42.4
+    },
+    {
+     "chunk": 7,
+     "fed": "Home we go. Boots off. Lights low.",
+     "round": 1,
+     "take": 1,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.59,
+      "wpm": 91.6,
+      "pitch_median_hz": 210.7,
+      "pitch_sd_st": 2.69,
+      "pitch_range_st_p5_p95": 9.88,
+      "rms_db_mean": -24.4,
+      "rms_db_sd_400ms": 8.97,
+      "loud_range_db_p10_p95": 21.81
+     },
+     "pitch_dev_from_anchor_st": 4.71,
+     "in_gate": "False",
+     "calm_score": 9.529,
+     "gen_s_batch": 42.4
+    },
+    {
+     "chunk": 7,
+     "fed": "Home we go. Boots off. Lights low.",
+     "round": 1,
+     "take": 2,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.2,
+      "wpm": 99.9,
+      "pitch_median_hz": 212.4,
+      "pitch_sd_st": 0.84,
+      "pitch_range_st_p5_p95": 3.31,
+      "rms_db_mean": -17.05,
+      "rms_db_sd_400ms": 2.43,
+      "loud_range_db_p10_p95": 5.93
+     },
+     "pitch_dev_from_anchor_st": 4.57,
+     "in_gate": "False",
+     "calm_score": 9.14,
+     "gen_s_batch": 42.4
+    },
+    {
+     "chunk": 8,
+     "fed": "Paw in hand, side by side.",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "Paw in hand, side by side.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.26,
+      "wpm": 110.3,
+      "pitch_median_hz": 246.3,
+      "pitch_sd_st": 2.69,
+      "pitch_range_st_p5_p95": 8.09,
+      "rms_db_mean": -20.97,
+      "rms_db_sd_400ms": 3.85,
+      "loud_range_db_p10_p95": 9.3
+     },
+     "pitch_dev_from_anchor_st": 2.01,
+     "in_gate": "True",
+     "calm_score": 6.202,
+     "gen_s_batch": 31.7,
+     "chosen": true
+    },
+    {
+     "chunk": 8,
+     "fed": "Paw in hand, side by side.",
+     "round": 0,
+     "take": 1,
+     "ok": false,
+     "heard": "Pawn hand, side by side.",
+     "wer": 0.333,
+     "errors": [
+      [
+       "substitute",
+       [
+        "paw"
+       ],
+       [
+        "pawn"
+       ]
+      ],
+      [
+       "delete",
+       [
+        "in"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.99,
+      "wpm": 120.5,
+      "pitch_median_hz": 204.3,
+      "pitch_sd_st": 2.27,
+      "pitch_range_st_p5_p95": 7.14,
+      "rms_db_mean": -19.98,
+      "rms_db_sd_400ms": 3.43,
+      "loud_range_db_p10_p95": 8.35
+     },
+     "pitch_dev_from_anchor_st": 5.24,
+     "in_gate": "False",
+     "calm_score": 7.938,
+     "gen_s_batch": 31.7
+    },
+    {
+     "chunk": 8,
+     "fed": "Paw in hand, side by side.",
+     "round": 0,
+     "take": 2,
+     "ok": false,
+     "heard": "Pine hand, side by side.",
+     "wer": 0.333,
+     "errors": [
+      [
+       "substitute",
+       [
+        "paw"
+       ],
+       [
+        "pine"
+       ]
+      ],
+      [
+       "delete",
+       [
+        "in"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.6,
+      "wpm": 138.3,
+      "pitch_median_hz": 172.1,
+      "pitch_sd_st": 4.2,
+      "pitch_range_st_p5_p95": 13.74,
+      "rms_db_mean": -23.2,
+      "rms_db_sd_400ms": 7.93,
+      "loud_range_db_p10_p95": 17.96
+     },
+     "pitch_dev_from_anchor_st": 8.21,
+     "in_gate": "False",
+     "calm_score": 14.739,
+     "gen_s_batch": 31.7
+    },
+    {
+     "chunk": 9,
+     "fed": "What a big day, Neeve.",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "What a big day, Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 1.73,
+      "wpm": 173.6,
+      "pitch_median_hz": 177.0,
+      "pitch_sd_st": 3.26,
+      "pitch_range_st_p5_p95": 9.45,
+      "rms_db_mean": -17.61,
+      "rms_db_sd_400ms": 1.83,
+      "loud_range_db_p10_p95": 4.19
+     },
+     "pitch_dev_from_anchor_st": 7.73,
+     "in_gate": "False",
+     "calm_score": 15.154,
+     "gen_s_batch": 17.6
+    },
+    {
+     "chunk": 9,
+     "fed": "What a big day, Neeve.",
+     "round": 0,
+     "take": 1,
+     "ok": true,
+     "heard": "What a big day, Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 1.66,
+      "wpm": 180.3,
+      "pitch_median_hz": 237.0,
+      "pitch_sd_st": 2.0,
+      "pitch_range_st_p5_p95": 5.94,
+      "rms_db_mean": -16.45,
+      "rms_db_sd_400ms": 1.58,
+      "loud_range_db_p10_p95": 3.44
+     },
+     "pitch_dev_from_anchor_st": 2.67,
+     "in_gate": "True",
+     "calm_score": 12.144,
+     "gen_s_batch": 17.6,
+     "chosen": true
+    },
+    {
+     "chunk": 9,
+     "fed": "What a big day, Neeve.",
+     "round": 0,
+     "take": 2,
+     "ok": true,
+     "heard": "What a big day, Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 1.73,
+      "wpm": 173.6,
+      "pitch_median_hz": 190.4,
+      "pitch_sd_st": 2.49,
+      "pitch_range_st_p5_p95": 6.27,
+      "rms_db_mean": -19.45,
+      "rms_db_sd_400ms": 3.42,
+      "loud_range_db_p10_p95": 7.12
+     },
+     "pitch_dev_from_anchor_st": 6.46,
+     "in_gate": "False",
+     "calm_score": 14.179,
+     "gen_s_batch": 17.6
+    },
+    {
+     "chunk": 10,
+     "fed": "Night night, Tiffin. Night night, Neeve.",
+     "round": 0,
+     "take": 0,
+     "ok": true,
+     "heard": "Night Night Tiffin. Night Night Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.29,
+      "wpm": 84.0,
+      "pitch_median_hz": 214.8,
+      "pitch_sd_st": 1.95,
+      "pitch_range_st_p5_p95": 5.73,
+      "rms_db_mean": -19.53,
+      "rms_db_sd_400ms": 4.28,
+      "loud_range_db_p10_p95": 9.64
+     },
+     "pitch_dev_from_anchor_st": 4.37,
+     "in_gate": "False",
+     "calm_score": 7.149,
+     "gen_s_batch": 39.6
+    },
+    {
+     "chunk": 10,
+     "fed": "Night night, Tiffin. Night night, Neeve.",
+     "round": 0,
+     "take": 1,
+     "ok": false,
+     "heard": "Night night, Tiffen. Night night, Neve.",
+     "wer": 0.167,
+     "errors": [
+      [
+       "substitute",
+       [
+        "tiffin"
+       ],
+       [
+        "tiffen"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.8,
+      "wpm": 94.8,
+      "pitch_median_hz": 176.7,
+      "pitch_sd_st": 3.82,
+      "pitch_range_st_p5_p95": 10.79,
+      "rms_db_mean": -20.62,
+      "rms_db_sd_400ms": 4.9,
+      "loud_range_db_p10_p95": 10.25
+     },
+     "pitch_dev_from_anchor_st": 7.76,
+     "in_gate": "False",
+     "calm_score": 10.802,
+     "gen_s_batch": 39.6
+    },
+    {
+     "chunk": 10,
+     "fed": "Night night, Tiffin. Night night, Neeve.",
+     "round": 0,
+     "take": 2,
+     "ok": true,
+     "heard": "Night Night Tiffin. Night Night Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.07,
+      "wpm": 117.2,
+      "pitch_median_hz": 214.7,
+      "pitch_sd_st": 1.23,
+      "pitch_range_st_p5_p95": 4.15,
+      "rms_db_mean": -18.08,
+      "rms_db_sd_400ms": 2.58,
+      "loud_range_db_p10_p95": 5.99
+     },
+     "pitch_dev_from_anchor_st": 4.38,
+     "in_gate": "False",
+     "calm_score": 8.943,
+     "gen_s_batch": 39.6
+    },
+    {
+     "chunk": 10,
+     "fed": "Night night, Tiffin. Night night, Neeve.",
+     "round": 1,
+     "take": 0,
+     "ok": true,
+     "heard": "Night night, Tiffin. Night night, Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.58,
+      "wpm": 100.4,
+      "pitch_median_hz": 236.9,
+      "pitch_sd_st": 1.99,
+      "pitch_range_st_p5_p95": 6.45,
+      "rms_db_mean": -20.58,
+      "rms_db_sd_400ms": 6.19,
+      "loud_range_db_p10_p95": 12.88
+     },
+     "pitch_dev_from_anchor_st": 2.68,
+     "in_gate": "True",
+     "calm_score": 7.087,
+     "gen_s_batch": 45.6,
+     "chosen": true
+    },
+    {
+     "chunk": 10,
+     "fed": "Night night, Tiffin. Night night, Neeve.",
+     "round": 1,
+     "take": 1,
+     "ok": true,
+     "heard": "Night night, Tiffin. Night night, Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 4.8,
+      "wpm": 75.0,
+      "pitch_median_hz": 209.3,
+      "pitch_sd_st": 1.58,
+      "pitch_range_st_p5_p95": 4.69,
+      "rms_db_mean": -23.84,
+      "rms_db_sd_400ms": 6.84,
+      "loud_range_db_p10_p95": 14.08
+     },
+     "pitch_dev_from_anchor_st": 4.82,
+     "in_gate": "False",
+     "calm_score": 9.022,
+     "gen_s_batch": 45.6
+    },
+    {
+     "chunk": 10,
+     "fed": "Night night, Tiffin. Night night, Neeve.",
+     "round": 1,
+     "take": 2,
+     "ok": true,
+     "heard": "Night night, Tiffin. Night night, Neve.",
+     "wer": 0.0,
+     "errors": [],
+     "names": {
+      "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 1,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 5.14,
+      "wpm": 70.0,
+      "pitch_median_hz": 189.3,
+      "pitch_sd_st": 1.2,
+      "pitch_range_st_p5_p95": 4.12,
+      "rms_db_mean": -21.5,
+      "rms_db_sd_400ms": 7.22,
+      "loud_range_db_p10_p95": 13.48
+     },
+     "pitch_dev_from_anchor_st": 6.56,
+     "in_gate": "False",
+     "calm_score": 12.569,
+     "gen_s_batch": 45.6
+    }
+   ],
+   "instruct_A": "A gentle, warm British woman in her early thirties with a soft Southern English accent. She reads quietly and calmly to a sleepy toddler: soft, low-energy, slow and steady, with an even volume and a warm smile in her voice. No dramatic emphasis, no shouting, no sudden changes; soft endings to phrases.",
+   "instruct_B": "A gentle, warm British woman in her early thirties with a soft Southern English accent. She is winding down a bedtime story for a toddler who is falling asleep: very soft, hushed and sleepy, slower than before, low and even in volume, with a warm smile in her voice and long, gentle pauses. No emphasis, no sudden changes; soft, fading endings to phrases.",
+   "pitch_gate_st": 3.0,
+   "max_new_tokens": "12.5 x (words + 3)",
+   "pitch_anchor_hz": {
+    "A": 293.0,
+    "B": 276.5551736157362
+   },
+   "master": {
+    "compressor": "2:1 above -24 dBFS, attack 30 ms, release 300 ms",
+    "high_shelf": "-2 dB at 6.5 kHz",
+    "lufs": -17.99,
+    "peak_dbfs": -4.64
+   },
+   "levelling": "each chunk levelled to the same active RMS (-20 dBFS A, -24.5 dBFS B) before mastering",
+   "B_time_stretch": 1.0,
+   "gaps_s": [
+    0.55,
+    0.7,
+    0.5,
+    0.45,
+    0.6,
+    0.4,
+    1.5,
+    0.75,
+    0.6,
+    0.85
+   ],
+   "gap_scale_B": 1.0,
+   "text_fed": [
+    "Goal, Ava! It's football day.",
+    "Tiffin has boots. Tiffin has a ball.",
+    "Where is Ava's shirt? Here it is.",
+    "Peep. Kick-off. Pass, pass, pass.",
+    "Tiffin to Ava... thud.",
+    "One more pass... to Ava. Ready... steady...",
+    "Goal... Goal, Ava! Goal, goal, goal.",
+    "Home we go. Boots off. Lights low.",
+    "Paw in hand, side by side.",
+    "What a big day, Neeve.",
+    "Night night, Tiffin. Night night, Neeve."
+   ],
+   "mp3_kb": 282.9,
+   "render_s_incl_retries": 1033.9,
+   "analysis": {
+    "file": "qwen-calm-design.mp3",
+    "sr": 24000,
+    "duration_s": 50.63,
+    "peak_dbfs": -4.23,
+    "size_kb": 282.9,
+    "gap_between_passages_s": 1.55,
+    "lufs": -17.96,
+    "A": {
+     "dur_s": 32.75,
+     "wpm": 77.0,
+     "pitch_median_hz": 213.5,
+     "pitch_sd_st": 3.56,
+     "pitch_range_st_p5_p95": 11.73,
+     "rms_db_mean": -19.85,
+     "rms_db_sd_400ms": 5.53,
+     "loud_range_db_p10_p95": 15.35,
+     "n_lines": 18,
+     "line_pitch_jump_st_mean": 3.63,
+     "line_pitch_jump_st_max": 9.22,
+     "line_level_jump_db_mean": 1.7,
+     "line_level_jump_db_max": 5.07,
+     "pauses_s": [
+      0.55,
+      0.65,
+      0.58,
+      0.81,
+      1.0,
+      0.54,
+      0.97,
+      0.97,
+      0.58,
+      0.99,
+      0.7,
+      0.84,
+      0.81,
+      0.93,
+      0.51,
+      0.83,
+      1.15
+     ],
+     "lufs": -17.6,
+     "whisper": "Goal Ava, it's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kick off. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready? Steady. Goal. Goal Ava. Goal, goal, goal"
+    },
+    "B": {
+     "dur_s": 15.49,
+     "wpm": 93.0,
+     "pitch_median_hz": 223.7,
+     "pitch_sd_st": 2.83,
+     "pitch_range_st_p5_p95": 9.54,
+     "rms_db_mean": -20.39,
+     "rms_db_sd_400ms": 5.95,
+     "loud_range_db_p10_p95": 12.29,
+     "n_lines": 9,
+     "line_pitch_jump_st_mean": 3.1,
+     "line_pitch_jump_st_max": 7.98,
+     "line_level_jump_db_mean": 2.01,
+     "line_level_jump_db_max": 3.96,
+     "pauses_s": [
+      0.55,
+      0.71,
+      0.85,
+      0.58,
+      0.75,
+      0.98,
+      0.58,
+      0.28
+     ],
+     "lufs": -18.77,
+     "whisper": "Home we go, boots off, lights low, paw in hand, side by side. What a big day, Neve. Night night, Tiffin. Night night, Neve."
+    },
+    "A_to_B_pitch_drop_st": -0.81,
+    "A_to_B_level_drop_db": 0.54,
+    "whisper_small_en": "Goal Ava, it's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kick off. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready? Steady. Goal. Goal Ava. Goal, goal, goal Home we go, boots off, lights low Paw in hand, side by side What a big day, Neve Night night, Tiffin Night night, Neve",
+    "wer_names_canonical": 0.0,
+    "word_errors": [],
+    "phonemes": "ɡoʊeɪvəɪtsfʊtbɔːldeɪtɪfənhæzbuːtstɪfənhæzɐbɑːlwɛɹɪzeɪvəʃʃɜːthɪɹrɪspiːpkɪkɑːfpæspæspæstfəntəeɪvʌθædhwʌnmɔːɹpæstuːeɪvɚɹɛristɛriɡoʊlɡoʊleɪvəɡoʊlɡoʊɡoʊlhuːmwiːɡoʊbuːtsɔflaɪtsloʊpɑːɪnhændsaɪdbaɪsaɪdhwʌdɐbɪɡdeɪniːvnaɪtnaɪtɪfənnaɪtnaɪdniːv",
+    "names": {
+     "ava_eɪv": 5,
+     "ava_eɪv_only": 5,
+     "ava_eːv": 0,
+     "ava_aɪv": 0,
+     "niamh_niːv": 2,
+     "ok": true
+    },
+    "utmos22": 3.6
+   }
   }
  }
 }
