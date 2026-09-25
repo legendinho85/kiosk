@@ -1,5 +1,5 @@
 {
- "status": "INTERIM",
+ "status": "FINAL",
  "date": "2026-09-25",
  "machine": "4 CPU cores, 15 GB RAM, no GPU; torch 2.14.0 (PyPI), fp32, 4 threads",
  "models": {
@@ -152,6 +152,7 @@
        "pace_wpm": 120.7
       },
       "calm": 8.285,
+      "pitch_drift_from_ref_st": 0.8,
       "ok": true
      },
      {
@@ -171,6 +172,7 @@
        "pace_wpm": 160.5
       },
       "calm": 10.155,
+      "pitch_drift_from_ref_st": 2.89,
       "ok": true
      },
      {
@@ -192,6 +194,7 @@
        "pace_wpm": 94.0
       },
       "calm": 7.455,
+      "pitch_drift_from_ref_st": 2.39,
       "ok": true
      },
      {
@@ -213,6 +216,7 @@
        "pace_wpm": 138.6
       },
       "calm": 10.735,
+      "pitch_drift_from_ref_st": 1.8,
       "ok": true
      }
     ],
@@ -670,7 +674,7 @@
      "size_kb": 180
     },
     "model_render_s": 414.4,
-    "total_s_incl_checks": 16.2
+    "total_s_incl_checks": 1.0
    }
   },
   {
@@ -807,6 +811,7 @@
        "pace_wpm": 136.8
       },
       "calm": 9.165,
+      "pitch_drift_from_ref_st": 0.1,
       "ok": true
      },
      {
@@ -826,12 +831,13 @@
        "pace_wpm": 169.6
       },
       "calm": 13.775,
+      "pitch_drift_from_ref_st": 0.51,
       "ok": true
      },
      {
-      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v2_c2_t0.wav",
-      "take": 0,
-      "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v2_c2_t2.wav",
+      "take": 2,
+      "transcript": "Ava Ava time for bed a cozy blanket a sleepy head",
       "word_errors": 0,
       "ava": {
        "expected": 2,
@@ -840,13 +846,14 @@
        "ok": true
       },
       "metrics": {
-       "duration_s": 6.46,
-       "f0_median_hz": 165.5,
-       "pitch_spread_st": 4.61,
-       "loudness_range_db": 23.5,
-       "pace_wpm": 102.2
+       "duration_s": 6.5,
+       "f0_median_hz": 203.8,
+       "pitch_spread_st": 5.07,
+       "loudness_range_db": 23.0,
+       "pace_wpm": 101.5
       },
-      "calm": 10.485,
+      "calm": 10.82,
+      "pitch_drift_from_ref_st": 0.1,
       "ok": true
      },
      {
@@ -868,6 +875,7 @@
        "pace_wpm": 145.8
       },
       "calm": 10.84,
+      "pitch_drift_from_ref_st": 0.09,
       "ok": false
      }
     ],
@@ -1345,7 +1353,7 @@
       "gap_after_s": 1.5
      },
      {
-      "found_pause_s": 0.72,
+      "found_pause_s": 0.68,
       "action": "kept",
       "gap_after_s": 1.06
      },
@@ -1359,38 +1367,38 @@
      "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball and watch it roll, all the way into the goal. Ava, Ava, time for bed, a cozy blanket, a sleepy head. The moon is out, the stars are too, night night Ava, we love you.",
      "wer": 0.0,
      "word_errors": 0,
-     "phonemes": "eɪvɐeɪvbuːtsɑːntaɪtðəsʌnɪzʌpðəskaɪɪzbɹaɪtkɪkðəbɔːlændwɑːtʃɪtɹoʊlɔːlðəweɪɪntəðəɡoʊleɪvɐeɪvɐtaɪmfɚbɛdɐkoʊziblæŋkɪtɐsliːpihɛdðəmuːnɪzaʊtðəstɑːɹzɑːɹtuːnaɪtnaɪteɪvɐwiːlʌvjuː",
+     "phonemes": "eɪvɐeɪvɐbuːtsɔntaɪtðəsʌnɪzʌpðəskaɪɪzbɹaɪtkɪkðəbɔːlændwɑːtʃɪtɹoʊlɔːlðəweɪɪntəðəɡoʊleɪvɐeɪvɐtaɪmvɚbɛdɐkoʊziblæŋkɪtɐsliːpihɛdðəmuːnɪzaʊtðəstɑːɹzɑːɹtuːnaɪtnaɪteɪvɐwiːlʌvjuː",
      "ava": {
       "expected": 5,
       "eɪv": 5,
       "wrong(aɪv/ɑːv/æv)": 0,
       "ok": true
      },
-     "utmos_all": 4.466,
-     "utmos_day": 4.468,
-     "utmos_bed": 4.469,
+     "utmos_all": 4.479,
+     "utmos_day": 4.466,
+     "utmos_bed": 4.481,
      "day": {
       "duration_s": 11.24,
       "f0_median_hz": 207.4,
-      "pitch_spread_st": 4.61,
+      "pitch_spread_st": 4.64,
       "loudness_range_db": 19.2,
       "pace_wpm": 138.8
      },
      "bed": {
-      "duration_s": 13.48,
-      "f0_median_hz": 199.1,
-      "pitch_spread_st": 3.6,
-      "loudness_range_db": 19.8,
-      "pace_wpm": 111.3
+      "duration_s": 13.52,
+      "f0_median_hz": 202.6,
+      "pitch_spread_st": 3.89,
+      "loudness_range_db": 20.1,
+      "pace_wpm": 110.9
      },
-     "lufs": -18.03,
+     "lufs": -18.05,
      "bed_minus_day_db": -0.9,
-     "peak_dbfs": -1.149999976158142,
-     "duration_s": 27.34,
+     "peak_dbfs": -1.2100000381469727,
+     "duration_s": 27.39,
      "size_kb": 175
     },
     "model_render_s": 437.4,
-    "total_s_incl_checks": 15.2
+    "total_s_incl_checks": 0.8
    }
   },
   {
@@ -1527,6 +1535,7 @@
        "pace_wpm": 138.3
       },
       "calm": 7.75,
+      "pitch_drift_from_ref_st": 1.0,
       "ok": true
      },
      {
@@ -1546,6 +1555,7 @@
        "pace_wpm": 149.4
       },
       "calm": 7.17,
+      "pitch_drift_from_ref_st": 1.1,
       "ok": true
      },
      {
@@ -1567,6 +1577,7 @@
        "pace_wpm": 73.8
       },
       "calm": 8.615,
+      "pitch_drift_from_ref_st": 1.0,
       "ok": true
      },
      {
@@ -1588,6 +1599,7 @@
        "pace_wpm": 109.4
       },
       "calm": 7.935,
+      "pitch_drift_from_ref_st": 3.6,
       "ok": true
      }
     ],
@@ -1996,7 +2008,7 @@
      "size_kb": 205
     },
     "model_render_s": 320.5,
-    "total_s_incl_checks": 57.3
+    "total_s_incl_checks": 0.8
    }
   },
   {
@@ -2083,7 +2095,645 @@
     },
     "render_s": 140.0
    },
-   "verse": null
+   "verse": {
+    "file": "voice4-classic-storyteller.mp3",
+    "method": "clone: Qwen3-TTS 1.7B Base, one voice-clone prompt (speaker embedding + reference codes and text) built from the designed reference",
+    "method_short": "clone",
+    "texts_fed": [
+     "Ava, Ava, boots on tight, the sun is up, the sky is bright!",
+     "Kick the ball... and watch it roll... all the way... into the goal!",
+     "Ava, Ava... time for bed. A cosy blanket... a sleepy head.",
+     "The moon is out, the stars are too... Night night, Ava. We love you."
+    ],
+    "gen_day": {
+     "do_sample": true,
+     "temperature": 0.5,
+     "top_p": 0.8,
+     "top_k": 50,
+     "repetition_penalty": 1.05,
+     "subtalker_temperature": 0.75,
+     "subtalker_top_p": 0.9,
+     "max_new_tokens": 220
+    },
+    "gen_bed": {
+     "do_sample": true,
+     "temperature": 0.45,
+     "top_p": 0.8,
+     "top_k": 50,
+     "repetition_penalty": 1.05,
+     "subtalker_temperature": 0.75,
+     "subtalker_top_p": 0.9,
+     "max_new_tokens": 220
+    },
+    "couplets": [
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c0_t1.wav",
+      "take": 1,
+      "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 2,
+       "eɪv": 2,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 4.92,
+       "f0_median_hz": 206.8,
+       "pitch_spread_st": 3.43,
+       "loudness_range_db": 26.9,
+       "pace_wpm": 158.5
+      },
+      "calm": 12.005,
+      "pitch_drift_from_ref_st": 0.85,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c1_t1.wav",
+      "take": 1,
+      "transcript": "Kick the ball and watch it roll all the way into the goal.",
+      "word_errors": 0,
+      "ava": {
+       "ok": true,
+       "expected": 0
+      },
+      "metrics": {
+       "duration_s": 4.84,
+       "f0_median_hz": 207.4,
+       "pitch_spread_st": 3.2,
+       "loudness_range_db": 21.0,
+       "pace_wpm": 161.2
+      },
+      "calm": 10.57,
+      "pitch_drift_from_ref_st": 0.8,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t5.wav",
+      "take": 5,
+      "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 2,
+       "eɪv": 2,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 7.64,
+       "f0_median_hz": 184.7,
+       "pitch_spread_st": 1.79,
+       "loudness_range_db": 24.0,
+       "pace_wpm": 86.4
+      },
+      "calm": 7.79,
+      "pitch_drift_from_ref_st": 2.81,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c3_t1.wav",
+      "take": 1,
+      "transcript": "The moon is out. The stars are too. Night, night, Ava. We love you.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 1,
+       "eɪv": 1,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 6.92,
+       "f0_median_hz": 190.1,
+       "pitch_spread_st": 2.28,
+       "loudness_range_db": 24.0,
+       "pace_wpm": 121.4
+      },
+      "calm": 8.92,
+      "pitch_drift_from_ref_st": 2.31,
+      "ok": true
+     }
+    ],
+    "takes_per_couplet": [
+     3,
+     3,
+     7,
+     3
+    ],
+    "all_takes": {
+     "0": [
+      {
+       "take": 0,
+       "transcript": "Ava. Ava boots on tight. The sun is up. The sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 8.9,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.92,
+        "f0_median_hz": 214.7,
+        "pitch_spread_st": 2.45,
+        "loudness_range_db": 25.8,
+        "pace_wpm": 131.8
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 12.005,
+       "ok": true,
+       "metrics": {
+        "duration_s": 4.92,
+        "f0_median_hz": 206.8,
+        "pitch_spread_st": 3.43,
+        "loudness_range_db": 26.9,
+        "pace_wpm": 158.5
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 9.17,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.86,
+        "f0_median_hz": 208.6,
+        "pitch_spread_st": 2.72,
+        "loudness_range_db": 25.8,
+        "pace_wpm": 133.1
+       }
+      }
+     ],
+     "1": [
+      {
+       "take": 0,
+       "transcript": "Kick the ball and watch it roll, all the way, into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 10.155,
+       "ok": true,
+       "metrics": {
+        "duration_s": 4.98,
+        "f0_median_hz": 194.6,
+        "pitch_spread_st": 3.42,
+        "loudness_range_db": 20.3,
+        "pace_wpm": 156.6
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Kick the ball and watch it roll all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 10.57,
+       "ok": true,
+       "metrics": {
+        "duration_s": 4.84,
+        "f0_median_hz": 207.4,
+        "pitch_spread_st": 3.2,
+        "loudness_range_db": 21.0,
+        "pace_wpm": 161.2
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Kick the ball and watch it roll.",
+       "word_errors": 6,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 21.74,
+       "ok": false,
+       "metrics": {
+        "duration_s": 2.84,
+        "f0_median_hz": 193.5,
+        "pitch_spread_st": 3.73,
+        "loudness_range_db": 18.2,
+        "pace_wpm": 274.6
+       }
+      }
+     ],
+     "2": [
+      {
+       "take": 0,
+       "transcript": "Ava. Ava. Time for bed. A cozy blanket. A sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 8.625,
+       "ok": false,
+       "metrics": {
+        "duration_s": 8.18,
+        "f0_median_hz": 212.2,
+        "pitch_spread_st": 2.2,
+        "loudness_range_db": 25.7,
+        "pace_wpm": 80.7
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 9.73,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.92,
+        "f0_median_hz": 184.7,
+        "pitch_spread_st": 3.53,
+        "loudness_range_db": 24.8,
+        "pace_wpm": 95.4
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 9.455,
+       "ok": false,
+       "metrics": {
+        "duration_s": 7.06,
+        "f0_median_hz": 217.2,
+        "pitch_spread_st": 2.83,
+        "loudness_range_db": 26.5,
+        "pace_wpm": 93.5
+       }
+      },
+      {
+       "take": 3,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 8.725,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.58,
+        "f0_median_hz": 186.9,
+        "pitch_spread_st": 2.15,
+        "loudness_range_db": 26.3,
+        "pace_wpm": 100.3
+       }
+      },
+      {
+       "take": 4,
+       "transcript": "Ava. Ava. Time for bed. A cozy blanket. A sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 8.76,
+       "ok": false,
+       "metrics": {
+        "duration_s": 7.12,
+        "f0_median_hz": 199.1,
+        "pitch_spread_st": 2.56,
+        "loudness_range_db": 24.8,
+        "pace_wpm": 92.7
+       }
+      },
+      {
+       "take": 5,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 7.79,
+       "ok": true,
+       "metrics": {
+        "duration_s": 7.64,
+        "f0_median_hz": 184.7,
+        "pitch_spread_st": 1.79,
+        "loudness_range_db": 24.0,
+        "pace_wpm": 86.4
+       }
+      },
+      {
+       "take": 6,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 9.125,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.86,
+        "f0_median_hz": 208.0,
+        "pitch_spread_st": 2.75,
+        "loudness_range_db": 25.5,
+        "pace_wpm": 96.2
+       }
+      }
+     ],
+     "3": [
+      {
+       "take": 0,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 12.57,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.54,
+        "f0_median_hz": 194.6,
+        "pitch_spread_st": 2.46,
+        "loudness_range_db": 25.8,
+        "pace_wpm": 151.6
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "The moon is out. The stars are too. Night, night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 8.92,
+       "ok": true,
+       "metrics": {
+        "duration_s": 6.92,
+        "f0_median_hz": 190.1,
+        "pitch_spread_st": 2.28,
+        "loudness_range_db": 24.0,
+        "pace_wpm": 121.4
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 11.125,
+       "ok": true,
+       "metrics": {
+        "duration_s": 6.14,
+        "f0_median_hz": 208.6,
+        "pitch_spread_st": 2.82,
+        "loudness_range_db": 24.5,
+        "pace_wpm": 136.8
+       }
+      }
+     ]
+    },
+    "gen_calls": [
+     {
+      "voice": 4,
+      "couplet": 0,
+      "takes": 3,
+      "seed": 4000,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 84.3,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c0_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c0_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c0_t2.wav"
+      ]
+     },
+     {
+      "voice": 4,
+      "couplet": 1,
+      "takes": 3,
+      "seed": 4010,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 157.7,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c1_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c1_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c1_t2.wav"
+      ]
+     },
+     {
+      "voice": 4,
+      "couplet": 2,
+      "takes": 3,
+      "seed": 4020,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 97.4,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t2.wav"
+      ]
+     },
+     {
+      "voice": 4,
+      "couplet": 3,
+      "takes": 3,
+      "seed": 4030,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 82.1,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c3_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c3_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c3_t2.wav"
+      ]
+     },
+     {
+      "voice": 4,
+      "couplet": 2,
+      "takes": 2,
+      "seed": 4023,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 71.7,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t3.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t4.wav"
+      ]
+     },
+     {
+      "voice": 4,
+      "couplet": 2,
+      "takes": 2,
+      "seed": 4025,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 83.8,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t5.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v4_c2_t6.wav"
+      ]
+     }
+    ],
+    "pauses": [
+     {
+      "found_pause_s": 0.31,
+      "action": "set to 0.40s",
+      "gap_after_s": 0.99
+     },
+     {
+      "found_pause_s": 0.76,
+      "action": "set to 0.70s",
+      "gap_after_s": 1.5
+     },
+     {
+      "found_pause_s": 0.98,
+      "action": "set to 0.95s",
+      "gap_after_s": 1.1
+     },
+     {
+      "found_pause_s": 0.8,
+      "action": "kept",
+      "gap_after_s": 0
+     }
+    ],
+    "final": {
+     "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright. Kick the ball, and watch it roll, all the way into the goal. Ava, Ava, time for bed, a cozy blanket, a sleepy head. The moon is out, the stars are too, night, night, Ava, we love you.",
+     "wer": 0.0,
+     "word_errors": 0,
+     "phonemes": "eɪvɐeɪvɐbuːtsɑːntaɪtðəsʌnɪzʌpðəskaɪɪzbɹaɪdkɪkðəbɔːlændwɑːtʃɪtɹoʊlɔːlðəweɪɪntəðəɡoʊleɪvɐvɐtaɪmfɚbɛdɐkoʊziblæŋkɪtɐsliːpihɛdðəmuːnɪzaʊtðəstɑːɹzɑːɹtuːnaɪtnaɪteɪvɐwiːlʌvjuː",
+     "ava": {
+      "expected": 5,
+      "eɪv": 4,
+      "wrong(aɪv/ɑːv/æv)": 0,
+      "ok": false
+     },
+     "utmos_all": 4.378,
+     "utmos_day": 4.395,
+     "utmos_bed": 4.35,
+     "day": {
+      "duration_s": 10.98,
+      "f0_median_hz": 208.6,
+      "pitch_spread_st": 3.11,
+      "loudness_range_db": 23.7,
+      "pace_wpm": 142.1
+     },
+     "bed": {
+      "duration_s": 15.88,
+      "f0_median_hz": 185.8,
+      "pitch_spread_st": 2.92,
+      "loudness_range_db": 22.6,
+      "pace_wpm": 94.5
+     },
+     "lufs": -18.0,
+     "bed_minus_day_db": -1.3,
+     "peak_dbfs": -2.0299999713897705,
+     "duration_s": 29.52,
+     "size_kb": 184
+    },
+    "model_render_s": 577.0,
+    "total_s_incl_checks": 20.0
+   }
   },
   {
    "n": 5,
@@ -2169,7 +2819,729 @@
     },
     "render_s": 153.0
    },
-   "verse": null
+   "verse": {
+    "file": "voice5-kind-granny.mp3",
+    "method": "clone: Qwen3-TTS 1.7B Base from the designed reference, except couplet 1, which failed the Ava check in every cloned take and was rendered with VoiceDesign (same description, lower sampling); the design take closest in pitch to the reference was kept",
+    "method_short": "clone + design for couplet 1",
+    "texts_fed": [
+     "Ava, Ava, boots on tight, the sun is up, the sky is bright!",
+     "Kick the ball... and watch it roll... all the way... into the goal!",
+     "Ava, Ava... time for bed. A cosy blanket... a sleepy head.",
+     "The moon is out, the stars are too... Night night, Ava. We love you."
+    ],
+    "gen_day": {
+     "do_sample": true,
+     "temperature": 0.5,
+     "top_p": 0.8,
+     "top_k": 50,
+     "repetition_penalty": 1.05,
+     "subtalker_temperature": 0.75,
+     "subtalker_top_p": 0.9,
+     "max_new_tokens": 220
+    },
+    "gen_bed": {
+     "do_sample": true,
+     "temperature": 0.45,
+     "top_p": 0.8,
+     "top_k": 50,
+     "repetition_penalty": 1.05,
+     "subtalker_temperature": 0.75,
+     "subtalker_top_p": 0.9,
+     "max_new_tokens": 220
+    },
+    "couplets": [
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t8.wav",
+      "take": 8,
+      "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 2,
+       "eɪv": 2,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 7.76,
+       "f0_median_hz": 205.0,
+       "pitch_spread_st": 2.09,
+       "loudness_range_db": 24.8,
+       "pace_wpm": 100.5
+      },
+      "calm": 8.29,
+      "pitch_drift_from_ref_st": 0.1,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c1_t0.wav",
+      "take": 0,
+      "transcript": "Kick the ball and watch it roll all the way into the goal.",
+      "word_errors": 0,
+      "ava": {
+       "ok": true,
+       "expected": 0
+      },
+      "metrics": {
+       "duration_s": 5.64,
+       "f0_median_hz": 193.5,
+       "pitch_spread_st": 2.09,
+       "loudness_range_db": 18.1,
+       "pace_wpm": 138.3
+      },
+      "calm": 6.615,
+      "pitch_drift_from_ref_st": 1.1,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c2_t2.wav",
+      "take": 2,
+      "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 2,
+       "eɪv": 2,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 7.68,
+       "f0_median_hz": 192.4,
+       "pitch_spread_st": 1.2,
+       "loudness_range_db": 20.6,
+       "pace_wpm": 85.9
+      },
+      "calm": 6.95,
+      "pitch_drift_from_ref_st": 1.2,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c3_t2.wav",
+      "take": 2,
+      "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 1,
+       "eɪv": 1,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 7.38,
+       "f0_median_hz": 190.1,
+       "pitch_spread_st": 2.79,
+       "loudness_range_db": 22.7,
+       "pace_wpm": 113.8
+      },
+      "calm": 8.465,
+      "pitch_drift_from_ref_st": 1.41,
+      "ok": true
+     }
+    ],
+    "takes_per_couplet": [
+     10,
+     3,
+     3,
+     3
+    ],
+    "all_takes": {
+     "0": [
+      {
+       "take": 0,
+       "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 7.04,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.76,
+        "f0_median_hz": 194.6,
+        "pitch_spread_st": 1.31,
+        "loudness_range_db": 21.4,
+        "pace_wpm": 115.4
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "You",
+       "word_errors": 13,
+       "ava": {
+        "expected": 2,
+        "eɪv": 0,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": false
+       },
+       "calm": 10.28,
+       "ok": false,
+       "metrics": {
+        "duration_s": 17.52,
+        "f0_median_hz": 498.9,
+        "pitch_spread_st": 0.22,
+        "loudness_range_db": 15.2,
+        "pace_wpm": 44.5
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "You",
+       "word_errors": 13,
+       "ava": {
+        "expected": 2,
+        "eɪv": 0,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": false
+       },
+       "calm": 13.225,
+       "ok": false,
+       "metrics": {
+        "duration_s": 17.52,
+        "f0_median_hz": null,
+        "pitch_spread_st": null,
+        "loudness_range_db": 18.1,
+        "pace_wpm": 44.5
+       }
+      },
+      {
+       "take": 3,
+       "transcript": "Ava, Ava, boots on tight. The sun is up. The sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 9.645,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.44,
+        "f0_median_hz": 196.8,
+        "pitch_spread_st": 4.12,
+        "loudness_range_db": 22.1,
+        "pace_wpm": 121.1
+       }
+      },
+      {
+       "take": 4,
+       "transcript": "Ava, Ava, boots on tight. The sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 7.46,
+       "ok": false,
+       "metrics": {
+        "duration_s": 7.02,
+        "f0_median_hz": 199.1,
+        "pitch_spread_st": 1.86,
+        "loudness_range_db": 22.4,
+        "pace_wpm": 111.1
+       }
+      },
+      {
+       "take": 5,
+       "transcript": "Ava, Ava, boots on tight. The sun is up. The sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": false
+       },
+       "calm": 9.58,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.3,
+        "f0_median_hz": 188.0,
+        "pitch_spread_st": 4.03,
+        "loudness_range_db": 22.2,
+        "pace_wpm": 123.8
+       }
+      },
+      {
+       "take": 6,
+       "transcript": "Ava, Ava boots on tight. The sun is up. The sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 7.05,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.1,
+        "f0_median_hz": 192.4,
+        "pitch_spread_st": 1.05,
+        "loudness_range_db": 20.4,
+        "pace_wpm": 127.9
+       }
+      },
+      {
+       "take": 7,
+       "transcript": "Ava, Ava, boots on tight.",
+       "word_errors": 8,
+       "ava": {
+        "expected": 2,
+        "eɪv": 0,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": false
+       },
+       "calm": 15.593,
+       "ok": false,
+       "metrics": {
+        "duration_s": 17.5,
+        "f0_median_hz": 70.0,
+        "pitch_spread_st": 5.75,
+        "loudness_range_db": 24.6,
+        "pace_wpm": 44.6
+       }
+      },
+      {
+       "take": 8,
+       "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 8.29,
+       "ok": true,
+       "metrics": {
+        "duration_s": 7.76,
+        "f0_median_hz": 205.0,
+        "pitch_spread_st": 2.09,
+        "loudness_range_db": 24.8,
+        "pace_wpm": 100.5
+       }
+      },
+      {
+       "take": 9,
+       "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": false
+       },
+       "calm": 9.405,
+       "ok": false,
+       "metrics": {
+        "duration_s": 8.96,
+        "f0_median_hz": 238.2,
+        "pitch_spread_st": 2.42,
+        "loudness_range_db": 24.5,
+        "pace_wpm": 87.1
+       }
+      }
+     ],
+     "1": [
+      {
+       "take": 0,
+       "transcript": "Kick the ball and watch it roll all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 6.615,
+       "ok": true,
+       "metrics": {
+        "duration_s": 5.64,
+        "f0_median_hz": 193.5,
+        "pitch_spread_st": 2.09,
+        "loudness_range_db": 18.1,
+        "pace_wpm": 138.3
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Kick the ball and watch it roll all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 7.145,
+       "ok": true,
+       "metrics": {
+        "duration_s": 5.36,
+        "f0_median_hz": 188.0,
+        "pitch_spread_st": 1.72,
+        "loudness_range_db": 19.5,
+        "pace_wpm": 145.5
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Kick the ball and watch it roll all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 10.4,
+       "ok": true,
+       "metrics": {
+        "duration_s": 5.16,
+        "f0_median_hz": 199.1,
+        "pitch_spread_st": 4.68,
+        "loudness_range_db": 18.4,
+        "pace_wpm": 151.2
+       }
+      }
+     ],
+     "2": [
+      {
+       "take": 0,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": false
+       },
+       "calm": 10.205,
+       "ok": false,
+       "metrics": {
+        "duration_s": 7.48,
+        "f0_median_hz": 189.6,
+        "pitch_spread_st": 4.48,
+        "loudness_range_db": 22.9,
+        "pace_wpm": 88.2
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Ava. Ava. Time for bed. A cozy blanket. A sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": false
+       },
+       "calm": 8.65,
+       "ok": false,
+       "metrics": {
+        "duration_s": 7.12,
+        "f0_median_hz": 183.7,
+        "pitch_spread_st": 3.3,
+        "loudness_range_db": 21.4,
+        "pace_wpm": 92.7
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 6.95,
+       "ok": true,
+       "metrics": {
+        "duration_s": 7.68,
+        "f0_median_hz": 192.4,
+        "pitch_spread_st": 1.2,
+        "loudness_range_db": 20.6,
+        "pace_wpm": 85.9
+       }
+      }
+     ],
+     "3": [
+      {
+       "take": 0,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 9.51,
+       "ok": true,
+       "metrics": {
+        "duration_s": 6.06,
+        "f0_median_hz": 192.4,
+        "pitch_spread_st": 1.95,
+        "loudness_range_db": 20.8,
+        "pace_wpm": 138.6
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "The moon is out the stars are too night night Ava. We love you",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 10.0,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.84,
+        "f0_median_hz": 201.5,
+        "pitch_spread_st": 1.62,
+        "loudness_range_db": 22.0,
+        "pace_wpm": 143.8
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 8.465,
+       "ok": true,
+       "metrics": {
+        "duration_s": 7.38,
+        "f0_median_hz": 190.1,
+        "pitch_spread_st": 2.79,
+        "loudness_range_db": 22.7,
+        "pace_wpm": 113.8
+       }
+      }
+     ]
+    },
+    "gen_calls": [
+     {
+      "voice": 5,
+      "couplet": 0,
+      "takes": 3,
+      "seed": 5000,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 161.8,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t2.wav"
+      ]
+     },
+     {
+      "voice": 5,
+      "couplet": 1,
+      "takes": 3,
+      "seed": 5010,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 83.4,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c1_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c1_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c1_t2.wav"
+      ]
+     },
+     {
+      "voice": 5,
+      "couplet": 2,
+      "takes": 3,
+      "seed": 5020,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 94.0,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c2_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c2_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c2_t2.wav"
+      ]
+     },
+     {
+      "voice": 5,
+      "couplet": 3,
+      "takes": 3,
+      "seed": 5030,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 91.9,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c3_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c3_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c3_t2.wav"
+      ]
+     },
+     {
+      "voice": 5,
+      "couplet": 0,
+      "takes": 2,
+      "seed": 5003,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 69.0,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t3.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t4.wav"
+      ]
+     },
+     {
+      "voice": 5,
+      "couplet": 0,
+      "takes": 2,
+      "seed": 5005,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 70.0,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t5.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t6.wav"
+      ]
+     },
+     {
+      "voice": 5,
+      "couplet": 0,
+      "takes": 3,
+      "seed": 25007,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "method": "design",
+      "instruct": "A kind British grandmother in her sixties with a gentle Home Counties accent. Warm, slightly husky, slow and loving, reading to her grandchild on her lap. Soft and steady. British English female narrator reading a picture book aloud to a small child. She reads slowly, at a relaxed bedtime-story pace, letting each phrase breathe with soft pauses at the commas. Gentle and calm throughout, never shouty, never dramatic, no sudden changes in volume or pitch. She reads this cheerful verse with a soft, quiet smile, still calm and gentle.",
+      "render_s": 132.6,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t7.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t8.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v5_c0_t9.wav"
+      ]
+     }
+    ],
+    "pauses": [
+     {
+      "found_pause_s": 1.06,
+      "action": "set to 0.70s",
+      "gap_after_s": 0.96
+     },
+     {
+      "found_pause_s": 0.7,
+      "action": "kept",
+      "gap_after_s": 1.5
+     },
+     {
+      "found_pause_s": 1.02,
+      "action": "set to 0.95s",
+      "gap_after_s": 1.16
+     },
+     {
+      "found_pause_s": 1.65,
+      "action": "set to 0.95s",
+      "gap_after_s": 0
+     }
+    ],
+    "final": {
+     "transcript": "Ava, Ava, boots on tight. The sun is up. The sky is bright. Kick the ball and watch it roll all the way into the goal. Ava, Ava, time for bed. A cozy blanket. A sleepy head. The moon is out. The stars are too. Night night, Ava. We love you.",
+     "wer": 0.0,
+     "word_errors": 0,
+     "phonemes": "eɪvɐeɪvɐbuːtsɑːntaɪtðəsʌnɪzʌpðəskaɪɪzbɹaɪtkɪkðəbɔːlændwɑːtʃɪtɹoʊlɑːlðəweɪɪntəðəɡoʊleɪvɐeɪvɐtaɪmfɚbɛdɐkoʊziblæŋkɪdɐsliːpihɛdðəmuːnɪzaʊtðəstɑːɹzɑːɹtuːnaɪtnaɪteɪvɐwiːlʌvjuː",
+     "ava": {
+      "expected": 5,
+      "eɪv": 5,
+      "wrong(aɪv/ɑːv/æv)": 0,
+      "ok": true
+     },
+     "utmos_all": 4.016,
+     "utmos_day": 3.923,
+     "utmos_bed": 4.334,
+     "day": {
+      "duration_s": 14.2,
+      "f0_median_hz": 200.3,
+      "pitch_spread_st": 2.13,
+      "loudness_range_db": 19.0,
+      "pace_wpm": 109.9
+     },
+     "bed": {
+      "duration_s": 15.7,
+      "f0_median_hz": 189.0,
+      "pitch_spread_st": 1.77,
+      "loudness_range_db": 20.9,
+      "pace_wpm": 95.5
+     },
+     "lufs": -18.01,
+     "bed_minus_day_db": -1.8,
+     "peak_dbfs": -1.090000033378601,
+     "duration_s": 32.64,
+     "size_kb": 200
+    },
+    "model_render_s": 702.7,
+    "total_s_incl_checks": 23.7
+   }
   },
   {
    "n": 6,
@@ -2255,21 +3627,847 @@
     },
     "render_s": 121.0
    },
-   "verse": null
+   "verse": {
+    "file": "voice6-soft-northern.mp3",
+    "method": "clone: Qwen3-TTS 1.7B Base, one voice-clone prompt (speaker embedding + reference codes and text) built from the designed reference",
+    "method_short": "clone",
+    "texts_fed": [
+     "Ava, Ava, boots on tight, the sun is up, the sky is bright!",
+     "Kick the ball... and watch it roll... all the way... into the goal!",
+     "Ava, Ava... time for bed. A cosy blanket... a sleepy head.",
+     "The moon is out, the stars are too... Night night, Ava. We love you."
+    ],
+    "gen_day": {
+     "do_sample": true,
+     "temperature": 0.5,
+     "top_p": 0.8,
+     "top_k": 50,
+     "repetition_penalty": 1.05,
+     "subtalker_temperature": 0.75,
+     "subtalker_top_p": 0.9,
+     "max_new_tokens": 220
+    },
+    "gen_bed": {
+     "do_sample": true,
+     "temperature": 0.45,
+     "top_p": 0.8,
+     "top_k": 50,
+     "repetition_penalty": 1.05,
+     "subtalker_temperature": 0.75,
+     "subtalker_top_p": 0.9,
+     "max_new_tokens": 220
+    },
+    "couplets": [
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c0_t0.wav",
+      "take": 0,
+      "transcript": "Ava, Ava, boots on tight. The sun is up, the sky is bright.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 2,
+       "eɪv": 2,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 6.18,
+       "f0_median_hz": 268.9,
+       "pitch_spread_st": 2.81,
+       "loudness_range_db": 25.3,
+       "pace_wpm": 126.2
+      },
+      "calm": 9.135,
+      "pitch_drift_from_ref_st": 1.3,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t3.wav",
+      "take": 3,
+      "transcript": "Kick the ball and watch it roll all the way into the goal.",
+      "word_errors": 0,
+      "ava": {
+       "ok": true,
+       "expected": 0
+      },
+      "metrics": {
+       "duration_s": 4.26,
+       "f0_median_hz": 239.6,
+       "pitch_spread_st": 2.37,
+       "loudness_range_db": 18.5,
+       "pace_wpm": 183.1
+      },
+      "calm": 11.305,
+      "pitch_drift_from_ref_st": 0.7,
+      "ok": false
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c2_t3.wav",
+      "take": 3,
+      "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 2,
+       "eɪv": 2,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 6.06,
+       "f0_median_hz": 248.0,
+       "pitch_spread_st": 2.88,
+       "loudness_range_db": 24.1,
+       "pace_wpm": 108.9
+      },
+      "calm": 8.905,
+      "pitch_drift_from_ref_st": 0.1,
+      "ok": true
+     },
+     {
+      "path": "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t6.wav",
+      "take": 6,
+      "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+      "word_errors": 0,
+      "ava": {
+       "expected": 1,
+       "eɪv": 1,
+       "wrong(aɪv/ɑːv/æv)": 0,
+       "ok": true
+      },
+      "metrics": {
+       "duration_s": 6.02,
+       "f0_median_hz": 296.6,
+       "pitch_spread_st": 2.28,
+       "loudness_range_db": 23.3,
+       "pace_wpm": 139.5
+      },
+      "calm": 10.555,
+      "pitch_drift_from_ref_st": 2.99,
+      "ok": true
+     }
+    ],
+    "takes_per_couplet": [
+     3,
+     7,
+     5,
+     7
+    ],
+    "all_takes": {
+     "0": [
+      {
+       "take": 0,
+       "transcript": "Ava, Ava, boots on tight. The sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 9.135,
+       "ok": true,
+       "metrics": {
+        "duration_s": 6.18,
+        "f0_median_hz": 268.9,
+        "pitch_spread_st": 2.81,
+        "loudness_range_db": 25.3,
+        "pace_wpm": 126.2
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Ava, Ava, boots on tight. The sun is up. The sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 10.15,
+       "ok": true,
+       "metrics": {
+        "duration_s": 5.2,
+        "f0_median_hz": 261.2,
+        "pitch_spread_st": 3.1,
+        "loudness_range_db": 24.2,
+        "pace_wpm": 150.0
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Ava, Ava, boots on tight, the sun is up, the sky is bright.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 10.645,
+       "ok": true,
+       "metrics": {
+        "duration_s": 4.68,
+        "f0_median_hz": 236.8,
+        "pitch_spread_st": 2.1,
+        "loudness_range_db": 23.5,
+        "pace_wpm": 166.7
+       }
+      }
+     ],
+     "1": [
+      {
+       "take": 0,
+       "transcript": "Kick the ball and watch it roll, all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 13.48,
+       "ok": false,
+       "metrics": {
+        "duration_s": 3.96,
+        "f0_median_hz": 294.9,
+        "pitch_spread_st": 2.38,
+        "loudness_range_db": 21.6,
+        "pace_wpm": 197.0
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Kick the ball and watch it roll, all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 15.61,
+       "ok": false,
+       "metrics": {
+        "duration_s": 3.96,
+        "f0_median_hz": 269.7,
+        "pitch_spread_st": 4.86,
+        "loudness_range_db": 20.2,
+        "pace_wpm": 197.0
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Kick the ball and watch it roll all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 11.955,
+       "ok": false,
+       "metrics": {
+        "duration_s": 4.22,
+        "f0_median_hz": 238.2,
+        "pitch_spread_st": 3.5,
+        "loudness_range_db": 15.9,
+        "pace_wpm": 184.8
+       }
+      },
+      {
+       "take": 3,
+       "transcript": "Kick the ball and watch it roll all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 11.305,
+       "ok": false,
+       "metrics": {
+        "duration_s": 4.26,
+        "f0_median_hz": 239.6,
+        "pitch_spread_st": 2.37,
+        "loudness_range_db": 18.5,
+        "pace_wpm": 183.1
+       }
+      },
+      {
+       "take": 4,
+       "transcript": "Kick the ball and watch it roll, all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 13.405,
+       "ok": false,
+       "metrics": {
+        "duration_s": 3.98,
+        "f0_median_hz": 258.2,
+        "pitch_spread_st": 2.78,
+        "loudness_range_db": 20.1,
+        "pace_wpm": 196.0
+       }
+      },
+      {
+       "take": 5,
+       "transcript": "Kick the ball and watch it roll, all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 13.22,
+       "ok": false,
+       "metrics": {
+        "duration_s": 3.82,
+        "f0_median_hz": 211.0,
+        "pitch_spread_st": 2.25,
+        "loudness_range_db": 18.2,
+        "pace_wpm": 204.2
+       }
+      },
+      {
+       "take": 6,
+       "transcript": "Kick the ball and watch it roll all the way into the goal.",
+       "word_errors": 0,
+       "ava": {
+        "ok": true,
+        "expected": 0
+       },
+       "calm": 17.095,
+       "ok": false,
+       "metrics": {
+        "duration_s": 3.26,
+        "f0_median_hz": 238.2,
+        "pitch_spread_st": 2.94,
+        "loudness_range_db": 16.9,
+        "pace_wpm": 239.3
+       }
+      }
+     ],
+     "2": [
+      {
+       "take": 0,
+       "transcript": "Ava Ava time for bed a cozy blanket a sleepy head",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 8.355,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.28,
+        "f0_median_hz": 289.9,
+        "pitch_spread_st": 2.43,
+        "loudness_range_db": 23.7,
+        "pace_wpm": 105.1
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 9.265,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.52,
+        "f0_median_hz": 206.2,
+        "pitch_spread_st": 3.44,
+        "loudness_range_db": 23.3,
+        "pace_wpm": 101.2
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 7.94,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.6,
+        "f0_median_hz": 234.1,
+        "pitch_spread_st": 2.79,
+        "loudness_range_db": 20.6,
+        "pace_wpm": 100.0
+       }
+      },
+      {
+       "take": 3,
+       "transcript": "Ava, Ava, time for bed, a cozy blanket, a sleepy head.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 2,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 8.905,
+       "ok": true,
+       "metrics": {
+        "duration_s": 6.06,
+        "f0_median_hz": 248.0,
+        "pitch_spread_st": 2.88,
+        "loudness_range_db": 24.1,
+        "pace_wpm": 108.9
+       }
+      },
+      {
+       "take": 4,
+       "transcript": "Ava Ava time for bed a cozy blanket a sleepy head",
+       "word_errors": 0,
+       "ava": {
+        "expected": 2,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 1,
+        "ok": false
+       },
+       "calm": 9.06,
+       "ok": false,
+       "metrics": {
+        "duration_s": 6.26,
+        "f0_median_hz": 280.8,
+        "pitch_spread_st": 3.31,
+        "loudness_range_db": 23.0,
+        "pace_wpm": 105.4
+       }
+      }
+     ],
+     "3": [
+      {
+       "take": 0,
+       "transcript": "The moon is out the stars are too night night Ava. We love you",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 12.285,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.28,
+        "f0_median_hz": 232.7,
+        "pitch_spread_st": 2.1,
+        "loudness_range_db": 23.1,
+        "pace_wpm": 159.1
+       }
+      },
+      {
+       "take": 1,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 11.355,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.62,
+        "f0_median_hz": 213.4,
+        "pitch_spread_st": 2.83,
+        "loudness_range_db": 20.3,
+        "pace_wpm": 149.5
+       }
+      },
+      {
+       "take": 2,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 12.67,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.2,
+        "f0_median_hz": 285.7,
+        "pitch_spread_st": 2.37,
+        "loudness_range_db": 22.6,
+        "pace_wpm": 161.5
+       }
+      },
+      {
+       "take": 3,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 12.09,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.52,
+        "f0_median_hz": 249.5,
+        "pitch_spread_st": 2.37,
+        "loudness_range_db": 24.0,
+        "pace_wpm": 152.2
+       }
+      },
+      {
+       "take": 4,
+       "transcript": "The moon is out the stars are too night night Ava. We love you",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 13.89,
+       "ok": false,
+       "metrics": {
+        "duration_s": 4.66,
+        "f0_median_hz": 250.9,
+        "pitch_spread_st": 1.71,
+        "loudness_range_db": 22.6,
+        "pace_wpm": 180.3
+       }
+      },
+      {
+       "take": 5,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 10.615,
+       "ok": false,
+       "metrics": {
+        "duration_s": 5.9,
+        "f0_median_hz": 265.8,
+        "pitch_spread_st": 1.9,
+        "loudness_range_db": 23.9,
+        "pace_wpm": 142.4
+       }
+      },
+      {
+       "take": 6,
+       "transcript": "The moon is out. The stars are too. Night night, Ava. We love you.",
+       "word_errors": 0,
+       "ava": {
+        "expected": 1,
+        "eɪv": 1,
+        "wrong(aɪv/ɑːv/æv)": 0,
+        "ok": true
+       },
+       "calm": 10.555,
+       "ok": true,
+       "metrics": {
+        "duration_s": 6.02,
+        "f0_median_hz": 296.6,
+        "pitch_spread_st": 2.28,
+        "loudness_range_db": 23.3,
+        "pace_wpm": 139.5
+       }
+      }
+     ]
+    },
+    "gen_calls": [
+     {
+      "voice": 6,
+      "couplet": 0,
+      "takes": 3,
+      "seed": 6000,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 70.2,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c0_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c0_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c0_t2.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 1,
+      "takes": 3,
+      "seed": 6010,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 55.8,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t2.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 2,
+      "takes": 3,
+      "seed": 6020,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 77.9,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c2_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c2_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c2_t2.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 3,
+      "takes": 3,
+      "seed": 6030,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 66.5,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t0.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t1.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t2.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 1,
+      "takes": 2,
+      "seed": 6013,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 47.1,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t3.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t4.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 2,
+      "takes": 2,
+      "seed": 6023,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 58.8,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c2_t3.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c2_t4.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 3,
+      "takes": 2,
+      "seed": 6033,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 52.7,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t3.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t4.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 1,
+      "takes": 2,
+      "seed": 6015,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.5,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 45.0,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t5.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c1_t6.wav"
+      ]
+     },
+     {
+      "voice": 6,
+      "couplet": 3,
+      "takes": 2,
+      "seed": 6035,
+      "gen": {
+       "do_sample": true,
+       "temperature": 0.45,
+       "top_p": 0.8,
+       "top_k": 50,
+       "repetition_penalty": 1.05,
+       "subtalker_temperature": 0.75,
+       "subtalker_top_p": 0.9,
+       "max_new_tokens": 220
+      },
+      "render_s": 55.4,
+      "files": [
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t5.wav",
+       "/tmp/claude-0/-home-user-kiosk/770bde94-ec15-55ed-8663-27081ebb32d7/scratchpad/work/v6_c3_t6.wav"
+      ]
+     }
+    ],
+    "pauses": [
+     {
+      "found_pause_s": 0.37,
+      "action": "set to 0.40s",
+      "gap_after_s": 0.91
+     },
+     {
+      "found_pause_s": 0.19,
+      "action": "set to 0.40s",
+      "gap_after_s": 1.5
+     },
+     {
+      "found_pause_s": 0.59,
+      "action": "kept",
+      "gap_after_s": 1.07
+     },
+     {
+      "found_pause_s": 0.68,
+      "action": "kept",
+      "gap_after_s": 0
+     }
+    ],
+    "final": {
+     "transcript": "Ava, Ava, boots on tight. The sun is up. The sky is bright. Kick the ball and watch it roll all the way into the goal. Ava, Ava, time for bed. A cozy blanket. A sleepy head. The moon is out. The stars are too. Night night, Ava. We love you.",
+     "wer": 0.0,
+     "word_errors": 0,
+     "phonemes": "eɪvɐeɪvɐbuːtsɑːntaɪtðəsʌnɪzʌpðəskaɪɪzbɹaɪtdkɪkðəbɔːlændwɑːtʃɪtɹoʊlɔːlðəweɪɪntəðəɡoʊleɪvɐeɪɐtaɪmfɚbɛdɐkoʊziblæŋkɪtɐsliːpihɛdðəmuːnɪzaʊtðəstɑːɹzɑːɹtuːnaɪtnaɪteɪvwiːlʌvjuː",
+     "ava": {
+      "expected": 5,
+      "eɪv": 4,
+      "wrong(aɪv/ɑːv/æv)": 0,
+      "ok": false
+     },
+     "utmos_all": 4.284,
+     "utmos_day": 4.339,
+     "utmos_bed": 4.293,
+     "day": {
+      "duration_s": 11.82,
+      "f0_median_hz": 255.3,
+      "pitch_spread_st": 2.93,
+      "loudness_range_db": 23.6,
+      "pace_wpm": 132.0
+     },
+     "bed": {
+      "duration_s": 13.28,
+      "f0_median_hz": 273.6,
+      "pitch_spread_st": 3.03,
+      "loudness_range_db": 22.3,
+      "pace_wpm": 113.0
+     },
+     "lufs": -18.13,
+     "bed_minus_day_db": -1.8,
+     "peak_dbfs": -1.0299999713897705,
+     "duration_s": 27.89,
+     "size_kb": 176
+    },
+    "model_render_s": 529.4,
+    "total_s_incl_checks": 14.2
+   }
   }
  ],
  "notes": {
   "listen": {
-   "1": "a warm, mid-pitched mum voice with the steadiest pitch of the first three (2.5 semitones spread by day); bedtime slows to about 104 wpm. Listen for whether it sounds tender enough, or a little plain.",
+   "1": "a warm, mid-pitched mum voice with one of the steadiest pitches of the six (2.5 semitones spread by day); bedtime slows to about 104 wpm. Every couplet is a clean clone that passed all checks. Listen for whether it sounds tender enough, or a little plain.",
    "2": "the brightest, most lilting read (widest pitch movement, 4.6 semitones by day) and the quickest (139 wpm by day, 111 at bedtime). Listen for whether it stays kind rather than 'presenter'. Highest UTMOS so far.",
-   "3": "the slowest, most hushed bedtime of the first three (86 wpm, pitch drops to about 183 Hz). This one is VoiceDesign, not a clone (see method), so listen for whether it sounds like the same woman across all four couplets."
+   "3": "the slowest, most hushed bedtime of the six (86 wpm, pitch drops to about 183 Hz). This one is VoiceDesign, not a clone (see method), so listen for whether it sounds like the same woman across all four couplets; the last couplet is 3.6 semitones below the reference.",
+   "4": "meant to be the lower, richer audiobook voice, but it measures about the same pitch as the mum (209 Hz by day), so listen for whether it actually sounds older and richer. It reads the day verse briskly (142 wpm, the quickest) and slows well at bedtime (95 wpm).",
+   "5": "the calmest by the numbers: a slow day read (110 wpm), the steadiest pitch of the six (2.1 semitones by day, 1.8 at bedtime) and a gentle bedtime (96 wpm). Listen for whether it sounds like a warm granny or just a slow reader, and for the join after couplet 1: that couplet comes from VoiceDesign (matched to within 0.1 semitone of the reference pitch), the rest is cloned.",
+   "6": "the highest and brightest voice (about 255 Hz by day) and the only one whose pitch goes up at bedtime (274 Hz). Whisper heard short, separate phrases ('The sun is up. The sky is bright.'). Listen for whether the Yorkshire accent is there at all; accent cannot be measured here."
   },
   "caveats": [
-   "- **The first \"Ava\" of a couplet is the weak spot.** With Base cloning, the Ava at the very start of an input was often said as AH-vuh (/ɑːv/) or AV-uh (/æv/), while the second Ava was right. The phoneme check caught this, and failing takes were re-rendered; the kept takes all measure /eɪv/. For production, start each rendered chunk with a word before the name, or check every name automatically as done here.",
+   "- **The first \"Ava\" of a couplet is the weak spot.** With Base cloning, the Ava at the very start of an input was often said as AH-vuh (/ɑːv/) or AV-uh (/æv/), while the second Ava was right. The phoneme check caught this and failing takes were re-rendered (up to 7 takes). It failed every take for voice 3 (two couplets) and voice 5 (couplet 1), which were fixed with VoiceDesign as described in their sections. For production, start each rendered chunk with a word before the name (for example \"Oh, Ava\" or \"Good night, Ava\"), or keep checking every name automatically as done here.",
+   "- **Whole-file Ava check on voices 4 and 6: 4 of 5.** Every couplet passed on its own, but in the finished file the recogniser merges the bedtime \"Ava, Ava\" into /eɪvɐvɐ/ (voice 4) or /eɪvɐeɪɐ/ (voice 6): the second Ava runs straight on from the first. No Ava was heard as EYE-vuh or AH-vuh. Please listen to the start of the bedtime verse on these two.",
+   "- **Two couplets only miss the pace gate:** voice 2's last couplet (every take 146–155 wpm against the 140 wpm bedtime limit) and voice 6's \"Kick the ball\" couplet (every take over 170 wpm). After 7 takes each, the calmest take was kept. Both pass Whisper and the Ava check.",
    "- **Line breaks inside a couplet:** Whisper and the pause measurement show the models usually leave a real pause between the two lines; where it was over the limit it was trimmed to the limit, and where it was a short but real pause (0.12–0.40 s) it was lengthened to 0.40 s with a crossfade. Lines that flowed straight on were left alone.",
    "- **Bedtime level:** −2.5 dB was applied before compression; after 2:1 compression and loudness matching the measured difference is about 1–2 dB.",
    "- Whisper writes \"cosy\" as \"cozy\"; this is not counted as an error. Per-take logs in `results.json` recorded before this normalisation may show it as 1 word error.",
    "- The \"Kick the ball\" couplet was fed with extra ellipses (\"Kick the ball... and watch it roll... all the way... into the goal!\") after the first attempt came out rushed (180–210 wpm). A pace gate (day ≤170 wpm, bedtime ≤140 wpm) was then added to the checks."
+  ],
+  "summary": [
+   "**Measurements only, to help you choose what to listen to first:**",
+   "- **Calmest on paper:** voice 5 (kind granny): slow by day, steadiest pitch. Then voice 1 (warm mum), which is also the cleanest: every couplet a clone that passed every check.",
+   "- **Most bedtime-like:** voice 3 (soft bedtime), 86 wpm at bedtime with the pitch dropping, but made with VoiceDesign, so it may drift a little between couplets.",
+   "- **Highest UTMOS (naturalness hint):** voice 2 (nursery teacher) 4.48, then voices 4 and 1 (4.38, 4.36). All six are between 4.0 and 4.5, higher than every sample in the earlier `hf/` round (best 4.11). The two voices with VoiceDesign in them (3 and 5) score lowest, about 4.0.",
+   "- **Least likely to suit:** voice 6 (Northern): the brightest, pitch rises at bedtime, and the accent is unverified.",
+   "- **Accent, warmth and age cannot be measured.** The descriptions asked for them, but only listening can tell whether they came through."
   ]
  }
 }
