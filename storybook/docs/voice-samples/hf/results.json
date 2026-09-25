@@ -1,28 +1,244 @@
 {
- "status": "INTERIM",
+ "status": "FINAL",
+ "date": "2026-09-25",
+ "machine": "4 CPU cores, 15 GB RAM, no GPU; torch 2.14.0 (PyPI wheel), 4 threads",
+ "blocked_hosts": {
+  "download.pytorch.org": "blocked (connection refused by proxy); torch came from PyPI instead",
+  "api.github.com, codeload.github.com, github.com/<repo>/archive": "403, so torch.hub could not fetch tarepan/SpeechMOS; used the MIT HF port prj-beatrice/utmos22-torch-native",
+  "huggingface.co gated repos (neuphonic/neutts-air, neuphonic/neucodec, kyutai/pocket-tts)": "401 (need an HF account token that has accepted the terms). This is not a network block."
+ },
+ "access_ok": [
+  "huggingface.co API",
+  "HF weight downloads via *.hf.co Xet CDN",
+  "pypi.org + files.pythonhosted.org (pip download six OK)",
+  "github.com release assets",
+  "archive.ubuntu.com (apt)"
+ ],
+ "checks": {
+  "asr": "faster-whisper small.en, int8, beam 5 (MIT)",
+  "names": "facebook/wav2vec2-lv-60-espeak-cv-ft phoneme CTC (Apache-2.0): Ava counted as /eɪv/, Niamh as /niːv/",
+  "mos": "UTMOS22 strong via prj-beatrice/utmos22-torch-native (MIT); rough hint only",
+  "per_chunk_gate": "each chunk re-rendered (max 3; VoxCPM2 max 2; Pocket max 5) until Whisper words matched and the names had the right phonemes; otherwise the best-scoring take was kept",
+  "mastering": "DC removal, -2 dB high shelf at 6.5 kHz, -18 LUFS integrated (pyloudnorm), look-ahead peak limiter (-1.0 dBFS; -1.5 dBFS for qwen3tts-voicedesign and pocket-tts-anna because MP3 encoding overshot), 0.25 s lead-in and 0.6 s tail silence, MP3 via soundfile/libsndfile"
+ },
+ "name_spelling_findings": {
+  "Qwen3-TTS": "'Ayva' -> /aɪv/ ('EYE-vuh') 3/3; 'Ay-vuh', 'Ayvah' -> /aɪv/; plain 'Ava' -> /eɪv/ 3/3. So plain 'Ava' was fed.",
+  "Chatterbox": "'Ayva' -> /aɪv/ in 5 of 9 spoken instances (first run); plain 'Ava' -> /eɪv/ in every take of the second run.",
+  "Pocket TTS": "plain 'Ava' -> /æv/ or /ɑːv/; 'Ayva', 'Aiva', 'Eyva' -> /aɪv/; 'A-va' was the best but inconsistent (/eɪvɑː/ or /əvɑː/).",
+  "Niamh": "fed as 'Neeve' to every model: /niːv/ in every model."
+ },
+ "reference_clip_for_cloning": {
+  "text": "Once upon a time, in a little house at the end of the lane, there lived a sleepy puppy called Tiffin. Every evening, when the sun went down, Tiffin curled up by the fire.",
+  "instruct": "A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases.",
+  "seed": 7,
+  "file": "not committed (11.05 s, 24 kHz, Qwen3-TTS VoiceDesign)"
+ },
+ "ranking": [
+  "chatterbox-designedref.mp3",
+  "chatterbox-turbo-designedref.mp3",
+  "qwen3tts-voicedesign-slowB.mp3",
+  "qwen3tts-voicedesign.mp3",
+  "voxcpm2-voicedesign.mp3",
+  "pocket-tts-anna.mp3"
+ ],
+ "licences": {
+  "qwen3tts": {
+   "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+   "card": "https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+   "code": "Apache-2.0 (pip qwen-tts 0.1.1 metadata)",
+   "weights": "Apache-2.0 (model card)",
+   "data": "Not stated on the model card (tech report arXiv:2601.15621).",
+   "commercial": "Yes (Apache-2.0). No watermark. The voice is designed from text, so no real person's voice is involved."
+  },
+  "chatterbox": {
+   "model": "ResembleAI/chatterbox",
+   "card": "https://huggingface.co/ResembleAI/chatterbox",
+   "code": "MIT (pip chatterbox-tts 0.1.7)",
+   "weights": "MIT (model card)",
+   "data": "'0.5M hours of cleaned data' (card); sources not listed.",
+   "commercial": "Yes (MIT). Every output carries Resemble's imperceptible PerTh watermark (resemble-perth, MIT). It is a cloning model: only ever feed it synthetic or consented reference audio."
+  },
+  "chatterbox-turbo": {
+   "model": "ResembleAI/chatterbox-turbo",
+   "card": "https://huggingface.co/ResembleAI/chatterbox-turbo",
+   "code": "MIT (same pip chatterbox-tts 0.1.7)",
+   "weights": "MIT (model card)",
+   "data": "Not stated on the card.",
+   "commercial": "Yes (MIT). PerTh watermark as above. Turbo ignores exaggeration and cfg_weight."
+  },
+  "voxcpm2": {
+   "model": "openbmb/VoxCPM2",
+   "card": "https://huggingface.co/openbmb/VoxCPM2",
+   "code": "Apache-2.0 (pip voxcpm 2.0.3 License-Expression)",
+   "weights": "Apache-2.0 (card: 'free for commercial use')",
+   "data": "'2M+ hours multilingual speech' (card); sources not listed.",
+   "commercial": "Yes (Apache-2.0). Voice designed from text."
+  },
+  "pocket-tts": {
+   "model": "kyutai/pocket-tts-without-voice-cloning (english_2026-09)",
+   "card": "https://huggingface.co/kyutai/pocket-tts-without-voice-cloning",
+   "code": "MIT (pip pocket-tts 3.3.0 LICENSE)",
+   "weights": "CC-BY-4.0 (attribution required)",
+   "data": "Not detailed on the card. Voice 'anna' is VCTK p228, CC-BY-4.0 (https://huggingface.co/kyutai/tts-voices).",
+   "commercial": "Yes, with attribution (CC-BY-4.0 for weights and the VCTK voice). The preset is a REAL consenting speaker from the VCTK corpus, not a synthetic voice. The gated kyutai/pocket-tts repo's terms prohibit voice cloning/impersonation. Avoid the Expresso and EARS presets (CC-BY-NC)."
+  }
+ },
+ "not_run": {
+  "neuphonic/neutts-air": {
+   "reason": "Gated on Hugging Face: the backbone and neuphonic/neucodec return 401 without a logged-in token that has accepted the terms. No HF token in this environment. The package installed fine (needed a torchtune shim).",
+   "licence": "Weights Apache-2.0 (card). Training datasets listed on the card: amphion/Emilia-Dataset (Emilia is CC-BY-NC-4.0) and neuphonic/emilia-yodas-english-neucodec, which is a caveat for commercial use.",
+   "note": "espeak-ng phonemizes Ava as /ˈɑːvə/ and Niamh as /nˈaɪəm/ (both wrong), so a phoneme override would be needed: /ˈeɪvə/, /nˈiːv/. The render script (neu_run.py) was written with that override."
+  },
+  "kyutai/pocket-tts (main, voice cloning)": {
+   "reason": "Gated (401). The non-cloning repo was used instead."
+  },
+  "maya-research/maya1": {
+   "reason": "Not tried: 3B model, too slow on a 4-core CPU within the time budget."
+  }
+ },
  "samples": [
   {
-   "file": "qwen3tts-voicedesign.mp3",
+   "file": "qwen3tts-voicedesign-slowB.mp3",
+   "model_key": "qwen3tts",
+   "voice": "designed from text description (no reference audio)",
+   "render_cpu_s_incl_retries_and_checks": 703.2,
+   "realtime_factor_approx": 15.2,
+   "attempts": 12,
+   "chunks_passing_all_checks": 6,
+   "render_settings": {
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "seed": 42,
+    "instruct_A": "A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases. She sounds quietly delighted and playful for the football game, but never loud or shouty; her excitement is soft and smiling.",
+    "instruct_B": "A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases. Now she is winding down for sleep: much slower and softer, hushed and sleepy, almost whispering, with long gentle pauses.",
+    "text_A": [
+     "Goal, Ava! It's football day!",
+     "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!"
+    ],
+    "text_B": [
+     "Home we go... Boots off... Lights low.",
+     "Paw in hand... side by side. What a big day, Neeve.",
+     "Night night, Tiffin... Night night, Neeve."
+    ],
+    "gen": {
+     "do_sample": true,
+     "temperature": 0.7,
+     "top_p": 0.9,
+     "top_k": 50,
+     "repetition_penalty": 1.05
+    },
+    "gaps_A_s": [
+     0.6,
+     0.5,
+     0.65
+    ],
+    "gaps_B_s": [
+     0.9,
+     1.1
+    ],
+    "B_gain": 0.85,
+    "gap_between_passages_s": 1.5,
+    "render_s_incl_retries": 703.2,
+    "dtype": "float32",
+    "threads": 4
+   },
+   "chunk_attempt_log": [
+    {
+     "text": "Goal, Ava! It's football day!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Go Ava, it's football day!  /ɡoʊeɪvɚɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "Goal, Ava! It's football day!",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Goal, Ava. It's football day.  /ɡoʊlheɪvəɪtsfʊtbɑːldeɪ/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Tiffin has boots, Tiffin has a ball. Where's Ava's shirt? Here it is.  /tɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is.  /tɪfənhæzbuːtstɪfənhæzɐbɔːlweɪɹɪzeɪvɐʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Peep, kick off, pass, pass, pass, Tiffany Ava, thud.  /piːpkɪkɑːfpæstpæstpættɪfɪndəeɪvəðɑːd/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Peep, kick off, pass, pass, pass. Tiff into Ava, thud.  /piːpkɪkɑːfpæspæspstɪfɪntəeɪvɚðʌd/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 2,
+     "ok": false,
+     "heard": "Peep! Kickoff! Pass, pass, pass! Tiffen to Ava! Thud!  /piːbkɪkɔvpaspaspastɪfəntəeɪvəðʌd/"
+    },
+    {
+     "text": "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "One more pass to Ava. Ready? Steady. Goal. Goal, Ava. Goal, goal, goal.  /wʌnmɔːɹpæstəeɪvʌɹɛdistɛdiɡoʊlɡoʊleɪvəɡɔlɡɔɡɔl/"
+    },
+    {
+     "text": "Home we go... Boots off... Lights low.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low  /hoʊmiːɡoʊbuːtsɑːflaɪtsloʊ/"
+    },
+    {
+     "text": "Paw in hand... side by side. What a big day, Neeve.",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Pawn hand, side by side, what a big day, Neve.  /pɑːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Paw in hand... side by side. What a big day, Neeve.",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Paw in hand, side by side, what a big day, Neve.  /pɑːɪnhændsaɪdbaɪsaɪdwɛrɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Night night, Tiffin... Night night, Neeve.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Night night Tiffin, night night Neve  /naɪnaɪtɪfønnaɪdnaɪdniːv/"
+    }
+   ],
    "analysis": {
-    "name": "qwen3tts-voicedesign",
+    "name": "qwen3tts-voicedesign-slowB",
     "raw_sr": 24000,
-    "raw_duration_s": 43.42,
-    "raw_peak_dbfs": -1.5099999904632568,
+    "raw_duration_s": 46.37,
+    "raw_peak_dbfs": -2.890000104904175,
     "raw_clipped_samples": 0,
     "master": {
      "high_shelf_db_at_6.5kHz": -2.0,
-     "lufs": -18.01,
-     "peak_dbfs": -1.0
+     "lufs": -18.0,
+     "peak_dbfs": -2.0
     },
-    "mp3_kb": 246.8,
+    "mp3_kb": 245.1,
     "mp3_sr": 24000,
-    "final_duration_s": 44.27,
-    "final_peak_dbfs": -0.7699999809265137,
-    "final_lufs": -18.08,
-    "whisper_small_en": "Goal, Ava! It's football day! Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kick off. Pass, pass, pass. Tiffin to Ava. Thud. One more pass to Ava. Ready? Steady? Goal. Goal, Ava. Goal, goal, goal. Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night, night, Tiffin. Night, night, Neve.",
-    "wer_raw": 0.03,
-    "wer_names_canonical": 0.0,
-    "word_errors": [],
+    "final_duration_s": 47.22,
+    "final_peak_dbfs": -1.8799999952316284,
+    "final_lufs": -17.96,
+    "whisper_small_en": "Goal, Ava. It's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kick off. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready? Steady. Goal. Goal, Ava. Goal, goal, goal. Home we go. Boots off. Light slow. Paw in hand. Side by side. What a big day, Neve. Night, night, Tiffin. Night, night, Neve.",
+    "wer_raw": 0.061,
+    "wer_names_canonical": 0.03,
+    "word_errors": [
+     "substitute: 'lights low' -> 'light slow'"
+    ],
     "name_tokens_heard": [
      "ava",
      "ava's",
@@ -32,52 +248,65 @@
      "neve",
      "neve"
     ],
-    "passage_A_s": 27.86,
-    "passage_B_s": 13.83,
-    "words_per_min_A": 90.5,
-    "words_per_min_B": 104.1,
-    "pause_between_passages_s": 1.59,
+    "passage_A_s": 26.39,
+    "passage_B_s": 18.02,
+    "words_per_min_A": 95.5,
+    "words_per_min_B": 79.9,
+    "pause_between_passages_s": 1.68,
     "pauses_A_s": [
+     0.45,
+     0.79,
+     0.52,
      0.7,
      0.69,
-     0.43,
+     0.63,
+     0.37,
+     0.41,
+     0.52,
+     0.45,
+     0.79,
+     0.75,
+     0.83,
      0.8,
-     0.54,
-     0.49,
-     0.55,
-     0.36,
-     1.28,
-     0.77,
-     0.33,
-     0.49,
-     0.67,
-     0.53,
-     0.51,
-     0.53
+     0.78,
+     1.03,
+     0.44
     ],
     "pauses_B_s": [
-     0.73,
-     0.93,
-     0.79,
-     0.55,
-     0.97,
+     1.48,
+     1.2,
+     1.04,
+     0.84,
+     1.09,
+     1.34,
      0.9
     ],
-    "rms_dbfs_A": -18.5,
-    "rms_dbfs_B": -20.899999618530273,
-    "phonemes": "ɡoʊleɪvɚɪtsfʊtbɔːldeɪtɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvʌʃɚthɪɹɪɾɪzpiːpkɪkɑːfpæspæspæstɪfəntəeɪvɐsʌdwʌnmɔːɹpæstəeɪvəɹɛdistɛdiɡoʊlɡleɪvəɡoʊlɡllhoʊmwiːɡoʊbuːtsnaɪtsloʊpɑːɪnhænsaɪdbaɪsaɪdwʌdɐbɪɡdeɪniːvnaɪtnaɪtɪfənnaɪnaɪtniː",
+    "rms_dbfs_A": -18.700000762939453,
+    "rms_dbfs_B": -21.200000762939453,
+    "phonemes": "ɡoʊlheɪvʌɪsfʊtbɑːdeɪtɪfənhæzbuːtstɪfənhzɐbɔlwɛɹɪseɪvəʃɜːthɪɹɪdɪspiːpkɪkɑːfpæstpæspæstɪfəndəeɪvʌðædwʌnmɔːɹpæstəeɪvɐɹɛdistɛriɡoːlɡleɪvɐɡɔlɡɔɡɔlhoʊmiːɡoʊuːtsɔflaɪtsloʊpɑːɪnhɛndsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːvnaɪtnaɪtɪfənnaɪtnaɪniːv",
     "name_phoneme_counts": {
      "ava_eɪv": 5,
      "ava_ɑːv_or_aɪv": 0,
-     "niamh_niːv": 1
+     "niamh_niːv": 2
     },
     "names_expected": {
      "ava_eɪv": 5,
      "niamh_niːv": 2
     },
-    "utmos22": 3.17
-   },
-   "render": {
+    "utmos22": 3.4,
+    "utmos22_A": 3.68,
+    "utmos22_B": 3.7
+   }
+  },
+  {
+   "file": "qwen3tts-voicedesign.mp3",
+   "model_key": "qwen3tts",
+   "voice": "designed from text description (no reference audio)",
+   "render_cpu_s_incl_retries_and_checks": 521.4,
+   "realtime_factor_approx": 12.0,
+   "attempts": 12,
+   "chunks_passing_all_checks": 7,
+   "render_settings": {
     "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
     "seed": 42,
     "instruct_A": "A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases. She sounds quietly delighted and playful for the football game, but never loud or shouty; her excitement is soft and smiling.",
@@ -112,86 +341,267 @@
     "B_gain": 0.85,
     "gap_between_passages_s": 1.5,
     "render_s_incl_retries": 521.4,
-    "attempts": [
-     {
-      "text": "Goal, Ava! It's football day!",
-      "attempt": 0,
-      "ok": false,
-      "heard": "Go Ava! It's football day!  /ɡoʊeɪvɚɪtsfʊtbɔːldeɪ/"
-     },
-     {
-      "text": "Goal, Ava! It's football day!",
-      "attempt": 1,
-      "ok": false,
-      "heard": "Goal, Haeva. It's football day.  /ɡoʊlheɪvəɪtsfʊtbɑːldeɪ/"
-     },
-     {
-      "text": "Goal, Ava! It's football day!",
-      "attempt": 2,
-      "ok": true,
-      "heard": "Goal Ava! It's football day!  /ɡoʊleɪvɚɪtsfʊtbɑːldeɪ/"
-     },
-     {
-      "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is.  /tɪfɪnhæzbuːtstɪfɪnhæzɐbɔːlwɛɹɪzeɪvɐzʃɜːthɪɹɪɾɪz/"
-     },
-     {
-      "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
-      "attempt": 0,
-      "ok": false,
-      "heard": "Peep, kick off. Pass, pass, pass. Tiff and Ava died.  /iːpkɪkɑːfpæspæspæstɪfɪndeɪvɚdaɪd/"
-     },
-     {
-      "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
-      "attempt": 1,
-      "ok": true,
-      "heard": "Peep, kick off. Pass, pass, pass. Tiffin to Ava. Thud.  /iːpkɪkɔθpspæspæstɪfɪntəeɪvɜθʌd/"
-     },
-     {
-      "text": "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!",
-      "attempt": 0,
-      "ok": true,
-      "heard": "One more pass to Ava. Ready? Steady? Goal. Goal, Ava. Goal, goal, goal.  /wʌnmɔːɹpæstəeɪvɐɹɛdistɛdiɡoʊlɡleɪvəɡoʊlɡoʊlɡoʊl/"
-     },
-     {
-      "text": "Home we go. Boots off. Lights low.",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Home we go Boots off Lights low  /hoʊmwiːɡoʊbuːtsɑːfnaɪtloʊ/"
-     },
-     {
-      "text": "Paw in hand, side by side. What a big day, Neeve.",
-      "attempt": 0,
-      "ok": false,
-      "heard": "Pawn hands side by side, what a big day, Neve.  /pɑːɪnheɪndsaɪdbaɪsaɪdwʌrɐbɪɡdeɪniːv/"
-     },
-     {
-      "text": "Paw in hand, side by side. What a big day, Neeve.",
-      "attempt": 1,
-      "ok": false,
-      "heard": "Pine hand, side by side. What a big day, Neve.  /pɑːɪnhændsaɪdbaɪsaɪdhwʌɾɐbɪɡdeɪneɪv/"
-     },
-     {
-      "text": "Paw in hand, side by side. What a big day, Neeve.",
-      "attempt": 2,
-      "ok": true,
-      "heard": "Paw in hand side by side. What a big day, Neve.  /pɑːædhænsaɪdbaɪsaɪdwʌtɐbɪɡdeɪniːv/"
-     },
-     {
-      "text": "Night night, Tiffin. Night night, Neeve.",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Night night, Tiffin. Night night, Neve.  /naɪnaɪtɪfɪnnaɪnaɪtniːv/"
-     }
-    ],
     "dtype": "float32",
     "threads": 4
+   },
+   "chunk_attempt_log": [
+    {
+     "text": "Goal, Ava! It's football day!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Go Ava! It's football day!  /ɡoʊeɪvɚɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "Goal, Ava! It's football day!",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Goal, Haeva. It's football day.  /ɡoʊlheɪvəɪtsfʊtbɑːldeɪ/"
+    },
+    {
+     "text": "Goal, Ava! It's football day!",
+     "attempt": 2,
+     "ok": true,
+     "heard": "Goal Ava! It's football day!  /ɡoʊleɪvɚɪtsfʊtbɑːldeɪ/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is.  /tɪfɪnhæzbuːtstɪfɪnhæzɐbɔːlwɛɹɪzeɪvɐzʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Peep, kick off. Pass, pass, pass. Tiff and Ava died.  /iːpkɪkɑːfpæspæspæstɪfɪndeɪvɚdaɪd/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Peep, kick off. Pass, pass, pass. Tiffin to Ava. Thud.  /iːpkɪkɔθpspæspæstɪfɪntəeɪvɜθʌd/"
+    },
+    {
+     "text": "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "One more pass to Ava. Ready? Steady? Goal. Goal, Ava. Goal, goal, goal.  /wʌnmɔːɹpæstəeɪvɐɹɛdistɛdiɡoʊlɡleɪvəɡoʊlɡoʊlɡoʊl/"
+    },
+    {
+     "text": "Home we go. Boots off. Lights low.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Home we go Boots off Lights low  /hoʊmwiːɡoʊbuːtsɑːfnaɪtloʊ/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Pawn hands side by side, what a big day, Neve.  /pɑːɪnheɪndsaɪdbaɪsaɪdwʌrɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Pine hand, side by side. What a big day, Neve.  /pɑːɪnhændsaɪdbaɪsaɪdhwʌɾɐbɪɡdeɪneɪv/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 2,
+     "ok": true,
+     "heard": "Paw in hand side by side. What a big day, Neve.  /pɑːædhænsaɪdbaɪsaɪdwʌtɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Night night, Tiffin. Night night, Neeve.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Night night, Tiffin. Night night, Neve.  /naɪnaɪtɪfɪnnaɪnaɪtniːv/"
+    }
+   ],
+   "analysis": {
+    "name": "qwen3tts-voicedesign",
+    "raw_sr": 24000,
+    "raw_duration_s": 43.42,
+    "raw_peak_dbfs": -1.5099999904632568,
+    "raw_clipped_samples": 0,
+    "master": {
+     "limiter_ceiling_dbfs": -1.5,
+     "high_shelf_db_at_6.5kHz": -2.0,
+     "lufs": -18.02,
+     "peak_dbfs": -1.5
+    },
+    "mp3_kb": 246.8,
+    "mp3_sr": 24000,
+    "final_duration_s": 44.27,
+    "final_peak_dbfs": -1.0299999713897705,
+    "final_lufs": -18.09,
+    "whisper_small_en": "Goal Ava! It's football day! Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kick off. Pass, pass, pass. Tiffin to Ava. Thud. One more pass to Ava. Ready? Steady? Goal. Goal Ava. Goal, goal, goal. Home we go. Boots off. Lights low. Pawn hands side by side. What a big day, Neve. Night night, Tiffin. Night night, Neve.",
+    "wer_raw": 0.076,
+    "wer_names_canonical": 0.045,
+    "word_errors": [
+     "substitute: 'paw in' -> 'pawn hands'",
+     "delete: 'hand' -> ''"
+    ],
+    "name_tokens_heard": [
+     "ava",
+     "ava's",
+     "ava",
+     "ava",
+     "ava",
+     "neve",
+     "neve"
+    ],
+    "passage_A_s": 27.86,
+    "passage_B_s": 13.83,
+    "words_per_min_A": 90.5,
+    "words_per_min_B": 104.1,
+    "pause_between_passages_s": 1.59,
+    "pauses_A_s": [
+     0.7,
+     0.69,
+     0.42,
+     0.8,
+     0.53,
+     0.49,
+     0.54,
+     0.36,
+     1.28,
+     0.77,
+     0.33,
+     0.48,
+     0.67,
+     0.53,
+     0.5,
+     0.53
+    ],
+    "pauses_B_s": [
+     0.73,
+     0.93,
+     0.79,
+     0.55,
+     0.97,
+     0.9
+    ],
+    "rms_dbfs_A": -18.5,
+    "rms_dbfs_B": -20.899999618530273,
+    "phonemes": "ɡoʊleɪvɚɪtsfʊtbɔːldeɪtɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvʌʃɚthɪɹɪɾɪzpiːpkɪkɑːfpæspæspæstɪfəntəeɪvɐsʌdwʌnmɔːɹpæstəeɪvəɹɛdistɛdiɡoʊlɡleɪvəɡoʊlɡllhoʊmwiːɡoʊbuːtsnaɪtsloʊpɑːɪnhænsaɪdbaɪsaɪdwʌdɐbɪɡdeɪniːvnaɪtnaɪtɪfənnaɪnaɪtniː",
+    "name_phoneme_counts": {
+     "ava_eɪv": 5,
+     "ava_ɑːv_or_aɪv": 0,
+     "niamh_niːv": 1
+    },
+    "names_expected": {
+     "ava_eɪv": 5,
+     "niamh_niːv": 2
+    },
+    "utmos22": 3.17,
+    "utmos22_A": 3.23,
+    "utmos22_B": 3.94
    }
   },
   {
    "file": "chatterbox-designedref.mp3",
+   "model_key": "chatterbox",
+   "voice": "synthetic reference: 11 s clip of the Qwen3-TTS designed voice",
+   "render_cpu_s_incl_retries_and_checks": 416.2,
+   "realtime_factor_approx": 12.3,
+   "attempts": 9,
+   "chunks_passing_all_checks": 7,
+   "render_settings": {
+    "model": "ResembleAI/chatterbox",
+    "reference_clip": "ref_qwen_designed.wav",
+    "seed": 42,
+    "settings_A": {
+     "exaggeration": 0.45,
+     "cfg_weight": 0.45,
+     "temperature": 0.7
+    },
+    "settings_B": {
+     "exaggeration": 0.3,
+     "cfg_weight": 0.3,
+     "temperature": 0.6
+    },
+    "text_A": [
+     "Goal, Ava! It's football day!",
+     "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!"
+    ],
+    "text_B": [
+     "Home we go. Boots off. Lights low.",
+     "Paw in hand, side by side. What a big day, Neeve.",
+     "Night night, Tiffin. Night night, Neeve."
+    ],
+    "gaps_A_s": [
+     0.6,
+     0.5,
+     0.65
+    ],
+    "gaps_B_s": [
+     0.7,
+     0.85
+    ],
+    "B_gain": 0.85,
+    "gap_between_passages_s": 1.5,
+    "render_s_incl_retries": 416.2,
+    "threads": 4
+   },
+   "chunk_attempt_log": [
+    {
+     "text": "Goal, Ava! It's football day!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Goal Ava, it's football day.  /ɡoʊleɪvɚɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is.  /tɪfɪnhæzbuːtstɪfɪnhæzɐbɔːlweɪɹɪzeɪvᵻzʃʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Peep, kickoff, pass, pass, pass, Tiffen to Ava, Thud.  /piːpkɪkɑːfpæstpæspæsttɪfɪntəeɪvəθʌd/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Peep. Kickoff. Pass, pass, pass. Tiff into Ava. Third.  /piːpkɪkɑːfpæspæspæstɪfɪntəeɪvəθʌd/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 2,
+     "ok": true,
+     "heard": "Peep, kick off, pass, pass, pass. Tiffin to Ava, thud.  /piːpkɪkɑːfpæstpæspæstɪfɪntəeɪvəθʌd/"
+    },
+    {
+     "text": "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "One more pass to Ava. Ready, steady, goal, goal, Ava, goal, goal, goal.  /wʌnmoːɹpæstʊeɪvɐɹɛdistɛdiɡoʊlɡoʊleɪvɐɡɔlɡɔlɡoʊl/"
+    },
+    {
+     "text": "Home we go. Boots off. Lights low.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low.  /hoʊmwiːɡoʊbuːtsɑːflaɪtsloʊ/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Paw in hand, side by side. What a big day, Neve.  /pɑːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Night night, Tiffin. Night night, Neeve.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Night Night Tiffin Night Night Neve  /naɪnaɪtɪfənnaɪnaɪniːv/"
+    }
+   ],
    "analysis": {
     "name": "chatterbox-designedref",
     "raw_sr": 24000,
@@ -257,21 +667,32 @@
      "ava_eɪv": 5,
      "niamh_niːv": 2
     },
-    "utmos22": 4.04
-   },
-   "render": {
-    "model": "ResembleAI/chatterbox",
+    "utmos22": 4.04,
+    "utmos22_A": 4.05,
+    "utmos22_B": 3.97
+   }
+  },
+  {
+   "file": "chatterbox-turbo-designedref.mp3",
+   "model_key": "chatterbox-turbo",
+   "voice": "synthetic reference: 11 s clip of the Qwen3-TTS designed voice",
+   "render_cpu_s_incl_retries_and_checks": 240.5,
+   "realtime_factor_approx": 6.3,
+   "attempts": 9,
+   "chunks_passing_all_checks": 7,
+   "render_settings": {
+    "model": "ResembleAI/chatterbox-turbo",
     "reference_clip": "ref_qwen_designed.wav",
     "seed": 42,
     "settings_A": {
-     "exaggeration": 0.45,
-     "cfg_weight": 0.45,
-     "temperature": 0.7
+     "temperature": 0.7,
+     "top_p": 0.95,
+     "repetition_penalty": 1.2
     },
     "settings_B": {
-     "exaggeration": 0.3,
-     "cfg_weight": 0.3,
-     "temperature": 0.6
+     "temperature": 0.6,
+     "top_p": 0.95,
+     "repetition_penalty": 1.2
     },
     "text_A": [
      "Goal, Ava! It's football day!",
@@ -295,64 +716,580 @@
     ],
     "B_gain": 0.85,
     "gap_between_passages_s": 1.5,
-    "render_s_incl_retries": 416.2,
-    "attempts": [
-     {
-      "text": "Goal, Ava! It's football day!",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Goal Ava, it's football day.  /ɡoʊleɪvɚɪtsfʊtbɔːldeɪ/"
-     },
-     {
-      "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is.  /tɪfɪnhæzbuːtstɪfɪnhæzɐbɔːlweɪɹɪzeɪvᵻzʃʃɜːthɪɹɪɾɪz/"
-     },
-     {
-      "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
-      "attempt": 0,
-      "ok": false,
-      "heard": "Peep, kickoff, pass, pass, pass, Tiffen to Ava, Thud.  /piːpkɪkɑːfpæstpæspæsttɪfɪntəeɪvəθʌd/"
-     },
-     {
-      "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
-      "attempt": 1,
-      "ok": false,
-      "heard": "Peep. Kickoff. Pass, pass, pass. Tiff into Ava. Third.  /piːpkɪkɑːfpæspæspæstɪfɪntəeɪvəθʌd/"
-     },
-     {
-      "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
-      "attempt": 2,
-      "ok": true,
-      "heard": "Peep, kick off, pass, pass, pass. Tiffin to Ava, thud.  /piːpkɪkɑːfpæstpæspæstɪfɪntəeɪvəθʌd/"
-     },
-     {
-      "text": "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!",
-      "attempt": 0,
-      "ok": true,
-      "heard": "One more pass to Ava. Ready, steady, goal, goal, Ava, goal, goal, goal.  /wʌnmoːɹpæstʊeɪvɐɹɛdistɛdiɡoʊlɡoʊleɪvɐɡɔlɡɔlɡoʊl/"
-     },
-     {
-      "text": "Home we go. Boots off. Lights low.",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Home we go, boots off, lights low.  /hoʊmwiːɡoʊbuːtsɑːflaɪtsloʊ/"
-     },
-     {
-      "text": "Paw in hand, side by side. What a big day, Neeve.",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Paw in hand, side by side. What a big day, Neve.  /pɑːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːv/"
-     },
-     {
-      "text": "Night night, Tiffin. Night night, Neeve.",
-      "attempt": 0,
-      "ok": true,
-      "heard": "Night Night Tiffin Night Night Neve  /naɪnaɪtɪfənnaɪnaɪniːv/"
-     }
-    ],
+    "render_s_incl_retries": 240.5,
     "threads": 4
+   },
+   "chunk_attempt_log": [
+    {
+     "text": "Goal, Ava! It's football day!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Goal Ava, it's football day.  /ɡoʊleɪvɚɪtsfɔːɹbɔːldeɪ/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where's Ava's shirt? Here it is.  /tɪfənhæzbuːtstɪfɪnhæzɐbɔːlwɛɹɪzeɪvəʒʃɜːthiːɹɪɾɪz/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is.  /tɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvᵻʃʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Peep, kick off, pass, pass, pass. Tiffin to Ava, thud.  /piːpkɪkɑːfpæspæspæstɪfɪntəeɪvɚθʌd/"
+    },
+    {
+     "text": "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "One more pass to Ava. Ready, steady, goal, goal, Ava, goal, goal, goal.  /wʌnmɔːɹpæstəeɪvəɹɛdistɛdiɡlɡoʊleɪvɐɡoʊlɡoʊlɡoʊ/"
+    },
+    {
+     "text": "Home we go. Boots off. Lights low.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low.  /hoʊmwiːɡoʊbuːtsɑːflaɪtsloʊ/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 0,
+     "ok": false,
+     "heard": "paw in hand, side by side. What a big day, Meave.  /pɑːlɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪmiːv/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Paw in hand side by side. What a big day, Neve!  /pɑːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Night night, Tiffin. Night night, Neeve.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Night night, Tiffin. Night night, Neve.  /naɪtnaɪtɪfɪnnaɪtnaɪtniːv/"
+    }
+   ],
+   "analysis": {
+    "name": "chatterbox-turbo-designedref",
+    "raw_sr": 24000,
+    "raw_duration_s": 38.04,
+    "raw_peak_dbfs": -13.5,
+    "raw_clipped_samples": 0,
+    "master": {
+     "high_shelf_db_at_6.5kHz": -2.0,
+     "lufs": -18.0,
+     "peak_dbfs": -1.4500000476837158
+    },
+    "mp3_kb": 213.4,
+    "mp3_sr": 24000,
+    "final_duration_s": 38.89,
+    "final_peak_dbfs": -1.3799999952316284,
+    "final_lufs": -18.1,
+    "whisper_small_en": "Goal Ava, it's football day. Tiffin has boots, Tiffin has a ball. Where is Ava's shirt? Here it is. Peep, kick off, pass, pass, pass. Tiffin to Ava, thud. One more pass to Ava. Ready, steady, goal, goal, Ava, goal, goal, goal. Home we go, boots off, lights low. Pawn hand, side by side. What a big day, Neve. Night night, Tiffin. Night night, Neve.",
+    "wer_raw": 0.061,
+    "wer_names_canonical": 0.03,
+    "word_errors": [
+     "substitute: 'paw' -> 'pawn'",
+     "delete: 'in' -> ''"
+    ],
+    "name_tokens_heard": [
+     "ava",
+     "ava's",
+     "ava",
+     "ava",
+     "ava",
+     "neve",
+     "neve"
+    ],
+    "passage_A_s": 23.71,
+    "passage_B_s": 12.33,
+    "words_per_min_A": 106.3,
+    "words_per_min_B": 116.8,
+    "pause_between_passages_s": 1.72,
+    "pauses_A_s": [
+     0.27,
+     0.81,
+     0.58,
+     0.36,
+     0.49,
+     0.74,
+     0.54,
+     0.55,
+     0.7,
+     0.45,
+     0.86,
+     0.21,
+     0.46,
+     0.27,
+     0.31,
+     0.23,
+     0.21
+    ],
+    "pauses_B_s": [
+     0.37,
+     0.32,
+     0.91,
+     1.05,
+     1.07,
+     0.38
+    ],
+    "rms_dbfs_A": -18.100000381469727,
+    "rms_dbfs_B": -19.299999237060547,
+    "phonemes": "ɡoʊleɪvɚɪtsfʊtbɔːldeɪtɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹzeɪvᵻʃɜːthɪɹɪɾɪzpiːpkɪkɑːfpæspæspæstɪfəntəeɪvəθʌdwʌnmɔːɹpæstəeɪvɹɛdistɛdiɡlɡleɪvɐɡoʊlɡoʊlɡoʊlhoʊmliɡoʊbuːtsɑːflaɪtsloʊpɑːɪnhændsaɪdbaɪsaɪdwʌdɐbɪɡdeɪniːvnaɪtnaɪtɪfənnaɪtnaɪtniːv",
+    "name_phoneme_counts": {
+     "ava_eɪv": 5,
+     "ava_ɑːv_or_aɪv": 0,
+     "niamh_niːv": 2
+    },
+    "names_expected": {
+     "ava_eɪv": 5,
+     "niamh_niːv": 2
+    },
+    "utmos22": 3.94,
+    "utmos22_A": 3.93,
+    "utmos22_B": 4.29
+   }
+  },
+  {
+   "file": "voxcpm2-voicedesign.mp3",
+   "model_key": "voxcpm2",
+   "voice": "designed from text description (no reference audio)",
+   "render_cpu_s_incl_retries_and_checks": 837.3,
+   "realtime_factor_approx": 18.0,
+   "attempts": 11,
+   "chunks_passing_all_checks": 6,
+   "render_settings": {
+    "model": "openbmb/VoxCPM2",
+    "seed": 42,
+    "desc_A": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)",
+    "desc_B": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; now slower, hushed and sleepy, almost whispering)",
+    "text_A": [
+     "Goal, Ava! It's football day!",
+     "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!"
+    ],
+    "text_B": [
+     "Home we go. Boots off. Lights low.",
+     "Paw in hand, side by side. What a big day, Neeve.",
+     "Night night, Tiffin. Night night, Neeve."
+    ],
+    "gen": {
+     "cfg_value": 2.0,
+     "inference_timesteps": 10
+    },
+    "gaps_A_s": [
+     0.6,
+     0.5,
+     0.65
+    ],
+    "gaps_B_s": [
+     0.7,
+     0.85
+    ],
+    "B_gain": 0.85,
+    "gap_between_passages_s": 1.5,
+    "render_s_incl_retries": 837.3,
+    "threads": 4,
+    "sr": 48000
+   },
+   "chunk_attempt_log": [
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)Goal, Ava! It's football day!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Go, Ava! It's football day!  /oʊeɪvɚɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)Goal, Ava! It's football day!",
+     "attempt": 1,
+     "ok": true,
+     "heard": "goal, Ava. It's football day.  /ɡoʊleɪvɚɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where's Ava's shirt? Here it is.  /ɪfənhæzbuːtstɪfɪnhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is!",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Tiffin has boots, Tiffin has a ball. Where is Ava's shirt? Here it is.  /ɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Peep, kick off, pass, pass, pass. Tiffen to Ava, thud.  /iːpkɪkɔfpæpæstpæstɪfəntəeɪvɐðʌd/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)Peep! Kick-off! Pass, pass, pass! Tiffin to Ava... thud!",
+     "attempt": 1,
+     "ok": true,
+     "heard": "Peep, kick off, pass, pass, pass. Tiffin to Ava, thud.  /piːpkɪkɔfpæspæspætɪfɪntəeɪvəθʌd/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; quietly delighted and playful, never loud)One more pass... to Ava! Ready... steady... Goal! Goal, Ava! Goal, goal, goal!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "One more pass to Ava. Ready, steady, goal, goal, Ava, goal, goal, goal.  /wʌnmoʊpæstəeɪvʌɹɛdistɛdiɡoʊɡoʊeɪvʌɡoʊɡoʊɡoʊ/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; now slower, hushed and sleepy, almost whispering)Home we go. Boots off. Lights low.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low  /poʊmliɡoʊbuːtsɑːflaɪsloʊ/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; now slower, hushed and sleepy, almost whispering)Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Pulling hand, side by side, what a big day, Neve.  /poʊɪnhændsaɪdbaɪsaɪdwʌtɐbɪɡdeɪnið/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; now slower, hushed and sleepy, almost whispering)Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Pull in hand side by side. What a big day, Neve.  /ɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "(A gentle, warm British woman in her early thirties with a soft Southern English accent, reading a bedtime picture book to a toddler: calm, kind, smiling, unhurried, with natural pauses and soft endings to phrases; now slower, hushed and sleepy, almost whispering)Night night, Tiffin. Night night, Neeve.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Night night, Tiffin. Night night, Neve.  /naɪtnaɪttɪfɪnnaɪtnaɪniːv/"
+    }
+   ],
+   "analysis": {
+    "name": "voxcpm2-voicedesign",
+    "raw_sr": 48000,
+    "raw_duration_s": 46.58,
+    "raw_peak_dbfs": -2.5999999046325684,
+    "raw_clipped_samples": 0,
+    "master": {
+     "high_shelf_db_at_6.5kHz": -2.0,
+     "lufs": -18.01,
+     "peak_dbfs": -1.0
+    },
+    "mp3_kb": 403.0,
+    "mp3_sr": 48000,
+    "final_duration_s": 47.43,
+    "final_peak_dbfs": -1.0,
+    "final_lufs": -17.93,
+    "whisper_small_en": "Goal, Ava, it's football day. Tiffin has boots, Tiffin has a ball. Where is Ava's shirt? Here it is. Peep, kick off, pass, pass, pass, Tiffin to Ava, thud. One more pass to Ava, ready, steady. Goal, goal, Ava, goal, goal, goal. Home we go, boots off, lights low. All in hand, side by side. What a big day, Neve. Night, night, Tiffin. Night, night, Neve.",
+    "wer_raw": 0.045,
+    "wer_names_canonical": 0.015,
+    "word_errors": [
+     "substitute: 'paw' -> 'all'"
+    ],
+    "name_tokens_heard": [
+     "ava",
+     "ava's",
+     "ava",
+     "ava",
+     "ava",
+     "neve",
+     "neve"
+    ],
+    "passage_A_s": 26.25,
+    "passage_B_s": 18.5,
+    "words_per_min_A": 96.0,
+    "words_per_min_B": 77.8,
+    "pause_between_passages_s": 1.6,
+    "pauses_A_s": [
+     0.21,
+     0.72,
+     0.38,
+     0.92,
+     0.59,
+     0.61,
+     0.24,
+     0.21,
+     0.38,
+     0.45,
+     0.81,
+     0.49,
+     0.48,
+     0.37,
+     0.5
+    ],
+    "pauses_B_s": [
+     1.21,
+     1.42,
+     0.88,
+     0.78,
+     1.08,
+     0.25,
+     0.39,
+     0.3
+    ],
+    "rms_dbfs_A": -18.200000762939453,
+    "rms_dbfs_B": -22.399999618530273,
+    "phonemes": "ɡoʊleɪvəɪtsfʊtbɔːldeɪhtɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹdᵻzpiːkɪkɑːspæspæspæstɪfəntəeɪvəθʌdwʌnmɔːɹpæsdəeɪvʌɹɛdistɛdiɡoʊɡoʊleɪvʌɡoʊɡoʊɡoʊhoʊiɡoʊbuːtslaɪsloʊhoʊɪnhændsaɪdbaɪsaɪdwʌrɐbɪɡdeɪniːvnaɪtnaɪttɪfənnaɪtnaɪtniːv",
+    "name_phoneme_counts": {
+     "ava_eɪv": 5,
+     "ava_ɑːv_or_aɪv": 0,
+     "niamh_niːv": 2
+    },
+    "names_expected": {
+     "ava_eɪv": 5,
+     "niamh_niːv": 2
+    },
+    "utmos22": 2.42,
+    "utmos22_A": 3.28,
+    "utmos22_B": 2.21
+   }
+  },
+  {
+   "file": "pocket-tts-anna.mp3",
+   "model_key": "pocket-tts",
+   "voice": "preset 'anna' = VCTK speaker p228 (real consenting speaker, CC-BY-4.0)",
+   "render_cpu_s_incl_retries_and_checks": 119.6,
+   "realtime_factor_approx": 3.1,
+   "attempts": 20,
+   "chunks_passing_all_checks": 5,
+   "render_settings": {
+    "model": "kyutai/pocket-tts-without-voice-cloning (english_2026-09)",
+    "voice_preset": "anna",
+    "seed": 42,
+    "settings_A": {
+     "temp": 0.45
+    },
+    "settings_B": {
+     "temp": 0.3
+    },
+    "text_A": [
+     "Goal, A-va! It's football day!",
+     "Tiffin has boots. Tiffin has a ball. Where is A-va's shirt? Here it is!",
+     "Peep! Kick-off! Pass, pass, pass! Tiffin to A-va... thud!",
+     "One more pass... to A-va! Ready... steady... Goal! Goal, A-va! Goal, goal, goal!"
+    ],
+    "text_B": [
+     "Home we go. Boots off. Lights low.",
+     "Paw in hand, side by side. What a big day, Neeve.",
+     "Night night, Tiffin. Night night, Neeve."
+    ],
+    "gaps_A_s": [
+     0.6,
+     0.5,
+     0.65
+    ],
+    "gaps_B_s": [
+     0.8,
+     0.95
+    ],
+    "B_gain": 0.85,
+    "gap_between_passages_s": 1.5,
+    "render_s_incl_retries": 119.6,
+    "threads": 4,
+    "sr": 24000
+   },
+   "chunk_attempt_log": [
+    {
+     "text": "Goal, A-va! It's football day!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Gull-va, it's football day.  /ɡoʊlvɑːɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "Goal, A-va! It's football day!",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Óle è va. It's football day.  /oʊeɪvɑːɪsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "Goal, A-va! It's football day!",
+     "attempt": 2,
+     "ok": false,
+     "heard": "Gol Eva. It's football day.  /ɡoʊleɪvɑːɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "Goal, A-va! It's football day!",
+     "attempt": 3,
+     "ok": false,
+     "heard": "Gole ewa. It's football day.  /ɡoʊleɪvɑːɪsfʊtbɔːdeɪ/"
+    },
+    {
+     "text": "Goal, A-va! It's football day!",
+     "attempt": 4,
+     "ok": false,
+     "heard": "Gòl è va. It's football day.  /ɡoʊləvɑːɪtsfʊtbɔːldeɪ/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is A-va's shirt? Here it is!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where is Eva's shirt? Here it is.  /tɪfənhæzbuːtstɪfɪnhæzɐbɔːlwɜːɹɪzɐvɑːɹzʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is A-va's shirt? Here it is!",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where is Eva's shirt? Here it is.  /tɪfənhæzbuːtstɪfənhæzɐbɔːlwɜːɹɪzeɪvɐʃʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Tiffin has boots. Tiffin has a ball. Where is A-va's shirt? Here it is!",
+     "attempt": 2,
+     "ok": true,
+     "heard": "Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is.  /tɪfɪnhɐzbuːtstɪfɪnhæzɐbɔːlwɛɹɪzeɪvɑːzʃɜːthɪɹɪɾɪz/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to A-va... thud!",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Peep, kick off, pass pass, tiff into Ava, thud  /piːpkɪkɔfpæspæstɪfɪntəeɪvɚθʌd/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to A-va... thud!",
+     "attempt": 1,
+     "ok": false,
+     "heard": "peep, kick off, pass, pass, pass, tiff into a vah  /piːpkɪkɔfpæspspæstɪfɪntəəvɑː/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to A-va... thud!",
+     "attempt": 2,
+     "ok": false,
+     "heard": "peep, kick off, pass, pass, tiffin to eva  /piːpkɪkɑːfpæspæstɪfɪntəəvɑː/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to A-va... thud!",
+     "attempt": 3,
+     "ok": false,
+     "heard": "peep, kick off, pass, pass, tiff into a vah, thud  /piːpkɪkɔfpæspstɪfɪntəəvɑːθʌd/"
+    },
+    {
+     "text": "Peep! Kick-off! Pass, pass, pass! Tiffin to A-va... thud!",
+     "attempt": 4,
+     "ok": false,
+     "heard": "Peep, kick off, pass, pass Tiffin to Avar, third  /piːpkɪkɔfæspæstɪfɪntəɐvɑːθʌd/"
+    },
+    {
+     "text": "One more pass... to A-va! Ready... steady... Goal! Goal, A-va! Goal, goal, goal!",
+     "attempt": 0,
+     "ok": true,
+     "heard": "One more pass to Ava. Ready, steady, goal, goal, Ava, goal, goal, goal.  /wʌnmoːɹpæstʊeɪvɐɹɛdistɛdiɡoʊɡoʊleɪvɐɡoʊlɡoʊɡoʊ/"
+    },
+    {
+     "text": "Home we go. Boots off. Lights low.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Home we go, boots off, lights low.  /hoʊmwiːɡoʊbuːtsɑːflaɪtsloʊ/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 0,
+     "ok": false,
+     "heard": "Pore and hand side by side. What a big day, Neve.  /pɔːænhændsaɪdbaɪsaɪdwʌtɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 1,
+     "ok": false,
+     "heard": "Pore in hand, side by side. What a big day, Neve!  /pɔːɪnhændsaɪdbaɪsaɪdwʌtɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 2,
+     "ok": false,
+     "heard": "Pore in hand, side by side. What a big day, Neve.  /pɔːɪnhændsaɪdbaɪsaɪdwʌtɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Paw in hand, side by side. What a big day, Neeve.",
+     "attempt": 3,
+     "ok": true,
+     "heard": "Paw in hand, side by side. What a big day, Neve!  /pɔːæɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːv/"
+    },
+    {
+     "text": "Night night, Tiffin. Night night, Neeve.",
+     "attempt": 0,
+     "ok": true,
+     "heard": "Night night, Tiffin. Night night, Neve.  /naɪtnaɪttɪfɪnnaɪtneːtniːv/"
+    }
+   ],
+   "analysis": {
+    "name": "pocket-tts-anna",
+    "raw_sr": 24000,
+    "raw_duration_s": 38.66,
+    "raw_peak_dbfs": -1.059999942779541,
+    "raw_clipped_samples": 0,
+    "master": {
+     "limiter_ceiling_dbfs": -1.5,
+     "high_shelf_db_at_6.5kHz": -2.0,
+     "lufs": -18.06,
+     "peak_dbfs": -1.5
+    },
+    "mp3_kb": 233.0,
+    "mp3_sr": 24000,
+    "final_duration_s": 39.51,
+    "final_peak_dbfs": -1.2300000190734863,
+    "final_lufs": -18.12,
+    "whisper_small_en": "Goal, Ava, it's football day. Tiffin has boots, Tiffin has a ball, where is Ava's shirt, here it is. Peep, kick off, pass, pass, Tiffin to Ava, thud. One more pass to Ava, ready, steady, goal, goal, Ava, goal, goal, goal. Home we go, boots off, lights low. Paw in hand, side by side, what a big day, Neve. Night night, Tiffin, night night, Neve.",
+    "wer_raw": 0.045,
+    "wer_names_canonical": 0.015,
+    "word_errors": [
+     "delete: 'pass' -> ''"
+    ],
+    "name_tokens_heard": [
+     "ava",
+     "ava's",
+     "ava",
+     "ava",
+     "ava",
+     "neve",
+     "neve"
+    ],
+    "passage_A_s": 23.66,
+    "passage_B_s": 13.01,
+    "words_per_min_A": 106.5,
+    "words_per_min_B": 110.7,
+    "pause_between_passages_s": 1.7,
+    "pauses_A_s": [
+     1.58,
+     0.25,
+     0.21,
+     0.44,
+     1.49,
+     0.52,
+     0.63,
+     0.75,
+     0.21,
+     1.06,
+     0.33,
+     0.33
+    ],
+    "pauses_B_s": [
+     0.4,
+     0.28,
+     0.43,
+     1.23,
+     0.47,
+     0.77,
+     1.4,
+     0.42,
+     0.23
+    ],
+    "rms_dbfs_A": -18.399999618530273,
+    "rms_dbfs_B": -21.399999618530273,
+    "phonemes": "oʊeɪvɑːɪsfʊtbɔːldeɪtɪfɪnhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvɑːzʃɜːthɪɹɪɾɪzpiːpkɪkɑːfpæspæstfɪntəeɪvɑːθʌdwʌnmɔːɹpæstəeɪvɑːɹɛdistɛdiɡoʊlɡoʊleɪvɡoʊlɡoʊɡoʊhoʊmwiːɡoʊbuːtsɑːflaɪtsloʊpɔːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːvnaɪtnaɪttɪfənnaɪtneɪtniːv",
+    "name_phoneme_counts": {
+     "ava_eɪv": 5,
+     "ava_ɑːv_or_aɪv": 0,
+     "niamh_niːv": 2
+    },
+    "names_expected": {
+     "ava_eɪv": 5,
+     "niamh_niːv": 2
+    },
+    "utmos22": 4.11,
+    "utmos22_A": 4.32,
+    "utmos22_B": 4.08
    }
   }
  ]
