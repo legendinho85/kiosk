@@ -1,0 +1,9 @@
+{
+  "status": "blocked",
+  "checked_at_utc": "2026-09-25T11:26Z",
+  "samples": [],
+  "blocked_hosts": ["huggingface.co", "hf.co", "cdn-lfs.huggingface.co", "cdn-lfs-us-1.hf.co", "cas-bridge.xethub.hf.co", "download.pytorch.org"],
+  "reachable_hosts": ["pypi.org", "github.com"],
+  "error": "CONNECT tunnel failed, response 403 (proxy policy denial)",
+  "note": "No mirrors or workarounds used, per instructions. No models downloaded, no samples rendered."
+}
