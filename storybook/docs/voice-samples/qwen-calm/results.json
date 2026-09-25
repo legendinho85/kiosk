@@ -126,6 +126,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -140,8 +142,10 @@
       "rms_db_sd_400ms": 7.16,
       "loud_range_db_p10_p95": 16.07
      },
+     "pitch_dev_from_anchor_st": 1.62,
+     "in_gate": "True",
      "calm_score": 9.409,
-     "gen_s_batch": 65.4
+     "gen_s_batch": 58.6
     },
     {
      "chunk": 0,
@@ -154,6 +158,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -168,8 +174,10 @@
       "rms_db_sd_400ms": 9.27,
       "loud_range_db_p10_p95": 20.12
      },
+     "pitch_dev_from_anchor_st": 1.6,
+     "in_gate": "True",
      "calm_score": 10.323,
-     "gen_s_batch": 65.4
+     "gen_s_batch": 58.6
     },
     {
      "chunk": 0,
@@ -182,6 +190,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -196,8 +206,10 @@
       "rms_db_sd_400ms": 4.15,
       "loud_range_db_p10_p95": 9.85
      },
+     "pitch_dev_from_anchor_st": 0.28,
+     "in_gate": "True",
      "calm_score": 6.725,
-     "gen_s_batch": 65.4,
+     "gen_s_batch": 58.6,
      "chosen": true
     },
     {
@@ -211,6 +223,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -225,8 +239,10 @@
       "rms_db_sd_400ms": 5.3,
       "loud_range_db_p10_p95": 10.62
      },
+     "pitch_dev_from_anchor_st": 1.36,
+     "in_gate": "True",
      "calm_score": 8.148,
-     "gen_s_batch": 62.3,
+     "gen_s_batch": 63.6,
      "chosen": true
     },
     {
@@ -240,6 +256,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -254,8 +272,10 @@
       "rms_db_sd_400ms": 8.22,
       "loud_range_db_p10_p95": 14.86
      },
+     "pitch_dev_from_anchor_st": 1.03,
+     "in_gate": "True",
      "calm_score": 10.82,
-     "gen_s_batch": 62.3
+     "gen_s_batch": 63.6
     },
     {
      "chunk": 1,
@@ -268,6 +288,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -282,8 +304,10 @@
       "rms_db_sd_400ms": 3.04,
       "loud_range_db_p10_p95": 6.65
      },
+     "pitch_dev_from_anchor_st": 3.03,
+     "in_gate": "False",
      "calm_score": 8.824,
-     "gen_s_batch": 62.3
+     "gen_s_batch": 63.6
     },
     {
      "chunk": 2,
@@ -306,6 +330,8 @@
      ],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -320,8 +346,10 @@
       "rms_db_sd_400ms": 4.47,
       "loud_range_db_p10_p95": 9.61
      },
-     "calm_score": 10.703,
-     "gen_s_batch": 64.8
+     "pitch_dev_from_anchor_st": 4.42,
+     "in_gate": "False",
+     "calm_score": 11.647,
+     "gen_s_batch": 64.0
     },
     {
      "chunk": 2,
@@ -344,6 +372,8 @@
      ],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -358,8 +388,10 @@
       "rms_db_sd_400ms": 7.0,
       "loud_range_db_p10_p95": 14.1
      },
-     "calm_score": 10.208,
-     "gen_s_batch": 64.8
+     "pitch_dev_from_anchor_st": 0.77,
+     "in_gate": "True",
+     "calm_score": 9.92,
+     "gen_s_batch": 64.0
     },
     {
      "chunk": 2,
@@ -372,6 +404,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -386,9 +420,144 @@
       "rms_db_sd_400ms": 2.82,
       "loud_range_db_p10_p95": 6.93
      },
-     "calm_score": 7.872,
-     "gen_s_batch": 64.8,
+     "pitch_dev_from_anchor_st": 5.87,
+     "in_gate": "False",
+     "calm_score": 8.496,
+     "gen_s_batch": 64.0,
      "chosen": true
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 1,
+     "take": 0,
+     "ok": false,
+     "heard": "Where is Eva's shirt? Here it is.",
+     "wer": 0.143,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava's"
+       ],
+       [
+        "eva's"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 2.77,
+      "wpm": 151.4,
+      "pitch_median_hz": 325.1,
+      "pitch_sd_st": 4.0,
+      "pitch_range_st_p5_p95": 11.28,
+      "rms_db_mean": -25.38,
+      "rms_db_sd_400ms": 10.92,
+      "loud_range_db_p10_p95": 18.94
+     },
+     "pitch_dev_from_anchor_st": 4.4,
+     "in_gate": "False",
+     "calm_score": 14.759,
+     "gen_s_batch": 66.3
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 1,
+     "take": 1,
+     "ok": false,
+     "heard": "Where's Ava's shirt? Here it is.",
+     "wer": 0.286,
+     "errors": [
+      [
+       "substitute",
+       [
+        "where"
+       ],
+       [
+        "where's"
+       ]
+      ],
+      [
+       "delete",
+       [
+        "is"
+       ],
+       []
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.43,
+      "wpm": 122.3,
+      "pitch_median_hz": 236.5,
+      "pitch_sd_st": 3.29,
+      "pitch_range_st_p5_p95": 10.35,
+      "rms_db_mean": -27.59,
+      "rms_db_sd_400ms": 8.71,
+      "loud_range_db_p10_p95": 14.15
+     },
+     "pitch_dev_from_anchor_st": 1.11,
+     "in_gate": "True",
+     "calm_score": 10.098,
+     "gen_s_batch": 66.3
+    },
+    {
+     "chunk": 2,
+     "fed": "Where is Ava's shirt? Here it is.",
+     "round": 1,
+     "take": 2,
+     "ok": false,
+     "heard": "Where is Eva's shirt? Here it is!",
+     "wer": 0.143,
+     "errors": [
+      [
+       "substitute",
+       [
+        "ava's"
+       ],
+       [
+        "eva's"
+       ]
+      ]
+     ],
+     "names": {
+      "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
+      "ava_aɪv": 0,
+      "niamh_niːv": 0,
+      "ok": true
+     },
+     "metrics": {
+      "dur_s": 3.18,
+      "wpm": 132.1,
+      "pitch_median_hz": 227.3,
+      "pitch_sd_st": 2.25,
+      "pitch_range_st_p5_p95": 6.66,
+      "rms_db_mean": -19.47,
+      "rms_db_sd_400ms": 5.66,
+      "loud_range_db_p10_p95": 10.87
+     },
+     "pitch_dev_from_anchor_st": 1.79,
+     "in_gate": "True",
+     "calm_score": 6.252,
+     "gen_s_batch": 66.3
     },
     {
      "chunk": 3,
@@ -401,6 +570,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -415,8 +586,10 @@
       "rms_db_sd_400ms": 3.63,
       "loud_range_db_p10_p95": 8.83
      },
-     "calm_score": 6.807,
-     "gen_s_batch": 73.1,
+     "pitch_dev_from_anchor_st": 0.2,
+     "in_gate": "True",
+     "calm_score": 7.707,
+     "gen_s_batch": 74.9,
      "chosen": true
     },
     {
@@ -430,6 +603,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -444,8 +619,10 @@
       "rms_db_sd_400ms": 10.58,
       "loud_range_db_p10_p95": 25.75
      },
-     "calm_score": 16.519,
-     "gen_s_batch": 73.1
+     "pitch_dev_from_anchor_st": 4.43,
+     "in_gate": "False",
+     "calm_score": 17.419,
+     "gen_s_batch": 74.9
     },
     {
      "chunk": 3,
@@ -458,6 +635,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -472,8 +651,10 @@
       "rms_db_sd_400ms": 9.09,
       "loud_range_db_p10_p95": 18.67
      },
-     "calm_score": 11.656,
-     "gen_s_batch": 73.1
+     "pitch_dev_from_anchor_st": 1.49,
+     "in_gate": "True",
+     "calm_score": 12.556,
+     "gen_s_batch": 74.9
     },
     {
      "chunk": 4,
@@ -486,6 +667,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -500,9 +683,10 @@
       "rms_db_sd_400ms": 1.49,
       "loud_range_db_p10_p95": 3.3
      },
-     "calm_score": 5.801,
-     "gen_s_batch": 53.0,
-     "chosen": true
+     "pitch_dev_from_anchor_st": 4.69,
+     "in_gate": "False",
+     "calm_score": 6.199,
+     "gen_s_batch": 53.8
     },
     {
      "chunk": 4,
@@ -515,6 +699,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -529,8 +715,11 @@
       "rms_db_sd_400ms": 5.17,
       "loud_range_db_p10_p95": 10.58
      },
-     "calm_score": 8.447,
-     "gen_s_batch": 53.0
+     "pitch_dev_from_anchor_st": 0.42,
+     "in_gate": "True",
+     "calm_score": 8.345,
+     "gen_s_batch": 53.8,
+     "chosen": true
     },
     {
      "chunk": 4,
@@ -553,6 +742,8 @@
      ],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -567,8 +758,10 @@
       "rms_db_sd_400ms": 1.71,
       "loud_range_db_p10_p95": 2.97
      },
-     "calm_score": 7.318,
-     "gen_s_batch": 53.0
+     "pitch_dev_from_anchor_st": 3.25,
+     "in_gate": "False",
+     "calm_score": 6.488,
+     "gen_s_batch": 53.8
     },
     {
      "chunk": 5,
@@ -581,6 +774,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -595,8 +790,10 @@
       "rms_db_sd_400ms": 5.7,
       "loud_range_db_p10_p95": 15.66
      },
-     "calm_score": 7.414,
-     "gen_s_batch": 64.6
+     "pitch_dev_from_anchor_st": 1.72,
+     "in_gate": "True",
+     "calm_score": 7.692,
+     "gen_s_batch": 66.1
     },
     {
      "chunk": 5,
@@ -609,6 +806,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -623,8 +822,10 @@
       "rms_db_sd_400ms": 10.1,
       "loud_range_db_p10_p95": 27.74
      },
-     "calm_score": 9.938,
-     "gen_s_batch": 64.6
+     "pitch_dev_from_anchor_st": 1.46,
+     "in_gate": "True",
+     "calm_score": 11.248,
+     "gen_s_batch": 66.1
     },
     {
      "chunk": 5,
@@ -637,6 +838,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -651,8 +854,10 @@
       "rms_db_sd_400ms": 5.59,
       "loud_range_db_p10_p95": 12.68
      },
-     "calm_score": 5.957,
-     "gen_s_batch": 64.6,
+     "pitch_dev_from_anchor_st": 0.75,
+     "in_gate": "True",
+     "calm_score": 6.895,
+     "gen_s_batch": 66.1,
      "chosen": true
     },
     {
@@ -676,6 +881,8 @@
      ],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -690,8 +897,10 @@
       "rms_db_sd_400ms": 5.66,
       "loud_range_db_p10_p95": 12.97
      },
-     "calm_score": 10.183,
-     "gen_s_batch": 77.5
+     "pitch_dev_from_anchor_st": 0.71,
+     "in_gate": "True",
+     "calm_score": 10.395,
+     "gen_s_batch": 82.4
     },
     {
      "chunk": 6,
@@ -704,6 +913,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -718,8 +929,10 @@
       "rms_db_sd_400ms": 7.28,
       "loud_range_db_p10_p95": 10.95
      },
-     "calm_score": 7.96,
-     "gen_s_batch": 77.5,
+     "pitch_dev_from_anchor_st": 1.12,
+     "in_gate": "True",
+     "calm_score": 8.724,
+     "gen_s_batch": 82.4,
      "chosen": true
     },
     {
@@ -743,6 +956,8 @@
      ],
      "names": {
       "ava_eɪv": 1,
+      "ava_eɪv_only": 1,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -757,8 +972,10 @@
       "rms_db_sd_400ms": 4.47,
       "loud_range_db_p10_p95": 8.24
      },
-     "calm_score": 6.701,
-     "gen_s_batch": 77.5
+     "pitch_dev_from_anchor_st": 1.85,
+     "in_gate": "True",
+     "calm_score": 6.501,
+     "gen_s_batch": 82.4
     },
     {
      "chunk": 7,
@@ -771,6 +988,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -785,8 +1004,10 @@
       "rms_db_sd_400ms": 5.12,
       "loud_range_db_p10_p95": 13.11
      },
-     "calm_score": 6.546,
-     "gen_s_batch": 66.2,
+     "pitch_dev_from_anchor_st": 1.77,
+     "in_gate": "True",
+     "calm_score": 6.046,
+     "gen_s_batch": 71.8,
      "chosen": true
     },
     {
@@ -800,6 +1021,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -814,8 +1037,10 @@
       "rms_db_sd_400ms": 5.34,
       "loud_range_db_p10_p95": 11.89
      },
-     "calm_score": 6.796,
-     "gen_s_batch": 66.2
+     "pitch_dev_from_anchor_st": 3.11,
+     "in_gate": "False",
+     "calm_score": 7.296,
+     "gen_s_batch": 71.8
     },
     {
      "chunk": 7,
@@ -828,6 +1053,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -842,8 +1069,10 @@
       "rms_db_sd_400ms": 6.08,
       "loud_range_db_p10_p95": 15.44
      },
-     "calm_score": 6.949,
-     "gen_s_batch": 66.2
+     "pitch_dev_from_anchor_st": 2.72,
+     "in_gate": "True",
+     "calm_score": 7.449,
+     "gen_s_batch": 71.8
     },
     {
      "chunk": 8,
@@ -856,6 +1085,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -870,8 +1101,10 @@
       "rms_db_sd_400ms": 4.3,
       "loud_range_db_p10_p95": 9.31
      },
-     "calm_score": 9.57,
-     "gen_s_batch": 54.7
+     "pitch_dev_from_anchor_st": 1.84,
+     "in_gate": "True",
+     "calm_score": 9.07,
+     "gen_s_batch": 58.8
     },
     {
      "chunk": 8,
@@ -884,6 +1117,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -898,8 +1133,10 @@
       "rms_db_sd_400ms": 3.55,
       "loud_range_db_p10_p95": 8.06
      },
-     "calm_score": 7.301,
-     "gen_s_batch": 54.7,
+     "pitch_dev_from_anchor_st": 0.59,
+     "in_gate": "True",
+     "calm_score": 6.801,
+     "gen_s_batch": 58.8,
      "chosen": true
     },
     {
@@ -913,6 +1150,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 0,
       "ok": true
@@ -927,8 +1166,10 @@
       "rms_db_sd_400ms": 3.7,
       "loud_range_db_p10_p95": 9.12
      },
-     "calm_score": 9.353,
-     "gen_s_batch": 54.7
+     "pitch_dev_from_anchor_st": 1.96,
+     "in_gate": "True",
+     "calm_score": 8.853,
+     "gen_s_batch": 58.8
     },
     {
      "chunk": 9,
@@ -941,6 +1182,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 1,
       "ok": true
@@ -955,8 +1198,10 @@
       "rms_db_sd_400ms": 1.73,
       "loud_range_db_p10_p95": 3.6
      },
-     "calm_score": 12.632,
-     "gen_s_batch": 50.4
+     "pitch_dev_from_anchor_st": 5.01,
+     "in_gate": "False",
+     "calm_score": 12.13,
+     "gen_s_batch": 51.2
     },
     {
      "chunk": 9,
@@ -969,6 +1214,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 1,
       "ok": true
@@ -983,8 +1230,10 @@
       "rms_db_sd_400ms": 1.81,
       "loud_range_db_p10_p95": 3.89
      },
-     "calm_score": 8.783,
-     "gen_s_batch": 50.4,
+     "pitch_dev_from_anchor_st": 0.08,
+     "in_gate": "True",
+     "calm_score": 8.281,
+     "gen_s_batch": 51.2,
      "chosen": true
     },
     {
@@ -998,6 +1247,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 1,
       "ok": true
@@ -1012,8 +1263,10 @@
       "rms_db_sd_400ms": 3.67,
       "loud_range_db_p10_p95": 7.45
      },
-     "calm_score": 10.685,
-     "gen_s_batch": 50.4
+     "pitch_dev_from_anchor_st": 6.24,
+     "in_gate": "False",
+     "calm_score": 11.183,
+     "gen_s_batch": 51.2
     },
     {
      "chunk": 10,
@@ -1026,6 +1279,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 1,
       "ok": true
@@ -1040,9 +1295,10 @@
       "rms_db_sd_400ms": 2.8,
       "loud_range_db_p10_p95": 6.48
      },
-     "calm_score": 4.948,
-     "gen_s_batch": 67.5,
-     "chosen": true
+     "pitch_dev_from_anchor_st": 2.66,
+     "in_gate": "True",
+     "calm_score": 5.716,
+     "gen_s_batch": 70.6
     },
     {
      "chunk": 10,
@@ -1055,6 +1311,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 1,
       "ok": true
@@ -1069,8 +1327,10 @@
       "rms_db_sd_400ms": 6.52,
       "loud_range_db_p10_p95": 14.45
      },
-     "calm_score": 7.104,
-     "gen_s_batch": 67.5
+     "pitch_dev_from_anchor_st": 0.98,
+     "in_gate": "True",
+     "calm_score": 7.212,
+     "gen_s_batch": 70.6
     },
     {
      "chunk": 10,
@@ -1083,6 +1343,8 @@
      "errors": [],
      "names": {
       "ava_eɪv": 0,
+      "ava_eɪv_only": 0,
+      "ava_eːv": 0,
       "ava_aɪv": 0,
       "niamh_niːv": 1,
       "ok": true
@@ -1097,8 +1359,11 @@
       "rms_db_sd_400ms": 3.07,
       "loud_range_db_p10_p95": 7.6
      },
-     "calm_score": 5.35,
-     "gen_s_batch": 67.5
+     "pitch_dev_from_anchor_st": 0.85,
+     "in_gate": "True",
+     "calm_score": 5.262,
+     "gen_s_batch": 70.6,
+     "chosen": true
     }
    ],
    "reference": {
@@ -1184,12 +1449,19 @@
     "chosen": 0,
     "render_s": 218.1
    },
+   "pitch_gate_st": 3.0,
+   "max_new_tokens": "12.5 x (words + 3)",
+   "pitch_anchor_hz": {
+    "A": 252.1,
+    "B": 237.95071422705493
+   },
    "master": {
     "compressor": "2:1 above -24 dBFS, attack 30 ms, release 300 ms",
     "high_shelf": "-2 dB at 6.5 kHz",
-    "lufs": -17.96,
-    "peak_dbfs": -4.3
+    "lufs": -18.01,
+    "peak_dbfs": -1.82
    },
+   "levelling": "each chunk levelled to the same active RMS (-20 dBFS A, -24.5 dBFS B) before mastering",
    "B_time_stretch": 1.0,
    "gaps_s": [
     0.55,
@@ -1217,80 +1489,81 @@
     "What a big day, Neeve.",
     "Night night, Tiffin. Night night, Neeve."
    ],
-   "mp3_kb": 246.6,
-   "render_s_incl_retries": 1010.6,
+   "mp3_kb": 239.1,
+   "render_s_incl_retries": 879.5,
    "analysis": {
     "file": "qwen-calm-clone.mp3",
     "sr": 24000,
-    "duration_s": 45.88,
-    "peak_dbfs": -4.35,
-    "size_kb": 246.6,
-    "gap_between_passages_s": 1.6,
-    "lufs": -17.98,
+    "duration_s": 45.9,
+    "peak_dbfs": -1.75,
+    "size_kb": 239.1,
+    "gap_between_passages_s": 1.61,
+    "lufs": -18.02,
     "A": {
-     "dur_s": 27.87,
-     "wpm": 90.4,
-     "pitch_median_hz": 246.8,
-     "pitch_sd_st": 3.61,
-     "pitch_range_st_p5_p95": 11.81,
-     "rms_db_mean": -19.74,
-     "rms_db_sd_400ms": 6.16,
-     "loud_range_db_p10_p95": 14.99,
+     "dur_s": 27.8,
+     "wpm": 90.6,
+     "pitch_median_hz": 251.7,
+     "pitch_sd_st": 3.59,
+     "pitch_range_st_p5_p95": 12.05,
+     "rms_db_mean": -19.54,
+     "rms_db_sd_400ms": 6.02,
+     "loud_range_db_p10_p95": 10.45,
      "n_lines": 16,
-     "line_pitch_jump_st_mean": 3.24,
-     "line_pitch_jump_st_max": 6.67,
-     "line_level_jump_db_mean": 1.02,
-     "line_level_jump_db_max": 2.39,
+     "line_pitch_jump_st_mean": 3.17,
+     "line_pitch_jump_st_max": 6.53,
+     "line_level_jump_db_mean": 1.54,
+     "line_level_jump_db_max": 3.26,
      "pauses_s": [
-      0.42,
+      0.43,
       0.68,
       0.68,
       0.84,
-      0.91,
+      0.93,
       0.64,
       0.9,
-      0.7,
+      0.71,
+      0.51,
+      0.81,
+      0.74,
       0.5,
-      0.78,
-      0.76,
-      0.5,
-      0.55,
+      0.57,
       0.9,
       0.66
      ],
-     "lufs": -17.55,
+     "lufs": -17.27,
      "whisper": "Goal, Ava. It's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kickoff. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready, steady. Goal. Goal, Ava. Goal, goal, goal."
     },
     "B": {
-     "dur_s": 15.57,
-     "wpm": 92.5,
-     "pitch_median_hz": 240.7,
-     "pitch_sd_st": 2.67,
-     "pitch_range_st_p5_p95": 8.14,
-     "rms_db_mean": -20.27,
-     "rms_db_sd_400ms": 5.1,
-     "loud_range_db_p10_p95": 12.32,
-     "n_lines": 9,
-     "line_pitch_jump_st_mean": 2.51,
-     "line_pitch_jump_st_max": 5.25,
-     "line_level_jump_db_mean": 2.19,
-     "line_level_jump_db_max": 5.55,
+     "dur_s": 15.62,
+     "wpm": 92.2,
+     "pitch_median_hz": 226.6,
+     "pitch_sd_st": 2.5,
+     "pitch_range_st_p5_p95": 7.8,
+     "rms_db_mean": -21.84,
+     "rms_db_sd_400ms": 5.86,
+     "loud_range_db_p10_p95": 12.74,
+     "n_lines": 10,
+     "line_pitch_jump_st_mean": 2.03,
+     "line_pitch_jump_st_max": 4.8,
+     "line_level_jump_db_mean": 2.03,
+     "line_level_jump_db_max": 5.33,
      "pauses_s": [
-      0.82,
-      0.7,
+      0.81,
+      0.69,
       0.91,
       0.37,
       0.75,
       0.93,
-      0.29,
-      0.45
+      0.49,
+      0.49,
+      0.46
      ],
-     "lufs": -18.74,
-     "whisper": "Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night, night, Tiffin, night, night, Neve."
+     "lufs": -19.77,
+     "whisper": "Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night, night. Tiffin. Night, night. Neve."
     },
-    "A_to_B_pitch_drop_st": 0.43,
-    "A_to_B_level_drop_db": 0.53,
-    "whisper_small_en": "Goal, Ava. It's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kickoff. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready, steady. Goal, Ava. Goal, goal, goal. Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night, night. Tiffin, night, night. Neve.",
+    "A_to_B_pitch_drop_st": 1.82,
+    "A_to_B_level_drop_db": 2.3,
+    "whisper_small_en": "Goal, Ava, it's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kickoff. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready, steady. Goal, Ava. Goal, goal, goal. Home we go, boots off, lights low, paw in hand, side by side. What a big day, Neve. Night night, Tiffin. Night night, Neve.",
     "wer_names_canonical": 0.015,
     "word_errors": [
      [
@@ -1301,16 +1574,17 @@
       []
      ]
     ],
-    "phonemes": "ɡoʊleɪvəɪtsfʊtbɔːdeɪtɪfənhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪzpiːpkɪkɑːfpæspæspæstɪfntəeɪvəθʌdwʌnmɔːɹpæstəeɪvəɹɛdistɛdiɡoʊlɡoʊleɪvɐɡoʊlɡoʊɡoʊlhoʊmwiːɡoʊbuːtsɑːflaɪtsloʊphɔːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːvnaɪtnaɪttɪfənnaɪnaɪtniːv",
+    "phonemes": "ɡoʊleɪvəɪtsfʊtbɔːdætɪfnhæzbuːtstɪfənhæzɐbɔːlwɛɹɪzeɪvəzʃɜːthɪɹɪɾɪzpiːpkɪkɑːfpæspæspæstɪfəntəeɪvəsʌdwʌnmɔːɹpæstəeɪvəɹɛdistɛdiɡoʊlɡoʊleɪvɐɡoʊlɡoʊɡoʊlhoʊmwiːɡoʊbuːtsɑːflaɪtsloʊhɔːɪnhændsaɪdbaɪsaɪdwʌɾɐbɪɡdeɪniːvnaɪtnaɪttɪfənnaɪtnaɪtniːv",
     "names": {
      "ava_eɪv": 5,
+     "ava_eɪv_only": 5,
+     "ava_eːv": 0,
      "ava_aɪv": 0,
      "niamh_niːv": 2,
      "ok": true
     },
-    "utmos22": 4.4
-   },
-   "levelling": "each chunk levelled to the same active RMS (-20 dBFS A, -24.5 dBFS B) before mastering"
+    "utmos22": 4.45
+   }
   },
   "v2": {
    "variant": "v2",

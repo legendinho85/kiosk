@@ -8,7 +8,7 @@ Nobody here could listen, so "calm" is measured (pitch spread, loudness spread, 
 
 ## Files
 
-- `qwen-calm-clone.mp3`: 45.88 s, 246.6 KB, -17.98 LUFS, peak -4.35 dBFS, UTMOS22 4.4
+- `qwen-calm-clone.mp3`: 45.9 s, 239.1 KB, -18.02 LUFS, peak -1.75 dBFS, UTMOS22 4.45
 - `qwen-calm-design.mp3`: 50.63 s, 282.9 KB, -17.96 LUFS, peak -4.23 dBFS, UTMOS22 3.6
 
 ## Calm measurements next to the original
@@ -23,14 +23,14 @@ Every file is measured the same way, on the final MP3. The passage split is foun
 | File | Median F0 Hz | Pitch SD st | Pitch range st | Loudness SD dB | Line pitch jump st, A | Line level jump dB, A | wpm | LUFS | UTMOS22 |
 |---|---|---|---|---|---|---|---|---|---|
 | original `hf/qwen3tts-voicedesign.mp3` | 285 / 220 | 5.39 / 4.23 | 16.43 / 15.4 | 6.44 / 6.09 | 3.91 (max 12.44) | 2.09 (max 6.99) | 90.3 / 103.5 | -17.26 / -20.08 | 3.16 |
-| **V1** `qwen-calm-clone.mp3` | 247 / 241 | 3.61 / 2.67 | 11.81 / 8.14 | 6.16 / 5.1 | 3.24 (max 6.67) | 1.02 (max 2.39) | 90.4 / 92.5 | -17.55 / -18.74 | 4.4 |
+| **V1** `qwen-calm-clone.mp3` | 252 / 227 | 3.59 / 2.5 | 12.05 / 7.8 | 6.02 / 5.86 | 3.17 (max 6.53) | 1.54 (max 3.26) | 90.6 / 92.2 | -17.27 / -19.77 | 4.45 |
 | **V2** `qwen-calm-design.mp3` | 214 / 224 | 3.56 / 2.83 | 11.73 / 9.54 | 5.53 / 5.95 | 3.63 (max 9.22) | 1.7 (max 5.07) | 77.0 / 93.0 | -17.6 / -18.77 | 3.6 |
 
 Original, Whisper on passage A: "Goal Ava! It's football day! Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kick off. Pass, pass, pass. Tiffin to Ava. Thud. One more pass to Ava. Ready? Steady? Goal. Goal Ava. Goal, goal, goal."; passage B: "Home we go, boots off, lights low. Pawn hands side by side, what a big day, Neve. Night, night, Tiffin, night, night, Neve.". Names by phoneme: Ava /eɪv/ 5/5, Niamh /niːv/ 1/2.
 
 ## V1: `qwen-calm-clone.mp3`
 
-Interim: this is the first V1 render. A re-render with the pitch gate (see V2) is running and will replace it.
+This is the second V1 render, with the pitch gate and per-chunk levelling. One more pass is queued: chunk 2 ("Where is Ava's shirt? Here it is.") still sits about 6 st above the voice's reference pitch, because every other take of it failed Whisper (heard as "Eva's"). A targeted re-roll of that chunk will run after V3.
 
 **Workflow:** design once, then clone. VoiceDesign (`Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign`) made one reference clip from the calm description. `Qwen/Qwen3-TTS-12Hz-1.7B-Base` then cloned it (ICL mode: reference audio plus its transcript) for every chunk, so the whole script uses one voice.
 
@@ -67,17 +67,17 @@ Night night, Tiffin. Night night, Neeve.
 
 **Assembly:** each chunk is trimmed and levelled to the same active RMS. Passage B is set about 4.5 dB lower before mastering. Gaps between chunks in seconds: [0.55, 0.7, 0.5, 0.45, 0.6, 0.4, 1.5, 0.75, 0.6, 0.85].
 
-**Mastering:** 2:1 above -24 dBFS, attack 30 ms, release 300 ms; -2 dB at 6.5 kHz; -18 LUFS; peak ≤ -1 dBFS. The result is -17.98 LUFS with a peak of -4.35 dBFS. The MP3 is 246.6 KB at 24000 Hz.
+**Mastering:** 2:1 above -24 dBFS, attack 30 ms, release 300 ms; -2 dB at 6.5 kHz; -18 LUFS; peak ≤ -1 dBFS. The result is -18.02 LUFS with a peak of -1.75 dBFS. The MP3 is 239.1 KB at 24000 Hz.
 
 **Whisper small.en, passage A:** "Goal, Ava. It's football day. Tiffin has boots. Tiffin has a ball. Where is Ava's shirt? Here it is. Peep. Kickoff. Pass, pass, pass. Tiffin to Ava. Thud. One more pass. To Ava. Ready, steady. Goal. Goal, Ava. Goal, goal, goal."
 
-**Whisper small.en, passage B:** "Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night, night, Tiffin, night, night, Neve."
+**Whisper small.en, passage B:** "Home we go. Boots off. Lights low. Paw in hand, side by side. What a big day, Neve. Night, night. Tiffin. Night, night. Neve."
 
 Word errors against the script, whole file: 0.015 [['delete', ['goal'], []]]. Whisper on the whole file sometimes merges repeated "goal"s; the per-passage transcripts above are the cleaner check.
 
 **Names (wav2vec2 espeak phonemes, whole file):** Ava as /eɪv/ 5/5, /aɪv/ 0. Niamh (fed "Neeve") as /niːv/ 2/2.
 
-**UTMOS22:** 4.4. **Duration:** 45.88 s. **Render time** (including the reference, all takes and all checks): 1010.6 s.
+**UTMOS22:** 4.45. **Duration:** 45.9 s. **Render time** (including the reference, all takes and all checks): 879.5 s.
 
 **Per-chunk choice:** the calmest take that passed. The calm score is pitch SD + 0.5 × loudness SD, plus penalties for a rate outside the band, for pitch SD under 1.8 st (monotone), and for drifting from the reference voice's pitch and level.
 
@@ -85,15 +85,15 @@ Word errors against the script, whole file: 0.015 [['delete', ['goal'], []]]. Wh
 |---|---|---|---|---|---|---|---|
 | 0 | 3 | 3 | 256.2 | 4.51 | 4.15 | 110.7 | Goal, Ava. It's football day! |
 | 1 | 3 | 3 | 233.0 | 3.64 | 5.3 | 133.0 | Tiffin has boots. Tiffin has a ball. |
-| 2 | 3 | 1 | 353.9 | 3.25 | 2.82 | 130.4 | Where is Ava's shirt? Here it is! |
+| 2 | 6 | 1 | 353.9 | 3.25 | 2.82 | 130.4 | Where is Ava's shirt? Here it is! |
 | 3 | 3 | 3 | 249.2 | 2.3 | 3.63 | 82.3 | Peep, kick off, pass, pass, pass. |
-| 4 | 3 | 2 | 192.3 | 1.8 | 1.49 | 99.6 | Tiffin to Ava, Thud. |
+| 4 | 3 | 2 | 258.3 | 4.49 | 5.17 | 100.4 | Tiffin to Ava, Thud. |
 | 5 | 3 | 3 | 263.3 | 2.6 | 5.59 | 112.5 | One more pass, to Ava, ready, steady. |
 | 6 | 3 | 1 | 236.3 | 2.04 | 7.28 | 79.6 | Goal, goal, Ava, goal, goal, goal. |
 | 7 | 3 | 3 | 214.8 | 2.6 | 5.12 | 96.0 | Home we go, boots off, lights low. |
 | 8 | 3 | 3 | 230.0 | 1.65 | 3.55 | 138.3 | Paw in hand, side by side. |
 | 9 | 3 | 3 | 236.9 | 2.6 | 1.81 | 156.3 | What a big day, Neve. |
-| 10 | 3 | 3 | 277.4 | 2.55 | 2.8 | 86.5 | Night, night, Tiffin, night, night, Neve |
+| 10 | 3 | 3 | 226.5 | 2.79 | 3.07 | 85.7 | night night tiffin night night neave |
 
 ## V2: `qwen-calm-design.mp3`
 
